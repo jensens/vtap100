@@ -7,7 +7,6 @@ from textual.app import ComposeResult
 from textual.reactive import reactive
 from textual.widget import Widget
 from textual.widgets import Static
-
 from vtap100.tui.help import HelpLoader
 from vtap100.tui.i18n import t
 

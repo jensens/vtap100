@@ -1,19 +1,19 @@
-# Google Smart Tap Konfiguration
+# Google Smart Tap Configuration
 
-Google Smart Tap ermöglicht das Auslesen von Google Wallet Pässen über NFC.
+Google Smart Tap enables reading Google Wallet passes via NFC.
 
-## Voraussetzungen
+## Prerequisites
 
-1. Ein Google Pay & Wallet Console Account
-2. Ein Collector ID (von Google bereitgestellt)
-3. Ein ECDSA-Schlüsselpaar für die Authentifizierung
-4. Der öffentliche Schlüssel muss bei Google registriert sein
+1. A Google Pay & Wallet Console account
+2. A Collector ID (provided by Google)
+3. An ECDSA key pair for authentication
+4. The public key must be registered with Google
 
-## Parameter
+## Parameters
 
 ### ST#CollectorID
 
-Die von Google zugewiesene Collector ID.
+The Collector ID assigned by Google.
 
 ```ini
 ST1CollectorID=96972794
@@ -21,23 +21,23 @@ ST1CollectorID=96972794
 
 ### ST#KeySlot
 
-Der Slot (1-6) in dem der private Schlüssel gespeichert ist.
+The slot (1-6) where the private key is stored.
 
 ```ini
 ST1KeySlot=2
 ```
 
-Der Wert 0 bedeutet automatische Auswahl.
+The value 0 means automatic selection.
 
 ### ST#KeyVersion
 
-Die Versionsnummer des verwendeten Schlüssels.
+The version number of the key being used.
 
 ```ini
 ST1KeyVersion=1
 ```
 
-## Vollständiges Beispiel
+## Complete Example
 
 ```ini
 !VTAPconfig
@@ -46,20 +46,20 @@ ST1CollectorID=96972794
 ST1KeySlot=2
 ST1KeyVersion=1
 
-; Keyboard Emulation für Smart Tap Daten
+; Keyboard Emulation for Smart Tap data
 KBLogMode=1
 KBSource=G1
 ```
 
-## CLI-Verwendung
+## CLI Usage
 
-### Einfache Konfiguration
+### Simple Configuration
 
 ```bash
 vtap100 generate --google-st 96972794 --key-slot 2 --key-version 1
 ```
 
-### Mit Apple VAS kombiniert
+### Combined with Apple VAS
 
 ```bash
 vtap100 generate \
@@ -68,7 +68,7 @@ vtap100 generate \
     --key-slot 1
 ```
 
-### Interaktiver Wizard
+### Interactive Wizard
 
 ```bash
 vtap100 wizard
@@ -81,24 +81,24 @@ from vtap100.models.smarttap import GoogleSmartTapConfig
 from vtap100.models.config import VTAPConfig
 from vtap100.generator import ConfigGenerator
 
-# Smart Tap Konfiguration erstellen
+# Create Smart Tap configuration
 st = GoogleSmartTapConfig(
     collector_id="96972794",
     key_slot=2,
     key_version=1
 )
 
-# Vollständige Konfiguration
+# Complete configuration
 config = VTAPConfig(smarttap_configs=[st])
 
-# config.txt generieren
+# Generate config.txt
 generator = ConfigGenerator(config)
 print(generator.generate())
 ```
 
-## Mehrere Collector IDs
+## Multiple Collector IDs
 
-Es können bis zu 6 verschiedene Collector IDs konfiguriert werden:
+Up to 6 different Collector IDs can be configured:
 
 ```ini
 !VTAPconfig
@@ -111,49 +111,49 @@ ST2KeySlot=2
 ST2KeyVersion=1
 ```
 
-## Smart Tap Daten auslesen
+## Reading Smart Tap Data
 
-Mit aktivierter Keyboard-Emulation werden die Smart Tap Daten automatisch ausgegeben:
+With keyboard emulation enabled, Smart Tap data is automatically output:
 
 ```ini
 KBLogMode=1
-KBSource=G5    ; Alle Bytes von Google Smart Tap
+KBSource=G5    ; All bytes from Google Smart Tap
 ```
 
 ## Default Passes
 
-Zusätzlich zu eigenen Collector IDs können Standard-Pässe aktiviert werden:
+In addition to custom Collector IDs, default passes can be enabled:
 
 ```python
 from vtap100.models.smarttap import SmartTapDefaultPassesConfig
 
 defaults = SmartTapDefaultPassesConfig(
-    loyalty=True,      # Loyalty-Karten
-    gift_card=True,    # Geschenkkarten
-    offer=True,        # Angebote
-    transit=False,     # Nahverkehr
-    event_ticket=True, # Event-Tickets
-    flight=True,       # Flugtickets
-    boarding=True      # Boarding-Pässe
+    loyalty=True,      # Loyalty cards
+    gift_card=True,    # Gift cards
+    offer=True,        # Offers
+    transit=False,     # Public transit
+    event_ticket=True, # Event tickets
+    flight=True,       # Flight tickets
+    boarding=True      # Boarding passes
 )
 ```
 
-## Fehlerbehebung
+## Troubleshooting
 
 ### "No Smart Tap data received"
 
-- Prüfen Sie die Collector ID
-- Stellen Sie sicher, dass der private Key im richtigen Slot liegt
-- Prüfen Sie, ob die Key Version übereinstimmt
+- Check the Collector ID
+- Ensure the private key is in the correct slot
+- Verify the key version matches
 
 ### "Authentication failed"
 
-- Der öffentliche Schlüssel ist möglicherweise nicht bei Google registriert
-- Die Key Version stimmt nicht überein
+- The public key may not be registered with Google
+- The key version doesn't match
 
-## Siehe auch
+## See Also
 
 - [config.txt Format](overview.md)
-- [Apple VAS Konfiguration](apple_vas.md)
+- [Apple VAS Configuration](apple_vas.md)
 - [Keyboard Emulation](keyboard.md)
-- [Quellensammlung](../references/sources.md)
+- [Reference Sources](../references/sources.md)

@@ -7,8 +7,6 @@ Tests for:
 """
 
 import pytest
-
-from vtap100.models.config import VTAPConfig
 from vtap100.models.smarttap import GoogleSmartTapConfig
 from vtap100.models.vas import AppleVASConfig
 

@@ -19,7 +19,6 @@ from enum import Enum
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
-
 import yaml
 
 

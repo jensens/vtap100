@@ -5,9 +5,12 @@ Form for editing NFC tag reading settings.
 
 from textual.app import ComposeResult
 from textual.containers import Horizontal
-from textual.widgets import Button, Label, Select, Switch
-
-from vtap100.models.nfc import NFCTagConfig, NFCTagMode
+from textual.widgets import Button
+from textual.widgets import Label
+from textual.widgets import Select
+from textual.widgets import Switch
+from vtap100.models.nfc import NFCTagConfig
+from vtap100.models.nfc import NFCTagMode
 from vtap100.tui.i18n import t
 from vtap100.tui.widgets.forms.base import BaseConfigForm
 
@@ -187,4 +190,6 @@ class NFCConfigForm(BaseConfigForm):
                 self.app.config.nfc = config
                 self._show_success_message(t("common.messages.config_saved"))
             except Exception as e:
-                self.mount(Label(t("common.messages.error", message=str(e)), classes="error-message"))
+                self.mount(
+                    Label(t("common.messages.error", message=str(e)), classes="error-message")
+                )

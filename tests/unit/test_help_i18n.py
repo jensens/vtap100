@@ -7,8 +7,9 @@ Tests for:
 """
 
 import pytest
-
-from vtap100.tui.i18n import Language, get_language, set_language
+from vtap100.tui.i18n import Language
+from vtap100.tui.i18n import get_language
+from vtap100.tui.i18n import set_language
 
 
 class TestHelpLoaderI18n:
@@ -19,12 +20,14 @@ class TestHelpLoaderI18n:
         set_language(Language.DE)
         # Clear cache to ensure fresh load
         from vtap100.tui.help import HelpLoader
+
         HelpLoader.clear_cache()
 
     def teardown_method(self) -> None:
         """Reset to German after each test."""
         set_language(Language.DE)
         from vtap100.tui.help import HelpLoader
+
         HelpLoader.clear_cache()
 
     def test_load_german_help(self) -> None:
@@ -97,12 +100,14 @@ class TestHelpPanelI18n:
         """Reset to German before each test."""
         set_language(Language.DE)
         from vtap100.tui.help import HelpLoader
+
         HelpLoader.clear_cache()
 
     def teardown_method(self) -> None:
         """Reset to German after each test."""
         set_language(Language.DE)
         from vtap100.tui.help import HelpLoader
+
         HelpLoader.clear_cache()
 
     @pytest.mark.asyncio

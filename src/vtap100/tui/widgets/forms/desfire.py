@@ -6,11 +6,19 @@ Form for editing DESFire application configurations.
 from pydantic import ValidationError
 from textual.app import ComposeResult
 from textual.containers import Horizontal
-from textual.widgets import Button, Input, Label, Select, Static, Switch
-
-from vtap100.models.desfire import DESFireAppConfig, DESFireConfig, DESFireCryptoMode, DESFireDataFormat
+from textual.widgets import Button
+from textual.widgets import Input
+from textual.widgets import Label
+from textual.widgets import Select
+from textual.widgets import Switch
+from vtap100.models.desfire import DESFireAppConfig
+from vtap100.models.desfire import DESFireConfig
+from vtap100.models.desfire import DESFireCryptoMode
+from vtap100.models.desfire import DESFireDataFormat
 from vtap100.tui.i18n import t
-from vtap100.tui.widgets.forms.base import BaseConfigForm, ConfigAdded, ConfigRemoved
+from vtap100.tui.widgets.forms.base import BaseConfigForm
+from vtap100.tui.widgets.forms.base import ConfigAdded
+from vtap100.tui.widgets.forms.base import ConfigRemoved
 
 
 class DESFireConfigForm(BaseConfigForm):
@@ -310,7 +318,9 @@ class DESFireConfigForm(BaseConfigForm):
                 if isinstance(e, ValidationError):
                     self._show_validation_error(e)
                 else:
-                    self.mount(Label(t("common.messages.error", message=str(e)), classes="error-message"))
+                    self.mount(
+                        Label(t("common.messages.error", message=str(e)), classes="error-message")
+                    )
 
         elif event.button.id == "save":
             try:
@@ -322,7 +332,9 @@ class DESFireConfigForm(BaseConfigForm):
                 if isinstance(e, ValidationError):
                     self._show_validation_error(e)
                 else:
-                    self.mount(Label(t("common.messages.error", message=str(e)), classes="error-message"))
+                    self.mount(
+                        Label(t("common.messages.error", message=str(e)), classes="error-message")
+                    )
 
         elif event.button.id == "remove":
             self.app.config.desfire.apps.pop(self.index)
@@ -341,4 +353,6 @@ class DESFireConfigForm(BaseConfigForm):
                 if isinstance(e, ValidationError):
                     self._show_validation_error(e)
                 else:
-                    self.mount(Label(t("common.messages.error", message=str(e)), classes="error-message"))
+                    self.mount(
+                        Label(t("common.messages.error", message=str(e)), classes="error-message")
+                    )

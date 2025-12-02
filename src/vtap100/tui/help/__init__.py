@@ -4,10 +4,8 @@ Loads context-sensitive help from YAML files with i18n support.
 """
 
 from pathlib import Path
-
-import yaml
-
 from vtap100.tui.i18n import get_language
+import yaml
 
 
 class HelpLoader:

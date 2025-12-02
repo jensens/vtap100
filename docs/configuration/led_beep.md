@@ -1,112 +1,112 @@
-# LED und Beep Konfiguration
+# LED and Beep Configuration
 
-Der VTAP100 bietet visuelles (LED) und akustisches (Beep) Feedback für verschiedene Ereignisse.
+The VTAP100 offers visual (LED) and audio (beep) feedback for various events.
 
-## LED Einstellungen
+## LED Settings
 
 ### LEDMode
 
-LED-Betriebsmodus.
+LED operating mode.
 
 ```ini
-LEDMode=0    ; LEDs aus
-LEDMode=1    ; LEDs an
-LEDMode=2    ; Status-Anzeige
-LEDMode=3    ; Benutzerdefinierte Sequenzen
+LEDMode=0    ; LEDs off
+LEDMode=1    ; LEDs on
+LEDMode=2    ; Status indicator
+LEDMode=3    ; Custom sequences
 ```
 
-| Wert | Modus | Beschreibung |
-|------|-------|--------------|
-| 0 | OFF | LEDs deaktiviert |
-| 1 | ON | LEDs aktiviert |
-| 2 | STATUS | Status-Indikator |
-| 3 | CUSTOM | Benutzerdefinierte Sequenzen |
+| Value | Mode | Description |
+|-------|------|-------------|
+| 0 | OFF | LEDs disabled |
+| 1 | ON | LEDs enabled |
+| 2 | STATUS | Status indicator |
+| 3 | CUSTOM | Custom sequences |
 
 ### LEDSelect
 
-LED-Typ/Position auswählen.
+Select LED type/position.
 
 ```ini
-LEDSelect=0    ; Externe RGB LED (common cathode)
+LEDSelect=0    ; External RGB LED (common cathode)
 LEDSelect=1    ; On-board LED (compact case)
 LEDSelect=2    ; On-board LED (square case)
 LEDSelect=3    ; Serial LEDs
 ```
 
-| Wert | Typ |
-|------|-----|
-| 0 | Externe RGB LED |
+| Value | Type |
+|-------|------|
+| 0 | External RGB LED |
 | 1 | On-board (Compact) |
 | 2 | On-board (Square) |
 | 3 | Serial LEDs |
 
 ### LEDDefaultRGB
 
-Standard-Farbe für LEDs (6 Hex-Zeichen).
+Default color for LEDs (6 hex characters).
 
 ```ini
-LEDDefaultRGB=FFFFFF    ; Weiß
-LEDDefaultRGB=00FF00    ; Grün
-LEDDefaultRGB=FF0000    ; Rot
+LEDDefaultRGB=FFFFFF    ; White
+LEDDefaultRGB=00FF00    ; Green
+LEDDefaultRGB=FF0000    ; Red
 ```
 
-### LED Sequenzen
+### LED Sequences
 
-Für Pass-Read, Tag-Read, Fehler und Start können LED-Sequenzen definiert werden.
+LED sequences can be defined for pass read, tag read, error, and start events.
 
 **Format:** `RRGGBB,on_ms,off_ms,repeats`
 
-| Parameter | Bereich | Beschreibung |
-|-----------|---------|--------------|
-| RRGGBB | Hex | Farbe (6 Zeichen) |
-| on_ms | 0-65535 | An-Zeit in ms |
-| off_ms | 0-65535 | Aus-Zeit in ms |
-| repeats | 1-255 | Wiederholungen |
+| Parameter | Range | Description |
+|-----------|-------|-------------|
+| RRGGBB | Hex | Color (6 characters) |
+| on_ms | 0-65535 | On time in ms |
+| off_ms | 0-65535 | Off time in ms |
+| repeats | 1-255 | Repetitions |
 
 ```ini
-; Grünes Blinken bei Pass-Read (2x, 100ms an/aus)
+; Green blink on pass read (2x, 100ms on/off)
 PassLED=00FF00,100,100,2
 
-; Blaue LED bei Tag-Read
+; Blue LED on tag read
 TagLED=0000FF,100,100,1
 
-; Rotes Blinken bei Fehler (3x schnell)
+; Red blink on error (3x fast)
 PassErrorLED=FF0000,50,50,3
 
-; Gelbe LED beim Start
+; Yellow LED on start
 StartLED=FFFF00,500,0,1
 ```
 
-## Beep/Buzzer Einstellungen
+## Beep/Buzzer Settings
 
-Für Pass-Read, Tag-Read, Fehler und Start können Beep-Sequenzen definiert werden.
+Beep sequences can be defined for pass read, tag read, error, and start events.
 
 **Format:** `on_ms,off_ms,repeats[,frequency]`
 
-| Parameter | Bereich | Beschreibung |
-|-----------|---------|--------------|
-| on_ms | 0-65535 | An-Zeit in ms |
-| off_ms | 0-65535 | Aus-Zeit in ms |
-| repeats | 1-255 | Wiederholungen |
-| frequency | 100-20000 | Frequenz in Hz (optional, Standard: 3136) |
+| Parameter | Range | Description |
+|-----------|-------|-------------|
+| on_ms | 0-65535 | On time in ms |
+| off_ms | 0-65535 | Off time in ms |
+| repeats | 1-255 | Repetitions |
+| frequency | 100-20000 | Frequency in Hz (optional, default: 3136) |
 
 ```ini
-; 2 Beeps bei Pass-Read
+; 2 beeps on pass read
 PassBeep=100,100,2
 
-; Kurzer Beep bei Tag-Read
+; Short beep on tag read
 TagBeep=50,50,1
 
-; 3 Beeps bei Fehler (tieferer Ton)
+; 3 beeps on error (lower tone)
 PassErrorBeep=200,100,3,2000
 
-; Langer Beep beim Start
+; Long beep on start
 StartBeep=500,0,1
 ```
 
 ## Python API
 
-### LED Konfiguration
+### LED Configuration
 
 ```python
 from vtap100.models.feedback import (
@@ -117,7 +117,7 @@ from vtap100.models.feedback import (
     LEDSequence,
 )
 
-# LED Grundeinstellungen
+# LED basic settings
 led = LEDConfig(
     mode=LEDMode.CUSTOM,
     select=LEDSelect.ONBOARD_COMPACT,
@@ -128,7 +128,7 @@ print(led.to_config_lines())
 # ['LEDMode=3', 'LEDSelect=1', 'LEDDefaultRGB=FFFFFF']
 ```
 
-### LED Sequenzen
+### LED Sequences
 
 ```python
 from vtap100.models.feedback import LEDConfig, LEDSequence
@@ -144,7 +144,7 @@ print(led.to_config_lines())
 #  'PassErrorLED=FF0000,50,50,3']
 ```
 
-### Beep Konfiguration
+### Beep Configuration
 
 ```python
 from vtap100.models.feedback import BeepConfig, BeepSequence
@@ -159,7 +159,7 @@ print(beep.to_config_lines())
 # ['PassBeep=100,100,2', 'TagBeep=50,50,1', 'PassErrorBeep=200,100,3,2000']
 ```
 
-### Kombinierte Konfiguration
+### Combined Configuration
 
 ```python
 from vtap100.models.feedback import (
@@ -185,7 +185,7 @@ print(feedback.to_config_lines())
 # ['LEDMode=3', 'PassLED=00FF00,100,100,2', 'PassBeep=100,100,2']
 ```
 
-### Mit VTAPConfig kombinieren
+### Combined with VTAPConfig
 
 ```python
 from vtap100.models.config import VTAPConfig
@@ -200,7 +200,7 @@ from vtap100.models.feedback import (
 from vtap100.models.vas import AppleVASConfig
 from vtap100.generator import ConfigGenerator
 
-# Komplette Konfiguration
+# Complete configuration
 feedback = FeedbackConfig(
     led=LEDConfig(
         mode=LEDMode.CUSTOM,
@@ -224,7 +224,7 @@ generator = ConfigGenerator(config)
 print(generator.generate())
 ```
 
-## Vollständiges Beispiel
+## Complete Example
 
 ```ini
 !VTAPconfig
@@ -241,14 +241,14 @@ PassBeep=100,100,2
 PassErrorBeep=200,100,3,2000
 ```
 
-## Tipps
+## Tips
 
-- **LEDMode=3** ist erforderlich für benutzerdefinierte LED-Sequenzen
-- Beep-Frequenz ist optional, Standard ist 3136 Hz
-- Kurze Zeiten (50-100ms) für schnelles Feedback
-- Längere Zeiten (200-500ms) für deutlichere Signale
+- **LEDMode=3** is required for custom LED sequences
+- Beep frequency is optional, default is 3136 Hz
+- Short times (50-100ms) for quick feedback
+- Longer times (200-500ms) for more noticeable signals
 
-## Siehe auch
+## See Also
 
 - [config.txt Format](overview.md)
 - [Apple VAS](apple_vas.md)

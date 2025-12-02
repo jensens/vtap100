@@ -16,7 +16,8 @@ References:
     - https://help.vtapnfc.com/en/Content/VTAP-Commands/Config-txt-KB-settings.htm
 """
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
+from pydantic import Field
 
 
 class KeyboardConfig(BaseModel):

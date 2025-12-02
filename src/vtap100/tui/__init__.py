@@ -9,8 +9,8 @@ Example:
 """
 
 from pathlib import Path
-
 from vtap100.tui.app import VTAPEditorApp
+
 
 __all__ = ["run", "VTAPEditorApp"]
 

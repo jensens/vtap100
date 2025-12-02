@@ -7,7 +7,6 @@ Tests for:
 """
 
 import pytest
-
 from vtap100.models.config import VTAPConfig
 from vtap100.models.vas import AppleVASConfig
 
@@ -131,8 +130,8 @@ class TestHelpPanelAsync:
     @pytest.mark.asyncio
     async def test_help_panel_updates_on_focus(self) -> None:
         """HelpPanel should update when input field gets focus."""
-        from textual.widgets import Input, Tree
-
+        from textual.widgets import Input
+        from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
         from vtap100.tui.widgets.help_panel import HelpPanel
 
@@ -168,8 +167,8 @@ class TestHelpPanelAsync:
     @pytest.mark.asyncio
     async def test_help_panel_shows_relevant_content(self) -> None:
         """HelpPanel should show content relevant to focused field."""
-        from textual.widgets import Input, Tree
-
+        from textual.widgets import Input
+        from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
         from vtap100.tui.widgets.help_panel import HelpPanel
 
@@ -206,8 +205,8 @@ class TestHelpPanelAsync:
     @pytest.mark.asyncio
     async def test_help_panel_updates_on_select_focus(self) -> None:
         """HelpPanel should update when Select field gets focus."""
-        from textual.widgets import Input, Select, Tree
-
+        from textual.widgets import Select
+        from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
         from vtap100.tui.widgets.help_panel import HelpPanel
 

@@ -8,7 +8,7 @@ Tests for:
 """
 
 import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 
 class TestExportDialog:
@@ -51,8 +51,8 @@ class TestExportDialog:
     async def test_cancel_closes_dialog_with_escape(self) -> None:
         """Escape should close dialog without action."""
         from vtap100.tui.app import VTAPEditorApp
-        from vtap100.tui.screens.export_dialog import ExportDialog
         from vtap100.tui.screens.editor import EditorScreen
+        from vtap100.tui.screens.export_dialog import ExportDialog
 
         app = VTAPEditorApp()
         async with app.run_test() as pilot:
@@ -75,8 +75,8 @@ class TestExportDialog:
         """Cancel button should close dialog without action."""
         from textual.widgets import Button
         from vtap100.tui.app import VTAPEditorApp
-        from vtap100.tui.screens.export_dialog import ExportDialog
         from vtap100.tui.screens.editor import EditorScreen
+        from vtap100.tui.screens.export_dialog import ExportDialog
 
         app = VTAPEditorApp()
         async with app.run_test() as pilot:
@@ -112,9 +112,7 @@ class TestExportDialogFormats:
             await pilot.pause()
 
             # Add VAS config
-            app.config.vas_configs.append(
-                AppleVASConfig(merchant_id="pass.com.test", key_slot=1)
-            )
+            app.config.vas_configs.append(AppleVASConfig(merchant_id="pass.com.test", key_slot=1))
 
             # Open dialog and export (full is default)
             await pilot.press("ctrl+e")
@@ -132,9 +130,10 @@ class TestExportDialogFormats:
     @pytest.mark.asyncio
     async def test_template_export_excludes_vas(self, tmp_path) -> None:
         """Template export should exclude VAS configs and include Jinja placeholder."""
-        from textual.widgets import Button, RadioButton
-        from vtap100.models.vas import AppleVASConfig
+        from textual.widgets import Button
+        from textual.widgets import RadioButton
         from vtap100.models.keyboard import KeyboardConfig
+        from vtap100.models.vas import AppleVASConfig
         from vtap100.tui.app import VTAPEditorApp
         from vtap100.tui.screens.export_dialog import ExportDialog
 
@@ -145,9 +144,7 @@ class TestExportDialogFormats:
             await pilot.pause()
 
             # Add configs
-            app.config.vas_configs.append(
-                AppleVASConfig(merchant_id="pass.com.test", key_slot=1)
-            )
+            app.config.vas_configs.append(AppleVASConfig(merchant_id="pass.com.test", key_slot=1))
             app.config.keyboard = KeyboardConfig(log_mode=True)
 
             # Open dialog
@@ -205,7 +202,8 @@ class TestExportDialogTargets:
     @pytest.mark.asyncio
     async def test_clipboard_export_copies_to_clipboard(self) -> None:
         """Clipboard target should copy content to clipboard."""
-        from textual.widgets import Button, RadioButton
+        from textual.widgets import Button
+        from textual.widgets import RadioButton
         from vtap100.tui.app import VTAPEditorApp
         from vtap100.tui.screens.export_dialog import ExportDialog
 
@@ -264,7 +262,8 @@ class TestExportDialogCombinations:
     @pytest.mark.asyncio
     async def test_template_to_clipboard(self) -> None:
         """Template format to clipboard should work correctly."""
-        from textual.widgets import Button, RadioButton
+        from textual.widgets import Button
+        from textual.widgets import RadioButton
         from vtap100.models.vas import AppleVASConfig
         from vtap100.tui.app import VTAPEditorApp
         from vtap100.tui.screens.export_dialog import ExportDialog
@@ -275,9 +274,7 @@ class TestExportDialogCombinations:
             await pilot.pause()
 
             # Add VAS config (should be excluded in template)
-            app.config.vas_configs.append(
-                AppleVASConfig(merchant_id="pass.com.test", key_slot=1)
-            )
+            app.config.vas_configs.append(AppleVASConfig(merchant_id="pass.com.test", key_slot=1))
 
             await pilot.press("ctrl+e")
             await pilot.pause()

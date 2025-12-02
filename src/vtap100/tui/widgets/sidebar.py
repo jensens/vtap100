@@ -7,7 +7,6 @@ from textual.app import ComposeResult
 from textual.message import Message
 from textual.widget import Widget
 from textual.widgets import Tree
-
 from vtap100.models.config import VTAPConfig
 from vtap100.tui.i18n import t
 
@@ -109,12 +108,16 @@ class ConfigSidebar(Widget):
         if section_id == "vas":
             merchant_id = getattr(item, "merchant_id", "?")
             key_slot = getattr(item, "key_slot", 0)
-            slot_text = t("common.labels.auto") if key_slot == 0 else t("common.labels.slot", num=key_slot)
+            slot_text = (
+                t("common.labels.auto") if key_slot == 0 else t("common.labels.slot", num=key_slot)
+            )
             return f"{merchant_id} ({slot_text})"
         elif section_id == "smarttap":
             collector_id = getattr(item, "collector_id", "?")
             key_slot = getattr(item, "key_slot", 0)
-            slot_text = t("common.labels.auto") if key_slot == 0 else t("common.labels.slot", num=key_slot)
+            slot_text = (
+                t("common.labels.auto") if key_slot == 0 else t("common.labels.slot", num=key_slot)
+            )
             return f"{collector_id} ({slot_text})"
         elif section_id == "desfire":
             app_id = getattr(item, "app_id", "?")
@@ -137,7 +140,9 @@ class ConfigSidebar(Widget):
                     entry_label = self._get_entry_label(section_id, item, i)
                     node.add(entry_label, data=f"{section_id}:{i}")
                 # Add "New Entry" if slots available
-                max_entries = self.MAX_DESFIRE_ENTRIES if section_id == "desfire" else self.MAX_ENTRIES
+                max_entries = (
+                    self.MAX_DESFIRE_ENTRIES if section_id == "desfire" else self.MAX_ENTRIES
+                )
                 if len(items) < max_entries:
                     node.add(t("common.labels.new_entry"), data=f"{section_id}:new")
 
@@ -205,7 +210,9 @@ class ConfigSidebar(Widget):
                         entry_label = self._get_entry_label(section_id, item, i)
                         node.add(entry_label, data=f"{section_id}:{i}")
                     # Add "New Entry" if slots available
-                    max_entries = self.MAX_DESFIRE_ENTRIES if section_id == "desfire" else self.MAX_ENTRIES
+                    max_entries = (
+                        self.MAX_DESFIRE_ENTRIES if section_id == "desfire" else self.MAX_ENTRIES
+                    )
                     if len(items) < max_entries:
                         node.add(t("common.labels.new_entry"), data=f"{section_id}:new")
         except Exception:

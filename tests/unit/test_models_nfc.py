@@ -6,8 +6,8 @@ Tests should fail until the implementation is complete.
 Phase 3 focuses on NFC Tag settings: NFCType2/4/5, TagRead parameters.
 """
 
-import pytest
 from pydantic import ValidationError
+import pytest
 
 
 class TestNFCTagMode:
@@ -55,35 +55,40 @@ class TestNFCTagConfig:
 
     def test_nfc_type2_uid_mode(self) -> None:
         """Can enable Type 2 in UID mode."""
-        from vtap100.models.nfc import NFCTagConfig, NFCTagMode
+        from vtap100.models.nfc import NFCTagConfig
+        from vtap100.models.nfc import NFCTagMode
 
         config = NFCTagConfig(type2=NFCTagMode.UID)
         assert config.type2 == NFCTagMode.UID
 
     def test_nfc_type2_ndef_mode(self) -> None:
         """Can enable Type 2 in NDEF mode."""
-        from vtap100.models.nfc import NFCTagConfig, NFCTagMode
+        from vtap100.models.nfc import NFCTagConfig
+        from vtap100.models.nfc import NFCTagMode
 
         config = NFCTagConfig(type2=NFCTagMode.NDEF)
         assert config.type2 == NFCTagMode.NDEF
 
     def test_nfc_type4_uid_mode(self) -> None:
         """Can enable Type 4 in UID mode."""
-        from vtap100.models.nfc import NFCTagConfig, NFCTagMode
+        from vtap100.models.nfc import NFCTagConfig
+        from vtap100.models.nfc import NFCTagMode
 
         config = NFCTagConfig(type4=NFCTagMode.UID)
         assert config.type4 == NFCTagMode.UID
 
     def test_nfc_type4_desfire_mode(self) -> None:
         """Type 4 supports DESFire mode."""
-        from vtap100.models.nfc import NFCTagConfig, NFCTagMode
+        from vtap100.models.nfc import NFCTagConfig
+        from vtap100.models.nfc import NFCTagMode
 
         config = NFCTagConfig(type4=NFCTagMode.DESFIRE)
         assert config.type4 == NFCTagMode.DESFIRE
 
     def test_nfc_type5_block_mode(self) -> None:
         """Can enable Type 5 in block mode."""
-        from vtap100.models.nfc import NFCTagConfig, NFCTagMode
+        from vtap100.models.nfc import NFCTagConfig
+        from vtap100.models.nfc import NFCTagMode
 
         config = NFCTagConfig(type5=NFCTagMode.BLOCK)
         assert config.type5 == NFCTagMode.BLOCK
@@ -173,14 +178,16 @@ class TestTagReadConfig:
 
     def test_tag_read_key_type_a(self) -> None:
         """Key type can be A."""
-        from vtap100.models.nfc import TagReadConfig, TagKeyType
+        from vtap100.models.nfc import TagKeyType
+        from vtap100.models.nfc import TagReadConfig
 
         config = TagReadConfig(key_type=TagKeyType.A)
         assert config.key_type == TagKeyType.A
 
     def test_tag_read_key_type_b(self) -> None:
         """Key type can be B."""
-        from vtap100.models.nfc import TagReadConfig, TagKeyType
+        from vtap100.models.nfc import TagKeyType
+        from vtap100.models.nfc import TagReadConfig
 
         config = TagReadConfig(key_type=TagKeyType.B)
         assert config.key_type == TagKeyType.B
@@ -228,21 +235,24 @@ class TestTagReadConfig:
 
     def test_tag_read_format_ascii(self) -> None:
         """Format can be ASCII."""
-        from vtap100.models.nfc import TagReadConfig, TagReadFormat
+        from vtap100.models.nfc import TagReadConfig
+        from vtap100.models.nfc import TagReadFormat
 
         config = TagReadConfig(format=TagReadFormat.ASCII)
         assert config.format == TagReadFormat.ASCII
 
     def test_tag_read_format_decimal(self) -> None:
         """Format can be decimal."""
-        from vtap100.models.nfc import TagReadConfig, TagReadFormat
+        from vtap100.models.nfc import TagReadConfig
+        from vtap100.models.nfc import TagReadFormat
 
         config = TagReadConfig(format=TagReadFormat.DECIMAL)
         assert config.format == TagReadFormat.DECIMAL
 
     def test_tag_read_format_hex(self) -> None:
         """Format can be hex."""
-        from vtap100.models.nfc import TagReadConfig, TagReadFormat
+        from vtap100.models.nfc import TagReadConfig
+        from vtap100.models.nfc import TagReadFormat
 
         config = TagReadConfig(format=TagReadFormat.HEX)
         assert config.format == TagReadFormat.HEX
@@ -276,7 +286,8 @@ class TestNFCTagConfigOutput:
 
     def test_to_config_lines_type2_uid(self) -> None:
         """Type 2 UID mode should generate NFCType2=U."""
-        from vtap100.models.nfc import NFCTagConfig, NFCTagMode
+        from vtap100.models.nfc import NFCTagConfig
+        from vtap100.models.nfc import NFCTagMode
 
         config = NFCTagConfig(type2=NFCTagMode.UID)
         lines = config.to_config_lines()
@@ -285,7 +296,8 @@ class TestNFCTagConfigOutput:
 
     def test_to_config_lines_type4_ndef(self) -> None:
         """Type 4 NDEF mode should generate NFCType4=N."""
-        from vtap100.models.nfc import NFCTagConfig, NFCTagMode
+        from vtap100.models.nfc import NFCTagConfig
+        from vtap100.models.nfc import NFCTagMode
 
         config = NFCTagConfig(type4=NFCTagMode.NDEF)
         lines = config.to_config_lines()
@@ -294,7 +306,8 @@ class TestNFCTagConfigOutput:
 
     def test_to_config_lines_type5_block(self) -> None:
         """Type 5 block mode should generate NFCType5=B."""
-        from vtap100.models.nfc import NFCTagConfig, NFCTagMode
+        from vtap100.models.nfc import NFCTagConfig
+        from vtap100.models.nfc import NFCTagMode
 
         config = NFCTagConfig(type5=NFCTagMode.BLOCK)
         lines = config.to_config_lines()
@@ -330,7 +343,8 @@ class TestNFCTagConfigOutput:
 
     def test_to_config_lines_all_types(self) -> None:
         """All NFC types enabled should generate all lines."""
-        from vtap100.models.nfc import NFCTagConfig, NFCTagMode
+        from vtap100.models.nfc import NFCTagConfig
+        from vtap100.models.nfc import NFCTagMode
 
         config = NFCTagConfig(
             type2=NFCTagMode.UID,
@@ -376,7 +390,8 @@ class TestTagReadConfigOutput:
 
     def test_to_config_lines_key_type(self) -> None:
         """Key type should generate TagReadKeyType."""
-        from vtap100.models.nfc import TagReadConfig, TagKeyType
+        from vtap100.models.nfc import TagKeyType
+        from vtap100.models.nfc import TagReadConfig
 
         config = TagReadConfig(key_type=TagKeyType.B)
         lines = config.to_config_lines()
@@ -403,7 +418,8 @@ class TestTagReadConfigOutput:
 
     def test_to_config_lines_format(self) -> None:
         """Format should generate TagReadFormat."""
-        from vtap100.models.nfc import TagReadConfig, TagReadFormat
+        from vtap100.models.nfc import TagReadConfig
+        from vtap100.models.nfc import TagReadFormat
 
         config = TagReadConfig(format=TagReadFormat.HEX)
         lines = config.to_config_lines()
@@ -421,7 +437,9 @@ class TestTagReadConfigOutput:
 
     def test_to_config_lines_full_config(self) -> None:
         """Full config should generate all lines."""
-        from vtap100.models.nfc import TagReadConfig, TagKeyType, TagReadFormat
+        from vtap100.models.nfc import TagKeyType
+        from vtap100.models.nfc import TagReadConfig
+        from vtap100.models.nfc import TagReadFormat
 
         config = TagReadConfig(
             block_num=5,

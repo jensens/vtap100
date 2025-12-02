@@ -5,14 +5,15 @@ The main Textual App for editing VTAP100 configurations.
 
 from enum import Enum
 from pathlib import Path
-
 from textual.app import App
 from textual.reactive import reactive
-
 from vtap100.generator import ConfigGenerator
 from vtap100.models.config import VTAPConfig
 from vtap100.parser import parse
-from vtap100.tui.i18n import Language, get_language, set_language, t
+from vtap100.tui.i18n import Language
+from vtap100.tui.i18n import get_language
+from vtap100.tui.i18n import set_language
+from vtap100.tui.i18n import t
 from vtap100.tui.screens.editor import EditorScreen
 
 
@@ -137,11 +138,14 @@ class VTAPEditorApp(App):
 
         Preserves the current section, form state, and tree expansion state.
         """
-        from textual.widgets import Input, Select, Switch, Tree
-
+        from textual.widgets import Input
+        from textual.widgets import Select
+        from textual.widgets import Switch
+        from textual.widgets import Tree
         from vtap100.tui.help import HelpLoader
         from vtap100.tui.widgets.help_panel import HelpPanel
-        from vtap100.tui.widgets.sidebar import ConfigSidebar, SectionSelected
+        from vtap100.tui.widgets.sidebar import ConfigSidebar
+        from vtap100.tui.widgets.sidebar import SectionSelected
 
         current = get_language()
         new_lang = Language.EN if current == Language.DE else Language.DE
@@ -235,11 +239,9 @@ class VTAPEditorApp(App):
 
     def action_export(self) -> None:
         """Open the export dialog."""
-        from vtap100.tui.screens.export_dialog import (
-            ExportDialog,
-            ExportFormat,
-            ExportTarget,
-        )
+        from vtap100.tui.screens.export_dialog import ExportDialog
+        from vtap100.tui.screens.export_dialog import ExportFormat
+        from vtap100.tui.screens.export_dialog import ExportTarget
 
         def handle_export(result: tuple[ExportFormat, ExportTarget] | None) -> None:
             if result is None:

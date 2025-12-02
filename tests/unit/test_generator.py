@@ -4,10 +4,8 @@ TDD Red Phase: These tests define the expected behavior of the config generator.
 Tests should fail until the implementation is complete.
 """
 
-from pathlib import Path
 from io import StringIO
-
-import pytest
+from pathlib import Path
 
 
 class TestVTAPConfig:
@@ -57,9 +55,9 @@ class TestVTAPConfig:
     def test_vtap_config_combined(self) -> None:
         """Config can have VAS, Smart Tap, and keyboard together."""
         from vtap100.models.config import VTAPConfig
-        from vtap100.models.vas import AppleVASConfig
-        from vtap100.models.smarttap import GoogleSmartTapConfig
         from vtap100.models.keyboard import KeyboardConfig
+        from vtap100.models.smarttap import GoogleSmartTapConfig
+        from vtap100.models.vas import AppleVASConfig
 
         vas = AppleVASConfig(merchant_id="pass.com.example.test", key_slot=1)
         st = GoogleSmartTapConfig(collector_id="96972794", key_slot=2)
@@ -149,9 +147,9 @@ class TestConfigGenerator:
         """Generate config with VAS, Smart Tap, and keyboard."""
         from vtap100.generator import ConfigGenerator
         from vtap100.models.config import VTAPConfig
-        from vtap100.models.vas import AppleVASConfig
-        from vtap100.models.smarttap import GoogleSmartTapConfig
         from vtap100.models.keyboard import KeyboardConfig
+        from vtap100.models.smarttap import GoogleSmartTapConfig
+        from vtap100.models.vas import AppleVASConfig
 
         vas = AppleVASConfig(merchant_id="pass.com.example.test", key_slot=1)
         st = GoogleSmartTapConfig(collector_id="96972794", key_slot=2, key_version=1)
@@ -279,7 +277,8 @@ class TestTemplateGeneration:
         """Template mode should include NFC config."""
         from vtap100.generator import ConfigGenerator
         from vtap100.models.config import VTAPConfig
-        from vtap100.models.nfc import NFCTagConfig, NFCTagMode
+        from vtap100.models.nfc import NFCTagConfig
+        from vtap100.models.nfc import NFCTagMode
 
         nfc = NFCTagConfig(type2=NFCTagMode.UID)
         config = VTAPConfig(nfc=nfc)
@@ -293,7 +292,8 @@ class TestTemplateGeneration:
         """Template mode should include DESFire config."""
         from vtap100.generator import ConfigGenerator
         from vtap100.models.config import VTAPConfig
-        from vtap100.models.desfire import DESFireConfig, DESFireAppConfig
+        from vtap100.models.desfire import DESFireAppConfig
+        from vtap100.models.desfire import DESFireConfig
 
         app = DESFireAppConfig(app_id="AABBCC")
         desfire = DESFireConfig(apps=[app])
@@ -308,7 +308,9 @@ class TestTemplateGeneration:
         """Template mode should include LED/Beep config."""
         from vtap100.generator import ConfigGenerator
         from vtap100.models.config import VTAPConfig
-        from vtap100.models.feedback import FeedbackConfig, LEDConfig, LEDMode
+        from vtap100.models.feedback import FeedbackConfig
+        from vtap100.models.feedback import LEDConfig
+        from vtap100.models.feedback import LEDMode
 
         led = LEDConfig(mode=LEDMode.CUSTOM)
         feedback = FeedbackConfig(led=led)

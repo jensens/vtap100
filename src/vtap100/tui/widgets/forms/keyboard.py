@@ -5,8 +5,10 @@ Form for editing keyboard emulation settings.
 
 from textual.app import ComposeResult
 from textual.containers import Horizontal
-from textual.widgets import Button, Input, Label, Switch
-
+from textual.widgets import Button
+from textual.widgets import Input
+from textual.widgets import Label
+from textual.widgets import Switch
 from vtap100.models.keyboard import KeyboardConfig
 from vtap100.tui.i18n import t
 from vtap100.tui.widgets.forms.base import BaseConfigForm
@@ -187,4 +189,6 @@ class KeyboardConfigForm(BaseConfigForm):
                 self.app.config.keyboard = config
                 self._show_success_message(t("common.messages.config_saved"))
             except Exception as e:
-                self.mount(Label(t("common.messages.error", message=str(e)), classes="error-message"))
+                self.mount(
+                    Label(t("common.messages.error", message=str(e)), classes="error-message")
+                )

@@ -7,8 +7,6 @@ Tests for:
 """
 
 import pytest
-
-from vtap100.models.config import VTAPConfig
 from vtap100.models.vas import AppleVASConfig
 
 
@@ -135,7 +133,8 @@ class TestPreviewToggle:
     @pytest.mark.asyncio
     async def test_preview_default_state(self) -> None:
         """Preview should start in default state (visible, normal size)."""
-        from vtap100.tui.app import PreviewMode, VTAPEditorApp
+        from vtap100.tui.app import PreviewMode
+        from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
         async with app.run_test() as pilot:
@@ -155,7 +154,8 @@ class TestPreviewToggle:
     @pytest.mark.asyncio
     async def test_preview_toggle_to_maximized(self) -> None:
         """Ctrl+O should cycle preview from default to maximized."""
-        from vtap100.tui.app import PreviewMode, VTAPEditorApp
+        from vtap100.tui.app import PreviewMode
+        from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
         async with app.run_test() as pilot:
@@ -179,7 +179,8 @@ class TestPreviewToggle:
     @pytest.mark.asyncio
     async def test_preview_toggle_to_hidden(self) -> None:
         """Ctrl+O twice should cycle preview to hidden."""
-        from vtap100.tui.app import PreviewMode, VTAPEditorApp
+        from vtap100.tui.app import PreviewMode
+        from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
         async with app.run_test() as pilot:
@@ -204,7 +205,8 @@ class TestPreviewToggle:
     @pytest.mark.asyncio
     async def test_preview_toggle_cycle_back_to_default(self) -> None:
         """Ctrl+O three times should cycle back to default."""
-        from vtap100.tui.app import PreviewMode, VTAPEditorApp
+        from vtap100.tui.app import PreviewMode
+        from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
         async with app.run_test() as pilot:
@@ -230,7 +232,7 @@ class TestPreviewToggle:
     @pytest.mark.asyncio
     async def test_preview_maximized_has_full_height(self) -> None:
         """Maximized preview should have full height CSS class."""
-        from vtap100.tui.app import PreviewMode, VTAPEditorApp
+        from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
         async with app.run_test() as pilot:

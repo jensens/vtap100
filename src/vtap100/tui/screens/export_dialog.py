@@ -10,12 +10,15 @@ Export targets:
 """
 
 from enum import Enum
-
 from textual.app import ComposeResult
-from textual.containers import Container, Horizontal
+from textual.containers import Container
+from textual.containers import Horizontal
 from textual.screen import ModalScreen
-from textual.widgets import Button, Label, RadioButton, RadioSet, Static
-
+from textual.widgets import Button
+from textual.widgets import Label
+from textual.widgets import RadioButton
+from textual.widgets import RadioSet
+from textual.widgets import Static
 from vtap100.tui.i18n import t
 
 
@@ -91,9 +94,7 @@ class ExportDialog(ModalScreen[tuple[ExportFormat, ExportTarget] | None]):
 
             yield Label(t("export.format_label"), classes="section-label")
             with RadioSet(id="format-options"):
-                yield RadioButton(
-                    t("export.format_full"), id="format-full", value=True
-                )
+                yield RadioButton(t("export.format_full"), id="format-full", value=True)
                 yield RadioButton(t("export.format_template"), id="format-template")
 
             yield Static(t("export.template_hint"), id="template-hint")
@@ -101,14 +102,10 @@ class ExportDialog(ModalScreen[tuple[ExportFormat, ExportTarget] | None]):
             yield Label(t("export.target_label"), classes="section-label")
             with RadioSet(id="target-options"):
                 yield RadioButton(t("export.target_file"), id="target-file", value=True)
-                yield RadioButton(
-                    t("export.target_clipboard"), id="target-clipboard"
-                )
+                yield RadioButton(t("export.target_clipboard"), id="target-clipboard")
 
             with Horizontal(id="export-buttons"):
-                yield Button(
-                    t("common.buttons.cancel"), id="cancel-btn", variant="default"
-                )
+                yield Button(t("common.buttons.cancel"), id="cancel-btn", variant="default")
                 yield Button(t("export.button"), id="export-btn", variant="primary")
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
@@ -120,14 +117,10 @@ class ExportDialog(ModalScreen[tuple[ExportFormat, ExportTarget] | None]):
             target_set = self.query_one("#target-options", RadioSet)
 
             export_format = (
-                ExportFormat.TEMPLATE
-                if format_set.pressed_index == 1
-                else ExportFormat.FULL
+                ExportFormat.TEMPLATE if format_set.pressed_index == 1 else ExportFormat.FULL
             )
             export_target = (
-                ExportTarget.CLIPBOARD
-                if target_set.pressed_index == 1
-                else ExportTarget.FILE
+                ExportTarget.CLIPBOARD if target_set.pressed_index == 1 else ExportTarget.FILE
             )
 
             self.dismiss((export_format, export_target))

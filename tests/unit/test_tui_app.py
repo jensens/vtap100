@@ -8,7 +8,6 @@ Tests for:
 """
 
 import pytest
-
 from vtap100.models.config import VTAPConfig
 
 
@@ -134,7 +133,8 @@ class TestVTAPEditorAppAsync:
     @pytest.mark.asyncio
     async def test_toggle_preview_with_ctrl_o(self) -> None:
         """Ctrl+O should cycle preview through 3 states."""
-        from vtap100.tui.app import PreviewMode, VTAPEditorApp
+        from vtap100.tui.app import PreviewMode
+        from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
         async with app.run_test() as pilot:

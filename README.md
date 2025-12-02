@@ -1,90 +1,90 @@
 # VTAP100 Configuration Generator
 
-Ein Python-Tool zur Generierung von Konfigurationsdateien für den **dotOrigin VTAP100** NFC Reader.
+A Python tool for generating configuration files for the **dotOrigin VTAP100** NFC Reader.
 
 ## Features
 
-- **Apple VAS** (Value Added Services) Konfiguration
-- **Google Smart Tap** Konfiguration
-- **Keyboard-Emulation** Einstellungen
-- **NFC Tag** Unterstützung (Type 2, 4, 5)
-- **MIFARE DESFire** Konfiguration
-- **LED/Buzzer** Feedback-Einstellungen
-- **Validierung** aller Parameter
-- **Rich CLI** mit farbiger Ausgabe
+- **Apple VAS** (Value Added Services) configuration
+- **Google Smart Tap** configuration
+- **Keyboard emulation** settings
+- **NFC Tag** support (Type 2, 4, 5)
+- **MIFARE DESFire** configuration
+- **LED/Buzzer** feedback settings
+- **Validation** of all parameters
+- **Rich CLI** with colored output
 
 ## Installation
 
 ```bash
-# Mit uv (empfohlen)
+# With uv (recommended)
 uv sync
 
-# Entwicklungsabhängigkeiten
+# Development dependencies
 uv sync --extra dev
 
-# Alternativ mit pip
+# Alternatively with pip
 pip install -e ".[dev]"
 ```
 
-## Schnellstart
+## Quickstart
 
-### Apple VAS Konfiguration
+### Apple VAS Configuration
 
 ```bash
 vtap100 generate --apple-vas pass.com.example.mypass --key-slot 1 --output ./config.txt
 ```
 
-### Google Smart Tap Konfiguration
+### Google Smart Tap Configuration
 
 ```bash
 vtap100 generate --google-st 96972794 --key-slot 2 --key-version 1 --output ./config.txt
 ```
 
-### Interaktiver Modus
+### Interactive Mode
 
 ```bash
 vtap100 wizard
 ```
 
-### Konfiguration validieren
+### Validate Configuration
 
 ```bash
 vtap100 validate ./config.txt
 ```
 
-## Dokumentation
+## Documentation
 
-Ausführliche Dokumentation findest du im [docs/](docs/) Verzeichnis:
+Detailed documentation can be found in the [docs/](docs/) directory:
 
-- [Schnelleinstieg](docs/quickstart.md)
-- [Apple VAS Konfiguration](docs/configuration/apple_vas.md)
-- [Google Smart Tap Konfiguration](docs/configuration/google_smarttap.md)
-- [Keyboard-Emulation](docs/configuration/keyboard.md)
-- [Deployment auf den Reader](docs/deployment/upload_to_reader.md)
-- [Quellensammlung](docs/references/sources.md)
+- [Quickstart](docs/quickstart.md)
+- [Apple VAS Configuration](docs/configuration/apple_vas.md)
+- [Google Smart Tap Configuration](docs/configuration/google_smarttap.md)
+- [Keyboard Emulation](docs/configuration/keyboard.md)
+- [Deployment to Reader](docs/deployment/upload_to_reader.md)
+- [Reference Sources](docs/references/sources.md)
 
-## Entwicklung
+## Development
 
-Dieses Projekt verwendet **Test-Driven Development (TDD)**.
+This project uses **Test-Driven Development (TDD)**.
 
 ```bash
-# Tests ausführen
+# Run tests
 uv run pytest
 
-# Mit Coverage
+# With coverage
 uv run pytest --cov=vtap100 --cov-report=html
 
 # Linting
 uv run ruff check src tests
 uv run ruff format src tests
 
-# Type-Checking
+# Type checking
 uv run mypy src
 ```
 
-## Lizenz
+## License
 
-MIT License - siehe [LICENSE](LICENSE) für Details.
+MIT License - see [LICENSE](LICENSE) for details.
 
 ## Links
 

@@ -6,8 +6,8 @@ Tests should fail until the implementation is complete.
 Phase 1 focuses on basic keyboard emulation: KBLogMode, KBSource, KBEnable
 """
 
-import pytest
 from pydantic import ValidationError
+import pytest
 
 
 class TestKeyboardConfig:

@@ -6,8 +6,8 @@ Tests should fail until the implementation is complete.
 Phase 4 focuses on MIFARE DESFire settings.
 """
 
-import pytest
 from pydantic import ValidationError
+import pytest
 
 
 class TestDESFireCryptoMode:
@@ -138,14 +138,16 @@ class TestDESFireAppConfig:
 
     def test_desfire_crypto_mode(self) -> None:
         """Can set crypto mode."""
-        from vtap100.models.desfire import DESFireAppConfig, DESFireCryptoMode
+        from vtap100.models.desfire import DESFireAppConfig
+        from vtap100.models.desfire import DESFireCryptoMode
 
         config = DESFireAppConfig(app_id="AABBCC", crypto=DESFireCryptoMode.AES)
         assert config.crypto == DESFireCryptoMode.AES
 
     def test_desfire_format(self) -> None:
         """Can set data format."""
-        from vtap100.models.desfire import DESFireAppConfig, DESFireDataFormat
+        from vtap100.models.desfire import DESFireAppConfig
+        from vtap100.models.desfire import DESFireDataFormat
 
         config = DESFireAppConfig(app_id="AABBCC", format=DESFireDataFormat.KEYID_V1)
         assert config.format == DESFireDataFormat.KEYID_V1
@@ -246,7 +248,8 @@ class TestDESFireConfig:
 
     def test_desfire_config_single_app(self) -> None:
         """Can configure single DESFire app."""
-        from vtap100.models.desfire import DESFireConfig, DESFireAppConfig
+        from vtap100.models.desfire import DESFireAppConfig
+        from vtap100.models.desfire import DESFireConfig
 
         app = DESFireAppConfig(app_id="AABBCC", file_id=1)
         config = DESFireConfig(apps=[app])
@@ -256,7 +259,8 @@ class TestDESFireConfig:
 
     def test_desfire_config_multiple_apps(self) -> None:
         """Can configure up to 9 DESFire apps."""
-        from vtap100.models.desfire import DESFireConfig, DESFireAppConfig
+        from vtap100.models.desfire import DESFireAppConfig
+        from vtap100.models.desfire import DESFireConfig
 
         apps = [DESFireAppConfig(app_id=f"00000{i}") for i in range(1, 10)]
         config = DESFireConfig(apps=apps)
@@ -265,7 +269,8 @@ class TestDESFireConfig:
 
     def test_desfire_config_max_apps(self) -> None:
         """Cannot have more than 9 apps."""
-        from vtap100.models.desfire import DESFireConfig, DESFireAppConfig
+        from vtap100.models.desfire import DESFireAppConfig
+        from vtap100.models.desfire import DESFireConfig
 
         apps = [DESFireAppConfig(app_id=f"0000{i:02d}") for i in range(10)]
 
@@ -313,7 +318,8 @@ class TestDESFireAppConfigOutput:
 
     def test_to_config_lines_with_crypto(self) -> None:
         """Crypto mode should generate DESFire#Crypto line."""
-        from vtap100.models.desfire import DESFireAppConfig, DESFireCryptoMode
+        from vtap100.models.desfire import DESFireAppConfig
+        from vtap100.models.desfire import DESFireCryptoMode
 
         config = DESFireAppConfig(app_id="AABBCC", crypto=DESFireCryptoMode.AES)
         lines = config.to_config_lines(slot_number=1)
@@ -322,7 +328,8 @@ class TestDESFireAppConfigOutput:
 
     def test_to_config_lines_with_format(self) -> None:
         """Format should generate DESFire#Format line."""
-        from vtap100.models.desfire import DESFireAppConfig, DESFireDataFormat
+        from vtap100.models.desfire import DESFireAppConfig
+        from vtap100.models.desfire import DESFireDataFormat
 
         config = DESFireAppConfig(app_id="AABBCC", format=DESFireDataFormat.KEYID_V2)
         lines = config.to_config_lines(slot_number=1)
@@ -371,11 +378,9 @@ class TestDESFireAppConfigOutput:
 
     def test_to_config_lines_full_config(self) -> None:
         """Full config should generate all lines."""
-        from vtap100.models.desfire import (
-            DESFireAppConfig,
-            DESFireCryptoMode,
-            DESFireDataFormat,
-        )
+        from vtap100.models.desfire import DESFireAppConfig
+        from vtap100.models.desfire import DESFireCryptoMode
+        from vtap100.models.desfire import DESFireDataFormat
 
         config = DESFireAppConfig(
             app_id="AABBCC",
@@ -414,7 +419,8 @@ class TestDESFireConfigOutput:
 
     def test_to_config_lines_single_app(self) -> None:
         """Single app should generate numbered lines."""
-        from vtap100.models.desfire import DESFireConfig, DESFireAppConfig
+        from vtap100.models.desfire import DESFireAppConfig
+        from vtap100.models.desfire import DESFireConfig
 
         app = DESFireAppConfig(app_id="AABBCC")
         config = DESFireConfig(apps=[app])
@@ -424,7 +430,8 @@ class TestDESFireConfigOutput:
 
     def test_to_config_lines_multiple_apps(self) -> None:
         """Multiple apps should generate correctly numbered lines."""
-        from vtap100.models.desfire import DESFireConfig, DESFireAppConfig
+        from vtap100.models.desfire import DESFireAppConfig
+        from vtap100.models.desfire import DESFireConfig
 
         apps = [
             DESFireAppConfig(app_id="111111"),
@@ -440,7 +447,8 @@ class TestDESFireConfigOutput:
 
     def test_to_config_lines_with_separator(self) -> None:
         """Non-default separator should generate DESFireSeparator line."""
-        from vtap100.models.desfire import DESFireConfig, DESFireAppConfig
+        from vtap100.models.desfire import DESFireAppConfig
+        from vtap100.models.desfire import DESFireConfig
 
         app = DESFireAppConfig(app_id="AABBCC")
         config = DESFireConfig(apps=[app], separator=";")
@@ -450,7 +458,8 @@ class TestDESFireConfigOutput:
 
     def test_to_config_lines_default_separator_not_included(self) -> None:
         """Default separator (,) should not be in output."""
-        from vtap100.models.desfire import DESFireConfig, DESFireAppConfig
+        from vtap100.models.desfire import DESFireAppConfig
+        from vtap100.models.desfire import DESFireConfig
 
         app = DESFireAppConfig(app_id="AABBCC")
         config = DESFireConfig(apps=[app])

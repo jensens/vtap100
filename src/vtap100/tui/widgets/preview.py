@@ -6,7 +6,6 @@ Shows a live preview of the generated config.txt content.
 from textual.app import ComposeResult
 from textual.widget import Widget
 from textual.widgets import Static
-
 from vtap100.generator import ConfigGenerator
 from vtap100.models.config import VTAPConfig
 

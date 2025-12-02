@@ -5,15 +5,15 @@ Form for editing LED and buzzer feedback settings.
 
 from textual.app import ComposeResult
 from textual.containers import Horizontal
-from textual.widgets import Button, Input, Label, Select
-
-from vtap100.models.feedback import (
-    BeepConfig,
-    FeedbackConfig,
-    LEDConfig,
-    LEDMode,
-    LEDSelect,
-)
+from textual.widgets import Button
+from textual.widgets import Input
+from textual.widgets import Label
+from textual.widgets import Select
+from vtap100.models.feedback import BeepConfig
+from vtap100.models.feedback import FeedbackConfig
+from vtap100.models.feedback import LEDConfig
+from vtap100.models.feedback import LEDMode
+from vtap100.models.feedback import LEDSelect
 from vtap100.tui.i18n import t
 from vtap100.tui.widgets.forms.base import BaseConfigForm
 
@@ -191,4 +191,6 @@ class FeedbackConfigForm(BaseConfigForm):
                 self.app.config.feedback = config
                 self._show_success_message(t("common.messages.config_saved"))
             except Exception as e:
-                self.mount(Label(t("common.messages.error", message=str(e)), classes="error-message"))
+                self.mount(
+                    Label(t("common.messages.error", message=str(e)), classes="error-message")
+                )

@@ -1,35 +1,35 @@
 # config.txt Format
 
-Die VTAP100-Konfiguration erfolgt über eine `config.txt` Datei, die auf den Reader kopiert wird.
+VTAP100 configuration is done via a `config.txt` file that is copied to the reader.
 
-## Dateiformat
+## File Format
 
 ### Header
 
-Jede gültige Konfigurationsdatei muss mit dem Header beginnen:
+Every valid configuration file must start with the header:
 
 ```
 !VTAPconfig
 ```
 
-### Kommentare
+### Comments
 
-Kommentare werden mit einem Semikolon eingeleitet:
+Comments are introduced with a semicolon:
 
 ```
-; Dies ist ein Kommentar
+; This is a comment
 ```
 
-### Parameter
+### Parameters
 
-Parameter werden im Format `Name=Wert` angegeben:
+Parameters are specified in `Name=Value` format:
 
 ```
 VAS1MerchantID=pass.com.example.test
 VAS1KeySlot=1
 ```
 
-## Vollständiges Beispiel
+## Complete Example
 
 ```ini
 !VTAPconfig
@@ -47,63 +47,63 @@ KBLogMode=1
 KBSource=AG1
 ```
 
-## Parameter-Kategorien
+## Parameter Categories
 
 ### Apple VAS (Value Added Services)
 
-| Parameter | Beschreibung | Werte |
-|-----------|--------------|-------|
+| Parameter | Description | Values |
+|-----------|-------------|--------|
 | VAS#MerchantID | Apple Pass Type ID | `pass.com.*` |
-| VAS#KeySlot | Private Key Slot | 0-6 (0=auto) |
-| VAS#MerchantURL | Optionale URL | URL-String |
+| VAS#KeySlot | Private key slot | 0-6 (0=auto) |
+| VAS#MerchantURL | Optional URL | URL string |
 
-Bis zu 6 VAS-Konfigurationen möglich (VAS1 bis VAS6).
+Up to 6 VAS configurations possible (VAS1 to VAS6).
 
 ### Google Smart Tap
 
-| Parameter | Beschreibung | Werte |
-|-----------|--------------|-------|
+| Parameter | Description | Values |
+|-----------|-------------|--------|
 | ST#CollectorID | Google Collector ID | String |
-| ST#KeySlot | Private Key Slot | 0-6 (0=auto) |
-| ST#KeyVersion | Key Version | Integer |
+| ST#KeySlot | Private key slot | 0-6 (0=auto) |
+| ST#KeyVersion | Key version | Integer |
 
-Bis zu 6 Smart Tap-Konfigurationen möglich (ST1 bis ST6).
+Up to 6 Smart Tap configurations possible (ST1 to ST6).
 
 ### Keyboard Emulation
 
-| Parameter | Beschreibung | Werte |
-|-----------|--------------|-------|
-| KBLogMode | Aktiviert Keyboard-Ausgabe | 0, 1 |
-| KBSource | Datenquellen | Hex-String |
-| KBEnable | USB-Keyboard aktivieren | 0, 1 |
+| Parameter | Description | Values |
+|-----------|-------------|--------|
+| KBLogMode | Enables keyboard output | 0, 1 |
+| KBSource | Data sources | Hex string |
+| KBEnable | Enable USB keyboard | 0, 1 |
 
-### KBSource-Werte
+### KBSource Values
 
-Der KBSource-Wert ist ein Hex-String, der die Datenquellen definiert:
+The KBSource value is a hex string that defines the data sources:
 
-- `A` = Apple VAS Daten
-- `G` = Google Smart Tap Daten
-- `U` = UID der NFC-Karte
-- `1-5` = Datenbytes (1=erstes Byte, 5=alle Bytes)
+- `A` = Apple VAS data
+- `G` = Google Smart Tap data
+- `U` = UID of NFC card
+- `1-5` = Data bytes (1=first byte, 5=all bytes)
 
-Beispiele:
-- `A1` = Erstes Byte von Apple VAS
-- `AG5` = Alle Bytes von Apple und Google
-- `U1` = Erstes Byte der UID
+Examples:
+- `A1` = First byte of Apple VAS
+- `AG5` = All bytes from Apple and Google
+- `U1` = First byte of UID
 
 ## Private Keys
 
-Private Keys werden als PEM-Dateien im Root-Verzeichnis des Readers gespeichert:
+Private keys are stored as PEM files in the root directory of the reader:
 
-- `private1.pem` - Key Slot 1
-- `private2.pem` - Key Slot 2
-- ... bis `private6.pem`
+- `private1.pem` - Key slot 1
+- `private2.pem` - Key slot 2
+- ... up to `private6.pem`
 
-Der Key Slot 0 bedeutet automatische Auswahl.
+Key slot 0 means automatic selection.
 
-## Siehe auch
+## See Also
 
-- [Apple VAS Konfiguration](apple_vas.md)
-- [Google Smart Tap Konfiguration](google_smarttap.md)
+- [Apple VAS Configuration](apple_vas.md)
+- [Google Smart Tap Configuration](google_smarttap.md)
 - [Keyboard Emulation](keyboard.md)
-- [Upload auf Reader](../deployment/upload_to_reader.md)
+- [Upload to Reader](../deployment/upload_to_reader.md)

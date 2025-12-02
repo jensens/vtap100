@@ -1,156 +1,156 @@
-# NFC Tag Konfiguration
+# NFC Tag Configuration
 
-Der VTAP100 kann verschiedene NFC-Tag-Typen lesen: Type 2, Type 4 und Type 5.
+The VTAP100 can read various NFC tag types: Type 2, Type 4, and Type 5.
 
-## Tag-Typen
+## Tag Types
 
 ### NFC Type 2
 
-Typische Tags: NTAG213/215/216, MIFARE Ultralight
+Typical tags: NTAG213/215/216, MIFARE Ultralight
 
 ```ini
-NFCType2=U    ; UID lesen
-NFCType2=N    ; NDEF Records lesen
-NFCType2=B    ; Block-Daten lesen
-NFCType2=0    ; Deaktiviert (Standard)
+NFCType2=U    ; Read UID
+NFCType2=N    ; Read NDEF records
+NFCType2=B    ; Read block data
+NFCType2=0    ; Disabled (default)
 ```
 
 ### NFC Type 4
 
-Typische Tags: DESFire, ISO 14443-4 kompatibel
+Typical tags: DESFire, ISO 14443-4 compatible
 
 ```ini
-NFCType4=U    ; UID lesen
-NFCType4=N    ; NDEF Records lesen
-NFCType4=B    ; Block-Daten lesen
+NFCType4=U    ; Read UID
+NFCType4=N    ; Read NDEF records
+NFCType4=B    ; Read block data
 NFCType4=D    ; DESFire secure data
-NFCType4=0    ; Deaktiviert (Standard)
+NFCType4=0    ; Disabled (default)
 ```
 
 ### NFC Type 5
 
-Typische Tags: ICODE, ISO 15693
+Typical tags: ICODE, ISO 15693
 
 ```ini
-NFCType5=U    ; UID lesen
-NFCType5=N    ; NDEF Records lesen
-NFCType5=B    ; Block-Daten lesen
-NFCType5=0    ; Deaktiviert (Standard)
+NFCType5=U    ; Read UID
+NFCType5=N    ; Read NDEF records
+NFCType5=B    ; Read block data
+NFCType5=0    ; Disabled (default)
 ```
 
-## Lese-Modi
+## Read Modes
 
-| Modus | Wert | Beschreibung |
-|-------|------|--------------|
-| Disabled | 0 | Tag-Typ deaktiviert |
-| UID | U | Nur UID lesen |
-| NDEF | N | NDEF Records lesen |
-| Block | B | Raw Block-Daten lesen |
-| DESFire | D | DESFire secure data (nur Type 4) |
+| Mode | Value | Description |
+|------|-------|-------------|
+| Disabled | 0 | Tag type disabled |
+| UID | U | Read UID only |
+| NDEF | N | Read NDEF records |
+| Block | B | Read raw block data |
+| DESFire | D | DESFire secure data (Type 4 only) |
 
-## Zusätzliche Parameter
+## Additional Parameters
 
 ### NFCReportReadError
 
-Fehler-Payload bei Lesefehlern ausgeben.
+Output error payload on read errors.
 
 ```ini
-NFCReportReadError=1    ; Fehler melden
-NFCReportReadError=0    ; Ignorieren (Standard)
+NFCReportReadError=1    ; Report errors
+NFCReportReadError=0    ; Ignore (default)
 ```
 
 ### IgnoreRandomUID
 
-Zufällige Type 4 UIDs filtern (z.B. von Smartphones).
+Filter random Type 4 UIDs (e.g., from smartphones).
 
 ```ini
-IgnoreRandomUID=1    ; Zufällige UIDs ignorieren
-IgnoreRandomUID=0    ; Alle UIDs akzeptieren (Standard)
+IgnoreRandomUID=1    ; Ignore random UIDs
+IgnoreRandomUID=0    ; Accept all UIDs (default)
 ```
 
 ### TagByteOrder
 
-Byte-Reihenfolge umkehren.
+Reverse byte order.
 
 ```ini
-TagByteOrder=1    ; Bytes umkehren
-TagByteOrder=0    ; Normal (Standard)
+TagByteOrder=1    ; Reverse bytes
+TagByteOrder=0    ; Normal (default)
 ```
 
-## Block-Daten lesen
+## Reading Block Data
 
-Für den Block-Modus (B) gibt es weitere Parameter:
+For block mode (B) there are additional parameters:
 
 ### TagReadBlockNum
 
-Block-Nummer zum Lesen (0-255).
+Block number to read (0-255).
 
 ```ini
-TagReadBlockNum=4    ; Block 4 lesen
+TagReadBlockNum=4    ; Read block 4
 ```
 
 ### TagReadKeySlot
 
-Key-Slot für Authentifizierung (1-9).
+Key slot for authentication (1-9).
 
 ```ini
-TagReadKeySlot=1    ; Key aus Slot 1 verwenden
+TagReadKeySlot=1    ; Use key from slot 1
 ```
 
 ### TagReadKeyType
 
-Key-Typ für MIFARE (A, B, oder C).
+Key type for MIFARE (A, B, or C).
 
 ```ini
-TagReadKeyType=A    ; Key Typ A
-TagReadKeyType=B    ; Key Typ B
+TagReadKeyType=A    ; Key type A
+TagReadKeyType=B    ; Key type B
 ```
 
 ### TagReadOffset
 
-Start-Byte im Block (0-15).
+Start byte in block (0-15).
 
 ```ini
-TagReadOffset=0     ; Ab Anfang (Standard)
-TagReadOffset=4     ; Ab Byte 4
+TagReadOffset=0     ; From beginning (default)
+TagReadOffset=4     ; From byte 4
 ```
 
 ### TagReadLength
 
-Anzahl zu lesender Bytes (1-16).
+Number of bytes to read (1-16).
 
 ```ini
-TagReadLength=4     ; 4 Bytes lesen
-TagReadLength=16    ; Ganzen Block lesen
+TagReadLength=4     ; Read 4 bytes
+TagReadLength=16    ; Read entire block
 ```
 
 ### TagReadFormat
 
-Ausgabeformat.
+Output format.
 
 ```ini
-TagReadFormat=h     ; Hexadezimal
-TagReadFormat=d     ; Dezimal
+TagReadFormat=h     ; Hexadecimal
+TagReadFormat=d     ; Decimal
 TagReadFormat=a     ; ASCII
 ```
 
 ### TagReadMinDigits
 
-Minimale Ziffern für UID-Ausgabe.
+Minimum digits for UID output.
 
 ```ini
-TagReadMinDigits=10    ; Mindestens 10 Ziffern
-TagReadMinDigits=A     ; Automatisch
+TagReadMinDigits=10    ; At least 10 digits
+TagReadMinDigits=A     ; Automatic
 ```
 
 ## Python API
 
-### Einfache Konfiguration
+### Simple Configuration
 
 ```python
 from vtap100.models.nfc import NFCTagConfig, NFCTagMode
 
-# Type 2 und Type 4 im UID-Modus aktivieren
+# Enable Type 2 and Type 4 in UID mode
 nfc = NFCTagConfig(
     type2=NFCTagMode.UID,
     type4=NFCTagMode.UID,
@@ -160,7 +160,7 @@ print(nfc.to_config_lines())
 # ['NFCType2=U', 'NFCType4=U']
 ```
 
-### Block-Daten lesen
+### Reading Block Data
 
 ```python
 from vtap100.models.nfc import (
@@ -168,7 +168,7 @@ from vtap100.models.nfc import (
     TagReadConfig, TagKeyType, TagReadFormat
 )
 
-# MIFARE Block lesen
+# Read MIFARE block
 tag_read = TagReadConfig(
     block_num=4,
     key_slot=1,
@@ -187,7 +187,7 @@ print(nfc.to_config_lines())
 #  'TagReadKeyType=A', 'TagReadLength=16', 'TagReadFormat=h']
 ```
 
-### Mit VTAPConfig kombinieren
+### Combined with VTAPConfig
 
 ```python
 from vtap100.models.config import VTAPConfig
@@ -195,7 +195,7 @@ from vtap100.models.nfc import NFCTagConfig, NFCTagMode
 from vtap100.models.keyboard import KeyboardConfig
 from vtap100.generator import ConfigGenerator
 
-# NFC + Keyboard kombinieren
+# Combine NFC + Keyboard
 nfc = NFCTagConfig(
     type2=NFCTagMode.UID,
     type4=NFCTagMode.NDEF,
@@ -204,7 +204,7 @@ nfc = NFCTagConfig(
 
 kb = KeyboardConfig(
     log_mode=True,
-    source="24",  # Type 2 und Type 4
+    source="24",  # Type 2 and Type 4
 )
 
 config = VTAPConfig(nfc=nfc, keyboard=kb)
@@ -213,7 +213,7 @@ generator = ConfigGenerator(config)
 print(generator.generate())
 ```
 
-## Vollständiges Beispiel
+## Complete Example
 
 ```ini
 !VTAPconfig
@@ -227,8 +227,8 @@ KBLogMode=1
 KBSource=24
 ```
 
-## Siehe auch
+## See Also
 
 - [config.txt Format](overview.md)
-- [Keyboard-Emulation](keyboard.md)
+- [Keyboard Emulation](keyboard.md)
 - [MIFARE DESFire](desfire.md) *(Phase 4)*

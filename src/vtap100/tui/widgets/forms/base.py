@@ -6,7 +6,8 @@ Provides common functionality for all configuration forms.
 from textual.events import DescendantFocus
 from textual.message import Message
 from textual.widget import Widget
-from textual.widgets import Input, Select
+from textual.widgets import Input
+from textual.widgets import Select
 
 
 class ConfigChanged(Message):
@@ -178,5 +179,5 @@ class BaseConfigForm(Widget):
         """
         # Check if the focused widget is an Input or Select with an id
         widget = event.widget
-        if isinstance(widget, (Input, Select)) and widget.id:
+        if isinstance(widget, Input | Select) and widget.id:
             self.post_message(HelpContextChanged(f"{self.SECTION_NAME}.{widget.id}"))

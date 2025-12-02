@@ -7,8 +7,9 @@ Phase 4 Implementation.
 """
 
 from enum import IntEnum
-
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel
+from pydantic import Field
+from pydantic import field_validator
 
 
 class DESFireCryptoMode(IntEnum):
@@ -49,16 +50,12 @@ class DESFireAppConfig(BaseModel):
     app_id: str = Field(..., description="Application ID (6 hex characters)")
     file_id: int | None = Field(default=None, ge=1, le=255, description="File ID (1-255)")
     key_num: int | None = Field(default=None, description="Key number")
-    key_slot: int | None = Field(
-        default=None, ge=1, le=9, description="Key slot (1-9)"
-    )
+    key_slot: int | None = Field(default=None, ge=1, le=9, description="Key slot (1-9)")
     crypto: DESFireCryptoMode | None = Field(default=None, description="Crypto mode")
     format: DESFireDataFormat | None = Field(default=None, description="Data format")
     read_length: int = Field(default=3, ge=1, le=255, description="Read length (1-255)")
     read_offset: int = Field(default=0, ge=0, le=255, description="Read offset (0-255)")
-    diversification: bool | None = Field(
-        default=None, description="Enable key diversification"
-    )
+    diversification: bool | None = Field(default=None, description="Enable key diversification")
     privacy_key_num: int | None = Field(default=None, description="Privacy key number")
     privacy_key_slot: int | None = Field(default=None, description="Privacy key slot")
     sysid_key_slot: int | None = Field(default=None, description="System ID key slot")

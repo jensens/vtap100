@@ -9,11 +9,13 @@ Note: DESFire is more complex and will be handled separately.
 """
 
 import pytest
-
 from vtap100.models.config import VTAPConfig
-from vtap100.models.feedback import FeedbackConfig, LEDConfig, LEDMode
+from vtap100.models.feedback import FeedbackConfig
+from vtap100.models.feedback import LEDConfig
+from vtap100.models.feedback import LEDMode
 from vtap100.models.keyboard import KeyboardConfig
-from vtap100.models.nfc import NFCTagConfig, NFCTagMode
+from vtap100.models.nfc import NFCTagConfig
+from vtap100.models.nfc import NFCTagMode
 
 
 class TestKeyboardFormImports:
@@ -43,8 +45,8 @@ class TestKeyboardConfigFormAsync:
     @pytest.mark.asyncio
     async def test_keyboard_form_has_log_mode_switch(self) -> None:
         """KeyboardConfigForm should have log_mode switch."""
-        from textual.widgets import Switch, Tree
-
+        from textual.widgets import Switch
+        from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -70,8 +72,8 @@ class TestKeyboardConfigFormAsync:
     @pytest.mark.asyncio
     async def test_keyboard_form_has_source_input(self) -> None:
         """KeyboardConfigForm should have source input."""
-        from textual.widgets import Input, Tree
-
+        from textual.widgets import Input
+        from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -94,8 +96,9 @@ class TestKeyboardConfigFormAsync:
     @pytest.mark.asyncio
     async def test_keyboard_form_saves_config(self) -> None:
         """KeyboardConfigForm should save changes to app.config."""
-        from textual.widgets import Button, Switch, Tree
-
+        from textual.widgets import Button
+        from textual.widgets import Switch
+        from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -131,7 +134,6 @@ class TestKeyboardConfigFormAsync:
     async def test_keyboard_section_shows_checkmark_when_configured(self) -> None:
         """Keyboard section should show checkmark when configured."""
         from textual.widgets import Tree
-
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -198,8 +200,8 @@ class TestNFCConfigFormAsync:
     @pytest.mark.asyncio
     async def test_nfc_form_has_type2_select(self) -> None:
         """NFCConfigForm should have type2 Select."""
-        from textual.widgets import Select, Tree
-
+        from textual.widgets import Select
+        from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -223,8 +225,8 @@ class TestNFCConfigFormAsync:
     @pytest.mark.asyncio
     async def test_nfc_form_saves_config(self) -> None:
         """NFCConfigForm should save changes to app.config."""
-        from textual.widgets import Button, Tree
-
+        from textual.widgets import Button
+        from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -294,14 +296,12 @@ class TestFeedbackConfigFormAsync:
     @pytest.mark.asyncio
     async def test_feedback_form_has_led_mode_select(self) -> None:
         """FeedbackConfigForm should have LED mode Select."""
-        from textual.widgets import Select, Tree
-
+        from textual.widgets import Select
+        from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
-        app.config = VTAPConfig(
-            feedback=FeedbackConfig(led=LEDConfig(mode=LEDMode.STATUS))
-        )
+        app.config = VTAPConfig(feedback=FeedbackConfig(led=LEDConfig(mode=LEDMode.STATUS)))
 
         async with app.run_test() as pilot:
             await pilot.pause()
@@ -362,15 +362,14 @@ class TestDESFireConfigFormAsync:
     @pytest.mark.asyncio
     async def test_desfire_form_has_app_id_input(self) -> None:
         """DESFireConfigForm should have app_id input."""
-        from textual.widgets import Input, Tree
-
-        from vtap100.models.desfire import DESFireAppConfig, DESFireConfig
+        from textual.widgets import Input
+        from textual.widgets import Tree
+        from vtap100.models.desfire import DESFireAppConfig
+        from vtap100.models.desfire import DESFireConfig
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
-        app.config = VTAPConfig(
-            desfire=DESFireConfig(apps=[DESFireAppConfig(app_id="AABBCC")])
-        )
+        app.config = VTAPConfig(desfire=DESFireConfig(apps=[DESFireAppConfig(app_id="AABBCC")]))
 
         async with app.run_test() as pilot:
             await pilot.pause()
@@ -394,13 +393,11 @@ class TestDESFireConfigFormAsync:
     @pytest.mark.asyncio
     async def test_desfire_form_has_crypto_select(self) -> None:
         """DESFireConfigForm should have crypto Select."""
-        from textual.widgets import Select, Tree
-
-        from vtap100.models.desfire import (
-            DESFireAppConfig,
-            DESFireConfig,
-            DESFireCryptoMode,
-        )
+        from textual.widgets import Select
+        from textual.widgets import Tree
+        from vtap100.models.desfire import DESFireAppConfig
+        from vtap100.models.desfire import DESFireConfig
+        from vtap100.models.desfire import DESFireCryptoMode
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -429,15 +426,15 @@ class TestDESFireConfigFormAsync:
     @pytest.mark.asyncio
     async def test_desfire_form_saves_config(self) -> None:
         """DESFireConfigForm should save changes to app.config."""
-        from textual.widgets import Button, Input, Tree
-
-        from vtap100.models.desfire import DESFireAppConfig, DESFireConfig
+        from textual.widgets import Button
+        from textual.widgets import Input
+        from textual.widgets import Tree
+        from vtap100.models.desfire import DESFireAppConfig
+        from vtap100.models.desfire import DESFireConfig
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
-        app.config = VTAPConfig(
-            desfire=DESFireConfig(apps=[DESFireAppConfig(app_id="AABBCC")])
-        )
+        app.config = VTAPConfig(desfire=DESFireConfig(apps=[DESFireAppConfig(app_id="AABBCC")]))
 
         async with app.run_test() as pilot:
             await pilot.pause()
@@ -471,8 +468,9 @@ class TestDESFireConfigFormAsync:
     @pytest.mark.asyncio
     async def test_desfire_add_new_entry(self) -> None:
         """DESFireConfigForm should allow adding new entries."""
-        from textual.widgets import Button, Input, Tree
-
+        from textual.widgets import Button
+        from textual.widgets import Input
+        from textual.widgets import Tree
         from vtap100.models.desfire import DESFireConfig
         from vtap100.tui.app import VTAPEditorApp
 

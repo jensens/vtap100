@@ -1,55 +1,55 @@
-# Upload auf den VTAP100 Reader
+# Upload to VTAP100 Reader
 
-Diese Anleitung beschreibt, wie die Konfigurationsdateien auf den VTAP100 NFC-Reader übertragen werden.
+This guide describes how to transfer configuration files to the VTAP100 NFC reader.
 
-## Übersicht
+## Overview
 
-Der VTAP100 wird als USB-Massenspeicher erkannt. Die Konfiguration erfolgt durch:
+The VTAP100 is recognized as a USB mass storage device. Configuration is done by:
 
-1. Kopieren der `config.txt` auf den Reader
-2. Kopieren der Private Key Dateien (`private#.pem`)
-3. Sicheres Auswerfen des Readers
-4. Reader neu starten
+1. Copying `config.txt` to the reader
+2. Copying private key files (`private#.pem`)
+3. Safely ejecting the reader
+4. Restarting the reader
 
-## Schritt-für-Schritt Anleitung
+## Step-by-Step Guide
 
-### 1. Reader anschließen
+### 1. Connect the Reader
 
-Verbinden Sie den VTAP100 über USB mit Ihrem Computer. Der Reader wird als Wechseldatenträger erkannt.
+Connect the VTAP100 via USB to your computer. The reader will be recognized as a removable drive.
 
 **Linux:**
 ```bash
-# Reader wird automatisch gemountet, z.B. unter:
+# Reader is automatically mounted, e.g., at:
 /media/$USER/VTAP100/
-# oder
+# or
 /run/media/$USER/VTAP100/
 ```
 
 **macOS:**
 ```bash
-# Reader erscheint unter:
+# Reader appears at:
 /Volumes/VTAP100/
 ```
 
 **Windows:**
-Der Reader erscheint als neues Laufwerk (z.B. `E:`).
+The reader appears as a new drive (e.g., `E:`).
 
-### 2. Konfiguration generieren
+### 2. Generate Configuration
 
 ```bash
-# Mit vtap100 CLI
+# With vtap100 CLI
 vtap100 generate \
     --apple-vas pass.com.example.myapp \
     --key-slot 1 \
     --output config.txt
 
-# Oder interaktiv
+# Or interactively
 vtap100 wizard
 ```
 
-### 3. Dateien kopieren
+### 3. Copy Files
 
-**config.txt kopieren:**
+**Copy config.txt:**
 
 ```bash
 # Linux/macOS
@@ -59,7 +59,7 @@ cp config.txt /media/$USER/VTAP100/
 Copy-Item config.txt E:\
 ```
 
-**Private Keys kopieren (falls erforderlich):**
+**Copy private keys (if required):**
 
 ```bash
 # Linux/macOS
@@ -69,15 +69,15 @@ cp private1.pem /media/$USER/VTAP100/
 Copy-Item private1.pem E:\
 ```
 
-### 4. Reader sicher auswerfen
+### 4. Safely Eject the Reader
 
 **Linux:**
 ```bash
-# Mit udisksctl
+# With udisksctl
 udisksctl unmount -b /dev/sdX1
 udisksctl power-off -b /dev/sdX
 
-# Oder über Dateimanager
+# Or via file manager
 ```
 
 **macOS:**
@@ -86,36 +86,36 @@ diskutil eject /Volumes/VTAP100
 ```
 
 **Windows:**
-Klicken Sie auf "Hardware sicher entfernen" in der Taskleiste.
+Click "Safely Remove Hardware" in the taskbar.
 
-### 5. Reader neu starten
+### 5. Restart the Reader
 
-Trennen Sie den Reader kurz vom USB und verbinden Sie ihn erneut. Die neue Konfiguration wird beim Start geladen.
+Briefly disconnect the reader from USB and reconnect it. The new configuration will be loaded at startup.
 
-## Dateistruktur auf dem Reader
+## File Structure on the Reader
 
 ```
 VTAP100/
-├── config.txt          # Hauptkonfiguration
-├── private1.pem        # Private Key Slot 1
-├── private2.pem        # Private Key Slot 2 (optional)
+├── config.txt          # Main configuration
+├── private1.pem        # Private key slot 1
+├── private2.pem        # Private key slot 2 (optional)
 ├── ...
-└── private6.pem        # Private Key Slot 6 (optional)
+└── private6.pem        # Private key slot 6 (optional)
 ```
 
-## Konfiguration validieren
+## Validate Configuration
 
-Vor dem Upload können Sie die Konfiguration prüfen:
+You can validate the configuration before uploading:
 
 ```bash
-# Lokale Datei validieren
+# Validate local file
 vtap100 validate config.txt
 
-# Datei auf dem Reader validieren
+# Validate file on reader
 vtap100 validate /media/$USER/VTAP100/config.txt
 ```
 
-## Automatisiertes Deployment
+## Automated Deployment
 
 ### Bash Script
 
@@ -126,34 +126,34 @@ vtap100 validate /media/$USER/VTAP100/config.txt
 MOUNT_POINT="/media/$USER/VTAP100"
 CONFIG_FILE="config.txt"
 
-# Prüfen ob Reader gemountet ist
+# Check if reader is mounted
 if [ ! -d "$MOUNT_POINT" ]; then
-    echo "VTAP100 nicht gefunden!"
+    echo "VTAP100 not found!"
     exit 1
 fi
 
-# Konfiguration validieren
+# Validate configuration
 vtap100 validate "$CONFIG_FILE"
 if [ $? -ne 0 ]; then
-    echo "Konfiguration ungültig!"
+    echo "Configuration invalid!"
     exit 1
 fi
 
-# Kopieren
+# Copy
 cp "$CONFIG_FILE" "$MOUNT_POINT/"
-echo "config.txt kopiert"
+echo "config.txt copied"
 
-# Private Keys kopieren (wenn vorhanden)
+# Copy private keys (if present)
 for i in 1 2 3 4 5 6; do
     if [ -f "private$i.pem" ]; then
         cp "private$i.pem" "$MOUNT_POINT/"
-        echo "private$i.pem kopiert"
+        echo "private$i.pem copied"
     fi
 done
 
-# Sync und unmount
+# Sync and unmount
 sync
-echo "Deployment abgeschlossen. Bitte Reader sicher auswerfen."
+echo "Deployment complete. Please safely eject the reader."
 ```
 
 ### Python Script
@@ -168,18 +168,18 @@ from pathlib import Path
 def deploy_config(config_path: Path, mount_point: Path) -> None:
     """Deploy config.txt to VTAP100 reader."""
     if not mount_point.exists():
-        raise FileNotFoundError(f"VTAP100 nicht gefunden: {mount_point}")
+        raise FileNotFoundError(f"VTAP100 not found: {mount_point}")
 
-    # config.txt kopieren
+    # Copy config.txt
     shutil.copy(config_path, mount_point / "config.txt")
-    print(f"config.txt nach {mount_point} kopiert")
+    print(f"config.txt copied to {mount_point}")
 
-    # Private Keys kopieren
+    # Copy private keys
     for i in range(1, 7):
         key_file = Path(f"private{i}.pem")
         if key_file.exists():
             shutil.copy(key_file, mount_point / key_file.name)
-            print(f"{key_file.name} kopiert")
+            print(f"{key_file.name} copied")
 
 if __name__ == "__main__":
     import sys
@@ -188,34 +188,34 @@ if __name__ == "__main__":
     deploy_config(config, mount)
 ```
 
-## Fehlerbehebung
+## Troubleshooting
 
-### Reader wird nicht erkannt
+### Reader Not Recognized
 
-1. Prüfen Sie die USB-Verbindung
-2. Versuchen Sie einen anderen USB-Port
-3. Auf Windows: Treiber-Update durchführen
+1. Check the USB connection
+2. Try a different USB port
+3. On Windows: Perform driver update
 
-### Konfiguration wird nicht übernommen
+### Configuration Not Applied
 
-1. Stellen Sie sicher, dass die Datei `config.txt` heißt (nicht `config.txt.txt`)
-2. Prüfen Sie, dass die Datei mit `!VTAPconfig` beginnt
-3. Werfen Sie den Reader sicher aus bevor Sie ihn trennen
+1. Ensure the file is named `config.txt` (not `config.txt.txt`)
+2. Verify the file starts with `!VTAPconfig`
+3. Safely eject the reader before disconnecting
 
-### Private Key wird nicht erkannt
+### Private Key Not Recognized
 
-1. Dateiname muss `private1.pem` bis `private6.pem` sein
-2. PEM-Format muss korrekt sein (ECDSA)
-3. Key Slot in config.txt muss übereinstimmen
+1. Filename must be `private1.pem` through `private6.pem`
+2. PEM format must be correct (ECDSA)
+3. Key slot in config.txt must match
 
-## Sicherheitshinweise
+## Security Notes
 
-- **Private Keys niemals weitergeben** - sie ermöglichen das Auslesen aller Pässe
-- **Reader physisch sichern** - unbefugter Zugriff ermöglicht Key-Extraktion
-- **Backup der Keys erstellen** - bei Verlust müssen neue Keys generiert werden
+- **Never share private keys** - they enable reading all passes
+- **Physically secure the reader** - unauthorized access allows key extraction
+- **Backup your keys** - if lost, new keys must be generated
 
-## Siehe auch
+## See Also
 
-- [Schnellstart](../quickstart.md)
+- [Quickstart](../quickstart.md)
 - [config.txt Format](../configuration/overview.md)
-- [Quellensammlung](../references/sources.md)
+- [Reference Sources](../references/sources.md)

@@ -13,14 +13,16 @@ Example:
     >>> config = VTAPConfig(vas_configs=[vas], keyboard=kb)
 """
 
-from pydantic import BaseModel, Field
-
-from vtap100.models.vas import AppleVASConfig, VASDefaultPassesEnabled
-from vtap100.models.smarttap import GoogleSmartTapConfig, STDefaultPassesEnabled
-from vtap100.models.keyboard import KeyboardConfig
-from vtap100.models.nfc import NFCTagConfig
+from pydantic import BaseModel
+from pydantic import Field
 from vtap100.models.desfire import DESFireConfig
 from vtap100.models.feedback import FeedbackConfig
+from vtap100.models.keyboard import KeyboardConfig
+from vtap100.models.nfc import NFCTagConfig
+from vtap100.models.smarttap import GoogleSmartTapConfig
+from vtap100.models.smarttap import STDefaultPassesEnabled
+from vtap100.models.vas import AppleVASConfig
+from vtap100.models.vas import VASDefaultPassesEnabled
 
 
 class VTAPConfig(BaseModel):

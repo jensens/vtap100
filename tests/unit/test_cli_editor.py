@@ -1,7 +1,6 @@
 """Unit tests for CLI editor command."""
 
 from click.testing import CliRunner
-
 from vtap100.cli import main
 
 

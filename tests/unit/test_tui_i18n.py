@@ -7,15 +7,16 @@ Tests for:
 - Help text retrieval
 """
 
-import pytest
-
 
 class TestI18nImports:
     """Test that i18n module can be imported."""
 
     def test_import_i18n(self) -> None:
         """i18n module should be importable."""
-        from vtap100.tui.i18n import Language, get_language, set_language, t
+        from vtap100.tui.i18n import Language
+        from vtap100.tui.i18n import get_language
+        from vtap100.tui.i18n import set_language
+        from vtap100.tui.i18n import t
 
         assert Language is not None
         assert t is not None
@@ -34,7 +35,9 @@ class TestLanguageSwitching:
 
     def test_default_language_is_german(self) -> None:
         """Default language should be German."""
-        from vtap100.tui.i18n import Language, get_language, set_language
+        from vtap100.tui.i18n import Language
+        from vtap100.tui.i18n import get_language
+        from vtap100.tui.i18n import set_language
 
         # Reset to default
         set_language(Language.DE)
@@ -42,7 +45,9 @@ class TestLanguageSwitching:
 
     def test_switch_to_english(self) -> None:
         """Should be able to switch to English."""
-        from vtap100.tui.i18n import Language, get_language, set_language
+        from vtap100.tui.i18n import Language
+        from vtap100.tui.i18n import get_language
+        from vtap100.tui.i18n import set_language
 
         set_language(Language.EN)
         assert get_language() == Language.EN
@@ -52,7 +57,9 @@ class TestLanguageSwitching:
 
     def test_switch_with_string(self) -> None:
         """Should be able to switch using string."""
-        from vtap100.tui.i18n import Language, get_language, set_language
+        from vtap100.tui.i18n import Language
+        from vtap100.tui.i18n import get_language
+        from vtap100.tui.i18n import set_language
 
         set_language("en")
         assert get_language() == Language.EN
@@ -66,14 +73,18 @@ class TestTranslations:
 
     def test_german_save_button(self) -> None:
         """Should return German translation for save button."""
-        from vtap100.tui.i18n import Language, set_language, t
+        from vtap100.tui.i18n import Language
+        from vtap100.tui.i18n import set_language
+        from vtap100.tui.i18n import t
 
         set_language(Language.DE)
         assert t("common.buttons.save") == "Speichern"
 
     def test_english_save_button(self) -> None:
         """Should return English translation for save button."""
-        from vtap100.tui.i18n import Language, set_language, t
+        from vtap100.tui.i18n import Language
+        from vtap100.tui.i18n import set_language
+        from vtap100.tui.i18n import t
 
         set_language(Language.EN)
         result = t("common.buttons.save")
@@ -82,14 +93,18 @@ class TestTranslations:
 
     def test_german_add_button(self) -> None:
         """Should return German translation for add button."""
-        from vtap100.tui.i18n import Language, set_language, t
+        from vtap100.tui.i18n import Language
+        from vtap100.tui.i18n import set_language
+        from vtap100.tui.i18n import t
 
         set_language(Language.DE)
         assert t("common.buttons.add") == "Hinzufügen"
 
     def test_english_add_button(self) -> None:
         """Should return English translation for add button."""
-        from vtap100.tui.i18n import Language, set_language, t
+        from vtap100.tui.i18n import Language
+        from vtap100.tui.i18n import set_language
+        from vtap100.tui.i18n import t
 
         set_language(Language.EN)
         result = t("common.buttons.add")
@@ -105,7 +120,9 @@ class TestTranslations:
 
     def test_placeholder_substitution(self) -> None:
         """Placeholders should be substituted."""
-        from vtap100.tui.i18n import Language, set_language, t
+        from vtap100.tui.i18n import Language
+        from vtap100.tui.i18n import set_language
+        from vtap100.tui.i18n import t
 
         set_language(Language.DE)
         result = t("common.messages.config_added", name="VAS")
@@ -114,7 +131,9 @@ class TestTranslations:
 
     def test_english_placeholder_substitution(self) -> None:
         """Placeholders should work in English too."""
-        from vtap100.tui.i18n import Language, set_language, t
+        from vtap100.tui.i18n import Language
+        from vtap100.tui.i18n import set_language
+        from vtap100.tui.i18n import t
 
         set_language(Language.EN)
         result = t("common.messages.config_added", name="VAS")
@@ -128,7 +147,9 @@ class TestSectionLabels:
 
     def test_german_section_labels(self) -> None:
         """German section labels should be correct."""
-        from vtap100.tui.i18n import Language, set_language, t
+        from vtap100.tui.i18n import Language
+        from vtap100.tui.i18n import set_language
+        from vtap100.tui.i18n import t
 
         set_language(Language.DE)
         assert t("sections.vas.label") == "Apple VAS"
@@ -137,7 +158,9 @@ class TestSectionLabels:
 
     def test_english_section_labels(self) -> None:
         """English section labels should be correct."""
-        from vtap100.tui.i18n import Language, set_language, t
+        from vtap100.tui.i18n import Language
+        from vtap100.tui.i18n import set_language
+        from vtap100.tui.i18n import t
 
         set_language(Language.EN)
         vas_label = t("sections.vas.label")
@@ -153,7 +176,9 @@ class TestFormFields:
 
     def test_german_keyboard_fields(self) -> None:
         """German keyboard form fields should be correct."""
-        from vtap100.tui.i18n import Language, set_language, t
+        from vtap100.tui.i18n import Language
+        from vtap100.tui.i18n import set_language
+        from vtap100.tui.i18n import t
 
         set_language(Language.DE)
         assert "Keyboard aktivieren" in t("forms.keyboard.enable")
@@ -161,7 +186,9 @@ class TestFormFields:
 
     def test_english_keyboard_fields(self) -> None:
         """English keyboard form fields should be correct."""
-        from vtap100.tui.i18n import Language, set_language, t
+        from vtap100.tui.i18n import Language
+        from vtap100.tui.i18n import set_language
+        from vtap100.tui.i18n import t
 
         set_language(Language.EN)
         enable = t("forms.keyboard.enable")
@@ -178,7 +205,8 @@ class TestHelpContent:
     def setup_method(self) -> None:
         """Reset to German and clear cache before each test."""
         from vtap100.tui.help import HelpLoader
-        from vtap100.tui.i18n import Language, set_language
+        from vtap100.tui.i18n import Language
+        from vtap100.tui.i18n import set_language
 
         set_language(Language.DE)
         HelpLoader.clear_cache()
@@ -186,7 +214,8 @@ class TestHelpContent:
     def teardown_method(self) -> None:
         """Reset to German and clear cache after each test."""
         from vtap100.tui.help import HelpLoader
-        from vtap100.tui.i18n import Language, set_language
+        from vtap100.tui.i18n import Language
+        from vtap100.tui.i18n import set_language
 
         set_language(Language.DE)
         HelpLoader.clear_cache()
@@ -194,7 +223,8 @@ class TestHelpContent:
     def test_german_vas_help(self) -> None:
         """German VAS help content should exist."""
         from vtap100.tui.help import HelpLoader
-        from vtap100.tui.i18n import Language, set_language
+        from vtap100.tui.i18n import Language
+        from vtap100.tui.i18n import set_language
 
         set_language(Language.DE)
         HelpLoader.clear_cache()
@@ -206,7 +236,8 @@ class TestHelpContent:
     def test_english_vas_help(self) -> None:
         """English VAS help content should exist."""
         from vtap100.tui.help import HelpLoader
-        from vtap100.tui.i18n import Language, set_language
+        from vtap100.tui.i18n import Language
+        from vtap100.tui.i18n import set_language
 
         set_language(Language.EN)
         HelpLoader.clear_cache()
@@ -218,7 +249,8 @@ class TestHelpContent:
     def test_german_merchant_id_help(self) -> None:
         """German merchant_id help should have all fields."""
         from vtap100.tui.help import HelpLoader
-        from vtap100.tui.i18n import Language, set_language
+        from vtap100.tui.i18n import Language
+        from vtap100.tui.i18n import set_language
 
         set_language(Language.DE)
         HelpLoader.clear_cache()
@@ -231,7 +263,8 @@ class TestHelpContent:
     def test_english_merchant_id_help(self) -> None:
         """English merchant_id help should have all fields."""
         from vtap100.tui.help import HelpLoader
-        from vtap100.tui.i18n import Language, set_language
+        from vtap100.tui.i18n import Language
+        from vtap100.tui.i18n import set_language
 
         set_language(Language.EN)
         HelpLoader.clear_cache()
@@ -247,7 +280,8 @@ class TestTHelpFunction:
     def setup_method(self) -> None:
         """Reset to German and clear cache before each test."""
         from vtap100.tui.help import HelpLoader
-        from vtap100.tui.i18n import Language, set_language
+        from vtap100.tui.i18n import Language
+        from vtap100.tui.i18n import set_language
 
         set_language(Language.DE)
         HelpLoader.clear_cache()
@@ -255,7 +289,8 @@ class TestTHelpFunction:
     def teardown_method(self) -> None:
         """Reset to German and clear cache after each test."""
         from vtap100.tui.help import HelpLoader
-        from vtap100.tui.i18n import Language, set_language
+        from vtap100.tui.i18n import Language
+        from vtap100.tui.i18n import set_language
 
         set_language(Language.DE)
         HelpLoader.clear_cache()
@@ -263,7 +298,9 @@ class TestTHelpFunction:
     def test_t_help_section(self) -> None:
         """t_help should get section help."""
         from vtap100.tui.help import HelpLoader
-        from vtap100.tui.i18n import Language, set_language, t_help
+        from vtap100.tui.i18n import Language
+        from vtap100.tui.i18n import set_language
+        from vtap100.tui.i18n import t_help
 
         set_language(Language.DE)
         HelpLoader.clear_cache()
@@ -273,7 +310,9 @@ class TestTHelpFunction:
     def test_t_help_field(self) -> None:
         """t_help should get field help."""
         from vtap100.tui.help import HelpLoader
-        from vtap100.tui.i18n import Language, set_language, t_help
+        from vtap100.tui.i18n import Language
+        from vtap100.tui.i18n import set_language
+        from vtap100.tui.i18n import t_help
 
         set_language(Language.DE)
         HelpLoader.clear_cache()
@@ -283,7 +322,9 @@ class TestTHelpFunction:
     def test_t_help_english(self) -> None:
         """t_help should work in English."""
         from vtap100.tui.help import HelpLoader
-        from vtap100.tui.i18n import Language, set_language, t_help
+        from vtap100.tui.i18n import Language
+        from vtap100.tui.i18n import set_language
+        from vtap100.tui.i18n import t_help
 
         set_language(Language.EN)
         HelpLoader.clear_cache()

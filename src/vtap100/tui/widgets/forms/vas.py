@@ -6,11 +6,16 @@ Form for editing Apple VAS (Value Added Services) configurations.
 from pydantic import ValidationError
 from textual.app import ComposeResult
 from textual.containers import Horizontal
-from textual.widgets import Button, Input, Label, Select, Static
-
+from textual.widgets import Button
+from textual.widgets import Input
+from textual.widgets import Label
+from textual.widgets import Select
+from textual.widgets import Static
 from vtap100.models.vas import AppleVASConfig
 from vtap100.tui.i18n import t
-from vtap100.tui.widgets.forms.base import BaseConfigForm, ConfigAdded, ConfigRemoved
+from vtap100.tui.widgets.forms.base import BaseConfigForm
+from vtap100.tui.widgets.forms.base import ConfigAdded
+from vtap100.tui.widgets.forms.base import ConfigRemoved
 
 
 class VASConfigForm(BaseConfigForm):

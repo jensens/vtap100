@@ -8,21 +8,29 @@ The primary screen with 3-panel layout:
 """
 
 from textual.app import ComposeResult
-from textual.containers import Container, Horizontal, Vertical
+from textual.containers import Container
+from textual.containers import Horizontal
+from textual.containers import Vertical
 from textual.screen import Screen
-from textual.widgets import Footer, Header, Label, Static
-
+from textual.widgets import Footer
+from textual.widgets import Header
+from textual.widgets import Label
+from textual.widgets import Static
 from vtap100.tui.i18n import t
-from vtap100.tui.widgets.forms.base import ConfigAdded, ConfigChanged, ConfigRemoved, HelpContextChanged
-from vtap100.tui.widgets.help_panel import HelpPanel
-from vtap100.tui.widgets.preview import ConfigPreview
+from vtap100.tui.widgets.forms.base import ConfigAdded
+from vtap100.tui.widgets.forms.base import ConfigChanged
+from vtap100.tui.widgets.forms.base import ConfigRemoved
+from vtap100.tui.widgets.forms.base import HelpContextChanged
 from vtap100.tui.widgets.forms.desfire import DESFireConfigForm
 from vtap100.tui.widgets.forms.feedback import FeedbackConfigForm
 from vtap100.tui.widgets.forms.keyboard import KeyboardConfigForm
 from vtap100.tui.widgets.forms.nfc import NFCConfigForm
 from vtap100.tui.widgets.forms.smarttap import SmartTapConfigForm
 from vtap100.tui.widgets.forms.vas import VASConfigForm
-from vtap100.tui.widgets.sidebar import ConfigSidebar, SectionSelected
+from vtap100.tui.widgets.help_panel import HelpPanel
+from vtap100.tui.widgets.preview import ConfigPreview
+from vtap100.tui.widgets.sidebar import ConfigSidebar
+from vtap100.tui.widgets.sidebar import SectionSelected
 
 
 class EditorScreen(Screen):

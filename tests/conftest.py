@@ -1,7 +1,6 @@
 """Pytest configuration and shared fixtures for VTAP100 tests."""
 
 from pathlib import Path
-
 import pytest
 
 

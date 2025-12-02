@@ -18,6 +18,8 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: System :: Hardware",
 ]
@@ -36,8 +38,10 @@ dev = [
     "pytest>=8.0",
     "pytest-cov>=4.0",
     "pytest-asyncio>=0.24.0",
-    "ruff>=0.1",
-    "mypy>=1.0",
+    "ruff>=0.8.0",
+    "mypy>=1.13.0",
+    "pre-commit>=4.0.0",
+    "types-PyYAML>=6.0",
 ]
 
 [project.scripts]
@@ -83,8 +87,35 @@ ignore = [
 [tool.ruff.lint.pydocstyle]
 convention = "google"
 
+[tool.ruff.lint.isort]
+known-local-folder = ["vtap100"]
+force-single-line = true
+force-sort-within-sections = true
+case-sensitive = false
+lines-after-imports = 2
+no-sections = true
+
 [tool.mypy]
 python_version = "3.11"
-strict = true
 warn_return_any = true
 warn_unused_ignores = true
+disallow_untyped_defs = true
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = "vtap100.cli"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
+disable_error_code = ["arg-type", "union-attr", "attr-defined", "misc"]
+
+[[tool.mypy.overrides]]
+module = "vtap100.tui.*"
+disallow_untyped_defs = false
+disable_error_code = ["attr-defined", "arg-type", "no-untyped-def", "assignment", "no-any-return"]
+
+[[tool.mypy.overrides]]
+module = "vtap100.parser"
+disable_error_code = ["assignment", "attr-defined"]

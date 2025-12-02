@@ -14,9 +14,8 @@ References:
 """
 
 from enum import Enum
-from typing import Union
-
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
+from pydantic import Field
 
 
 class NFCTagMode(str, Enum):
@@ -115,7 +114,7 @@ class TagReadConfig(BaseModel):
         default=None,
         description="Output format (TagReadFormat)",
     )
-    min_digits: Union[int, str, None] = Field(
+    min_digits: int | str | None = Field(
         default=None,
         description="Min digits for UID (TagReadMinDigits), 1-20 or 'A' for auto",
     )

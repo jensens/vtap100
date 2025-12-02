@@ -8,7 +8,6 @@ Tests for:
 """
 
 import pytest
-
 from vtap100.models.config import VTAPConfig
 from vtap100.models.vas import AppleVASConfig
 
@@ -61,7 +60,6 @@ class TestConfigSidebarAsync:
     async def test_sidebar_renders_tree(self) -> None:
         """Sidebar should render a tree with sections."""
         from textual.widgets import Tree
-
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -77,7 +75,6 @@ class TestConfigSidebarAsync:
     async def test_sidebar_tree_has_all_sections(self) -> None:
         """Tree should have nodes for all config sections."""
         from textual.widgets import Tree
-
         from vtap100.tui.app import VTAPEditorApp
         from vtap100.tui.widgets.sidebar import ConfigSidebar
 
@@ -96,7 +93,6 @@ class TestConfigSidebarAsync:
     async def test_sidebar_shows_vas_badge_when_configured(self) -> None:
         """Sidebar should show badge with count when VAS is configured."""
         from textual.widgets import Tree
-
         from vtap100.tui.app import VTAPEditorApp
 
         # Create app with VAS config

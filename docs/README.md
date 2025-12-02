@@ -1,67 +1,67 @@
 # VTAP100 Documentation
 
-Willkommen zur Dokumentation des VTAP100 Configuration Generator.
+Welcome to the VTAP100 Configuration Generator documentation.
 
-## Inhaltsverzeichnis
+## Table of Contents
 
-### Erste Schritte
-- [Quickstart](quickstart.md) - Schnelleinstieg in wenigen Minuten
-- [Installation](quickstart.md#installation) - Installationsanleitung
+### Getting Started
+- [Quickstart](quickstart.md) - Get started in minutes
+- [Installation](quickstart.md#installation) - Installation guide
 
-### Konfiguration (Phase 1-5 - Vollständig)
-- [Übersicht](configuration/overview.md) - config.txt Format und Grundlagen
+### Configuration (Phase 1-5 - Complete)
+- [Overview](configuration/overview.md) - config.txt format and basics
 - [Apple VAS](configuration/apple_vas.md) - Apple Wallet Value Added Services
 - [Google Smart Tap](configuration/google_smarttap.md) - Google Wallet Smart Tap
-- [Keyboard-Emulation](configuration/keyboard.md) - Tastaturemulation Einstellungen
-- [NFC Tags](configuration/nfc_tags.md) - NFC Tag-Typen (Type 2, 4, 5)
-- [MIFARE DESFire](configuration/desfire.md) - DESFire Konfiguration
-- [LED/Beep](configuration/led_beep.md) - Visuelles und akustisches Feedback
+- [Keyboard Emulation](configuration/keyboard.md) - Keyboard emulation settings
+- [NFC Tags](configuration/nfc_tags.md) - NFC tag types (Type 2, 4, 5)
+- [MIFARE DESFire](configuration/desfire.md) - DESFire configuration
+- [LED/Beep](configuration/led_beep.md) - Visual and audio feedback
 
 ### Deployment
-- [Upload auf den Reader](deployment/upload_to_reader.md) - Dateien übertragen
+- [Upload to Reader](deployment/upload_to_reader.md) - File transfer
 
-### Beispiele (in Dokumentation integriert)
-Beispiele finden sich in den jeweiligen Konfigurationsseiten:
-- Apple VAS Beispiele: siehe [Apple VAS](configuration/apple_vas.md)
-- Google Smart Tap Beispiele: siehe [Google Smart Tap](configuration/google_smarttap.md)
-- Kombinierte Konfiguration: siehe [Quickstart](quickstart.md)
+### Examples (integrated in documentation)
+Examples can be found in the respective configuration pages:
+- Apple VAS examples: see [Apple VAS](configuration/apple_vas.md)
+- Google Smart Tap examples: see [Google Smart Tap](configuration/google_smarttap.md)
+- Combined configuration: see [Quickstart](quickstart.md)
 
-### Entwicklung
-- [Entwickler-Guide](development.md) - TDD, Code-Stil, Contributing
-- [Implementierungsplan](PLAN.md) - Projektplan und Spezifikation
+### Development
+- [Developer Guide](development.md) - TDD, code style, contributing
+- [Implementation Plan](PLAN.md) - Project plan and specification
 
-### Referenz
-- [Quellensammlung](references/sources.md) - Alle verwendeten Quellen und Links
+### Reference
+- [Reference Sources](references/sources.md) - All sources and links used
 
-## Über das Projekt
+## About the Project
 
-Der VTAP100 Configuration Generator ist ein Python-Tool zur einfachen Erstellung von Konfigurationsdateien für den [dotOrigin VTAP100](https://www.vtapnfc.com/) NFC Reader.
+The VTAP100 Configuration Generator is a Python tool for easily creating configuration files for the [dotOrigin VTAP100](https://www.vtapnfc.com/) NFC Reader.
 
-### Features (Phase 1-5 - Vollständig)
+### Features (Phase 1-5 - Complete)
 
-- Apple VAS Unterstützung
-- Google Smart Tap Unterstützung
-- Keyboard-Emulation (erweitert)
-- NFC Tag Support (Type 2, 4, 5)
-- MIFARE DESFire Unterstützung
-- LED/Buzzer Konfiguration
-- Validierung
-- Rich CLI mit farbiger Ausgabe
+- Apple VAS support
+- Google Smart Tap support
+- Keyboard emulation (extended)
+- NFC tag support (Type 2, 4, 5)
+- MIFARE DESFire support
+- LED/Buzzer configuration
+- Validation
+- Rich CLI with colored output
 
-### Schnellstart
+### Quickstart
 
 ```bash
 # Installation
 uv sync
 
-# Apple VAS Konfiguration generieren
+# Generate Apple VAS configuration
 vtap100 generate --apple-vas pass.com.example.mypass --key-slot 1
 
-# Interaktiver Wizard
+# Interactive wizard
 vtap100 wizard
 ```
 
-## Weitere Informationen
+## Further Information
 
 - [GitHub Repository](https://github.com/your-org/vtap100)
 - [dotOrigin Website](https://www.dotorigin.com/)

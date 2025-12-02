@@ -19,8 +19,8 @@ Example:
 
 from pathlib import Path
 from typing import TextIO
-
 from vtap100.models.config import VTAPConfig
+
 
 # Jinja2 template for dynamic wallet passes (VAS/SmartTap)
 # fmt: off

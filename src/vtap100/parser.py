@@ -15,9 +15,8 @@ Example:
     'pass.com.example.test'
 """
 
+from dataclasses import dataclass
 import re
-from dataclasses import dataclass, field
-
 from vtap100.models.config import VTAPConfig
 from vtap100.models.keyboard import KeyboardConfig
 from vtap100.models.smarttap import GoogleSmartTapConfig

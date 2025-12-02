@@ -1,32 +1,32 @@
 # Quickstart Guide
 
-Diese Anleitung hilft dir, in wenigen Minuten deine erste VTAP100-Konfiguration zu erstellen.
+This guide helps you create your first VTAP100 configuration in minutes.
 
 ## Installation
 
 ```bash
-# Mit uv (empfohlen)
+# With uv (recommended)
 uv sync
 
-# Alternativ mit pip
+# Alternatively with pip
 pip install -e .
 ```
 
-## Schnellste Methode: CLI
+## Fastest Method: CLI
 
-### Apple VAS Konfiguration
+### Apple VAS Configuration
 
 ```bash
 vtap100 generate --apple-vas pass.com.example.myapp --key-slot 1
 ```
 
-### Google Smart Tap Konfiguration
+### Google Smart Tap Configuration
 
 ```bash
 vtap100 generate --google-st 96972794 --key-slot 2 --key-version 1
 ```
 
-### Kombinierte Konfiguration
+### Combined Configuration
 
 ```bash
 vtap100 generate \
@@ -35,9 +35,9 @@ vtap100 generate \
   --key-slot 1
 ```
 
-## Interaktiver Wizard
+## Interactive Wizard
 
-Für eine geführte Konfiguration:
+For a guided configuration:
 
 ```bash
 vtap100 wizard
@@ -51,7 +51,7 @@ from vtap100.models.vas import AppleVASConfig
 from vtap100.models.keyboard import KeyboardConfig
 from vtap100.generator import ConfigGenerator
 
-# Konfiguration erstellen
+# Create configuration
 vas = AppleVASConfig(
     merchant_id="pass.com.example.myapp",
     key_slot=1,
@@ -63,15 +63,15 @@ config = VTAPConfig(
     keyboard=kb,
 )
 
-# config.txt generieren
+# Generate config.txt
 generator = ConfigGenerator(config)
 print(generator.generate())
 
-# In Datei speichern
+# Save to file
 generator.write_to_file("config.txt")
 ```
 
-## Ausgabe-Beispiel
+## Example Output
 
 ```ini
 !VTAPconfig
@@ -84,28 +84,28 @@ KBLogMode=1
 KBSource=A1
 ```
 
-## Konfiguration auf den Reader übertragen
+## Transfer Configuration to Reader
 
-1. VTAP100 per USB anschließen
-2. Reader erscheint als USB-Laufwerk
-3. `config.txt` auf das Laufwerk kopieren
-4. Optional: `private1.pem` Key-Datei hinzufügen
-5. Reader neu starten (USB trennen/verbinden)
+1. Connect VTAP100 via USB
+2. Reader appears as USB drive
+3. Copy `config.txt` to the drive
+4. Optional: Add `private1.pem` key file
+5. Restart reader (disconnect/reconnect USB)
 
-## Hilfe zu Parametern
+## Parameter Help
 
 ```bash
-# Alle Parameter anzeigen
+# Show all parameters
 vtap100 docs
 
-# CLI-Hilfe
+# CLI help
 vtap100 --help
 vtap100 generate --help
 ```
 
-## Nächste Schritte
+## Next Steps
 
-- [Apple VAS Konfiguration](configuration/apple_vas.md)
-- [Google Smart Tap Konfiguration](configuration/google_smarttap.md)
-- [Keyboard-Emulation](configuration/keyboard.md)
+- [Apple VAS Configuration](configuration/apple_vas.md)
+- [Google Smart Tap Configuration](configuration/google_smarttap.md)
+- [Keyboard Emulation](configuration/keyboard.md)
 - [Deployment](deployment/upload_to_reader.md)

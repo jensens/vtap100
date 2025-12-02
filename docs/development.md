@@ -1,26 +1,26 @@
-# Entwickler-Guide
+# Developer Guide
 
-Dieses Dokument beschreibt die Entwicklungspraktiken für das VTAP100-Projekt.
+This document describes the development practices for the VTAP100 project.
 
-## Entwicklungsumgebung einrichten
+## Setting Up Development Environment
 
 ```bash
-# Repository klonen
+# Clone repository
 git clone <repository-url>
 cd vtap100
 
-# Dependencies installieren mit uv
+# Install dependencies with uv
 uv sync --extra dev
 
-# Oder mit pip
+# Or with pip
 pip install -e ".[dev]"
 ```
 
 ## Test-Driven Development (TDD)
 
-Dieses Projekt verwendet TDD. Der Workflow ist:
+This project uses TDD. The workflow is:
 
-### 1. Red: Test schreiben
+### 1. Red: Write Test
 
 ```python
 # tests/unit/test_new_feature.py
@@ -41,64 +41,64 @@ def new_function(input: str) -> str:
 
 ### 3. Refactor
 
-Code verbessern, Tests müssen weiter bestehen.
+Improve code while tests continue to pass.
 
-## Tests ausführen
+## Running Tests
 
 ```bash
-# Alle Tests
+# All tests
 uv run pytest
 
-# Mit Coverage
+# With coverage
 uv run pytest --cov=vtap100 --cov-report=html
 
-# Einzelne Test-Datei
+# Single test file
 uv run pytest tests/unit/test_models_vas.py -v
 
-# Ohne Coverage-Check
+# Without coverage check
 uv run pytest --no-cov
 ```
 
-## Code-Qualität
+## Code Quality
 
-### Linting mit Ruff
+### Linting with Ruff
 
 ```bash
-# Prüfen
+# Check
 uv run ruff check src tests
 
-# Automatisch fixen
+# Auto-fix
 uv run ruff check --fix src tests
 
-# Formatieren
+# Format
 uv run ruff format src tests
 ```
 
-### Type-Checking mit mypy
+### Type Checking with mypy
 
 ```bash
 uv run mypy src
 ```
 
-## Projektstruktur
+## Project Structure
 
 ```
 vtap100/
-├── src/vtap100/          # Quellcode
-│   ├── models/           # Pydantic-Modelle
-│   ├── generator.py      # config.txt Generator
-│   ├── cli.py            # CLI mit Rich
-│   └── templates/        # Vordefinierte Konfigurationen
+├── src/vtap100/          # Source code
+│   ├── models/           # Pydantic models
+│   ├── generator.py      # config.txt generator
+│   ├── cli.py            # CLI with Rich
+│   └── templates/        # Predefined configurations
 ├── tests/
-│   ├── unit/             # Unit-Tests
-│   ├── integration/      # Integrationstests
-│   └── fixtures/         # Test-Daten
-└── docs/                 # Dokumentation
+│   ├── unit/             # Unit tests
+│   ├── integration/      # Integration tests
+│   └── fixtures/         # Test data
+└── docs/                 # Documentation
 ```
 
-## Docstring-Standard
+## Docstring Standard
 
-Wir verwenden Google-Style Docstrings:
+We use Google-style docstrings:
 
 ```python
 def generate_config(config: VTAPConfig, output_path: Path) -> None:
@@ -118,24 +118,24 @@ def generate_config(config: VTAPConfig, output_path: Path) -> None:
     """
 ```
 
-## Neue Features hinzufügen
+## Adding New Features
 
-1. **Dokumentation schreiben:** Was soll das Feature tun?
-2. **Tests schreiben:** Definiere das erwartete Verhalten
-3. **Implementation:** Code schreiben bis Tests bestehen
-4. **Dokumentation finalisieren:** Beispiele und API-Docs aktualisieren
-5. **Changelog aktualisieren:** Änderungen dokumentieren
+1. **Write documentation:** What should the feature do?
+2. **Write tests:** Define expected behavior
+3. **Implementation:** Write code until tests pass
+4. **Finalize documentation:** Update examples and API docs
+5. **Update changelog:** Document changes
 
-## Phasen-Übersicht
+## Phase Overview
 
-- **Phase 1 (aktuell):** Apple VAS, Google Smart Tap, Keyboard-Emulation
-- **Phase 2:** Erweiterte Keyboard-Emulation
+- **Phase 1 (current):** Apple VAS, Google Smart Tap, Keyboard Emulation
+- **Phase 2:** Extended Keyboard Emulation
 - **Phase 3:** NFC Tags
 - **Phase 4:** MIFARE DESFire
 - **Phase 5:** LED/Beep + Extras
 
-## Ressourcen
+## Resources
 
 - [VTAP Configuration Guide](https://www.vtapnfc.com/downloads/VTAP_Configuration_Guide.pdf)
-- [Quellensammlung](references/sources.md)
-- [Implementierungsplan](PLAN.md)
+- [Reference Sources](references/sources.md)
+- [Implementation Plan](PLAN.md)

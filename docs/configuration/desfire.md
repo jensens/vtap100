@@ -1,17 +1,16 @@
-# MIFARE DESFire Konfiguration
+# MIFARE DESFire Configuration
 
-Der VTAP100 kann MIFARE DESFire Karten lesen und authentifizierte Daten auslesen.
+The VTAP100 can read MIFARE DESFire cards and retrieve authenticated data.
 
-## Grundlagen
+## Basics
 
-DESFire ist ein kontaktloser Smartcard-Typ von NXP mit Verschlüsselungsfunktionen.
-Der VTAP100 unterstützt bis zu 9 DESFire-Anwendungskonfigurationen.
+DESFire is a contactless smartcard type from NXP with encryption features. The VTAP100 supports up to 9 DESFire application configurations.
 
-## Parameter
+## Parameters
 
 ### DESFire#AppID
 
-Application ID der DESFire-Anwendung (6 Hex-Zeichen).
+Application ID of the DESFire application (6 hex characters).
 
 ```ini
 DESFire1AppID=AABBCC
@@ -20,7 +19,7 @@ DESFire2AppID=112233
 
 ### DESFire#FileID
 
-File ID zum Lesen (1-255).
+File ID to read (1-255).
 
 ```ini
 DESFire1FileID=1
@@ -28,7 +27,7 @@ DESFire1FileID=1
 
 ### DESFire#KeyNum
 
-Key-Nummer für Authentifizierung.
+Key number for authentication.
 
 ```ini
 DESFire1KeyNum=0
@@ -36,7 +35,7 @@ DESFire1KeyNum=0
 
 ### DESFire#KeySlot
 
-Key-Slot für Authentifizierung (1-9).
+Key slot for authentication (1-9).
 
 ```ini
 DESFire1KeySlot=1
@@ -44,39 +43,39 @@ DESFire1KeySlot=1
 
 ### DESFire#Crypto
 
-Kryptographischer Modus.
+Cryptographic mode.
 
 ```ini
-DESFire1Crypto=0    ; Keine Verschlüsselung
+DESFire1Crypto=0    ; No encryption
 DESFire1Crypto=1    ; 3DES
 DESFire1Crypto=3    ; AES
 ```
 
-| Wert | Modus |
-|------|-------|
-| 0 | Keine Verschlüsselung |
+| Value | Mode |
+|-------|------|
+| 0 | No encryption |
 | 1 | 3DES |
 | 3 | AES |
 
 ### DESFire#Format
 
-Daten-Ausgabeformat.
+Data output format.
 
 ```ini
-DESFire1Format=0    ; Raw-Daten
+DESFire1Format=0    ; Raw data
 DESFire1Format=1    ; KEY-ID v1
 DESFire1Format=2    ; KEY-ID v2
 ```
 
-| Wert | Format |
-|------|--------|
-| 0 | Raw-Daten |
+| Value | Format |
+|-------|--------|
+| 0 | Raw data |
 | 1 | KEY-ID v1 |
 | 2 | KEY-ID v2 |
 
 ### DESFire#ReadLength
 
-Anzahl zu lesender Bytes (1-255, Standard: 3).
+Number of bytes to read (1-255, default: 3).
 
 ```ini
 DESFire1ReadLength=16
@@ -84,7 +83,7 @@ DESFire1ReadLength=16
 
 ### DESFire#ReadOffset
 
-Start-Offset im File (0-255, Standard: 0).
+Start offset in file (0-255, default: 0).
 
 ```ini
 DESFire1ReadOffset=4
@@ -92,15 +91,15 @@ DESFire1ReadOffset=4
 
 ### DESFire#Diversification
 
-Key-Diversifizierung aktivieren.
+Enable key diversification.
 
 ```ini
-DESFire1Diversification=1    ; Aktiviert
+DESFire1Diversification=1    ; Enabled
 ```
 
 ### DESFireSeparator
 
-Trennzeichen für mehrere Apps (Standard: `,`).
+Separator for multiple apps (default: `,`).
 
 ```ini
 DESFireSeparator=;
@@ -108,12 +107,12 @@ DESFireSeparator=;
 
 ## Python API
 
-### Einfache Konfiguration
+### Simple Configuration
 
 ```python
 from vtap100.models.desfire import DESFireConfig, DESFireAppConfig
 
-# Einzelne DESFire-App
+# Single DESFire app
 app = DESFireAppConfig(
     app_id="AABBCC",
     file_id=1,
@@ -125,7 +124,7 @@ print(config.to_config_lines())
 # ['DESFire1AppID=AABBCC', 'DESFire1FileID=1', 'DESFire1KeySlot=1']
 ```
 
-### Mit Verschlüsselung
+### With Encryption
 
 ```python
 from vtap100.models.desfire import (
@@ -152,7 +151,7 @@ print(config.to_config_lines())
 #  'DESFire1ReadLength=16']
 ```
 
-### Mehrere Apps
+### Multiple Apps
 
 ```python
 from vtap100.models.desfire import DESFireConfig, DESFireAppConfig
@@ -171,7 +170,7 @@ print(config.to_config_lines())
 #  'DESFireSeparator=;']
 ```
 
-### Mit VTAPConfig kombinieren
+### Combined with VTAPConfig
 
 ```python
 from vtap100.models.config import VTAPConfig
@@ -179,7 +178,7 @@ from vtap100.models.desfire import DESFireConfig, DESFireAppConfig, DESFireCrypt
 from vtap100.models.keyboard import KeyboardConfig
 from vtap100.generator import ConfigGenerator
 
-# DESFire + Keyboard kombinieren
+# Combine DESFire + Keyboard
 desfire = DESFireConfig(
     apps=[
         DESFireAppConfig(
@@ -202,7 +201,7 @@ generator = ConfigGenerator(config)
 print(generator.generate())
 ```
 
-## Vollständiges Beispiel
+## Complete Example
 
 ```ini
 !VTAPconfig
@@ -219,8 +218,8 @@ KBLogMode=1
 KBSource=D1
 ```
 
-## Siehe auch
+## See Also
 
 - [config.txt Format](overview.md)
-- [Keyboard-Emulation](keyboard.md)
+- [Keyboard Emulation](keyboard.md)
 - [NFC Tags](nfc_tags.md)

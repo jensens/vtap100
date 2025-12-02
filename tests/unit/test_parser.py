@@ -16,7 +16,7 @@ class TestConfigParserImports:
         assert ConfigParser is not None
 
     def test_import_parse_function(self) -> None:
-        """parse function should be importable."""
+        """Parse function should be importable."""
         from vtap100.parser import parse
 
         assert callable(parse)
@@ -224,9 +224,7 @@ class TestConfigParserRoundTrip:
         from vtap100.parser import parse
 
         original = VTAPConfig(
-            vas_configs=[
-                AppleVASConfig(merchant_id="pass.com.example.test", key_slot=1)
-            ]
+            vas_configs=[AppleVASConfig(merchant_id="pass.com.example.test", key_slot=1)]
         )
         generator = ConfigGenerator(original)
         content = generator.generate()
@@ -246,9 +244,7 @@ class TestConfigParserRoundTrip:
         from vtap100.parser import parse
 
         original = VTAPConfig(
-            vas_configs=[
-                AppleVASConfig(merchant_id="pass.com.example.test", key_slot=1)
-            ],
+            vas_configs=[AppleVASConfig(merchant_id="pass.com.example.test", key_slot=1)],
             smarttap_configs=[
                 GoogleSmartTapConfig(collector_id="96972794", key_slot=2, key_version=1)
             ],

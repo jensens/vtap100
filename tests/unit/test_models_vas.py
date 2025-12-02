@@ -4,8 +4,8 @@ TDD Red Phase: These tests define the expected behavior of the AppleVASConfig mo
 Tests should fail until the implementation is complete.
 """
 
-import pytest
 from pydantic import ValidationError
+import pytest
 
 
 class TestAppleVASConfig:

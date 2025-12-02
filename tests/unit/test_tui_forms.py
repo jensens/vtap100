@@ -8,7 +8,6 @@ Tests for:
 """
 
 import pytest
-
 from vtap100.models.config import VTAPConfig
 from vtap100.models.smarttap import GoogleSmartTapConfig
 from vtap100.models.vas import AppleVASConfig
@@ -91,7 +90,6 @@ class TestVASConfigFormAsync:
     async def test_vas_form_has_merchant_id_input(self) -> None:
         """VASConfigForm should have merchant_id input field."""
         from textual.widgets import Input
-
         from vtap100.tui.app import VTAPEditorApp
 
         # Create app with VAS config
@@ -122,7 +120,6 @@ class TestVASConfigFormAsync:
     async def test_vas_form_has_key_slot_select(self) -> None:
         """VASConfigForm should have key_slot Select field."""
         from textual.widgets import Select
-
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -149,7 +146,6 @@ class TestVASConfigFormAsync:
     async def test_vas_form_shows_correct_values(self) -> None:
         """VASConfigForm should display values from config."""
         from textual.widgets import Input
-
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -179,8 +175,8 @@ class TestFormFocus:
     @pytest.mark.asyncio
     async def test_selecting_vas_entry_focuses_first_field(self) -> None:
         """Selecting a VAS entry should focus the first form field."""
-        from textual.widgets import Input, Tree
-
+        from textual.widgets import Input
+        from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -205,8 +201,8 @@ class TestFormFocus:
     @pytest.mark.asyncio
     async def test_selecting_smarttap_entry_focuses_first_field(self) -> None:
         """Selecting a SmartTap entry should focus the first form field."""
-        from textual.widgets import Input, Tree
-
+        from textual.widgets import Input
+        from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -231,8 +227,8 @@ class TestFormFocus:
     @pytest.mark.asyncio
     async def test_selecting_neuer_eintrag_focuses_first_field(self) -> None:
         """Selecting 'Neuer Eintrag' should focus the first form field."""
-        from textual.widgets import Input, Tree
-
+        from textual.widgets import Input
+        from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -277,7 +273,6 @@ class TestSmartTapConfigFormAsync:
     async def test_smarttap_form_has_collector_id_input(self) -> None:
         """SmartTapConfigForm should have collector_id input field."""
         from textual.widgets import Input
-
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -310,8 +305,8 @@ class TestAddNewConfig:
     @pytest.mark.asyncio
     async def test_clicking_neuer_eintrag_shows_new_form(self) -> None:
         """Clicking 'Neuer Eintrag' should show new config form."""
-        from textual.widgets import Button, Tree
-
+        from textual.widgets import Button
+        from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -337,8 +332,8 @@ class TestAddNewConfig:
     @pytest.mark.asyncio
     async def test_new_vas_form_shows_correct_title(self) -> None:
         """New VAS form should show 'Neue Apple VAS Konfiguration' title."""
-        from textual.widgets import Label, Tree
-
+        from textual.widgets import Label
+        from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -362,8 +357,8 @@ class TestAddNewConfig:
     @pytest.mark.asyncio
     async def test_existing_vas_form_has_remove_button(self) -> None:
         """Existing VAS form should have remove button, not add."""
-        from textual.widgets import Button, Tree
-
+        from textual.widgets import Button
+        from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -389,8 +384,9 @@ class TestAddNewConfig:
     @pytest.mark.asyncio
     async def test_clicking_add_button_adds_vas_config(self) -> None:
         """Clicking Add button should add new VAS config to app.config."""
-        from textual.widgets import Button, Input, Tree
-
+        from textual.widgets import Button
+        from textual.widgets import Input
+        from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -424,8 +420,9 @@ class TestAddNewConfig:
     @pytest.mark.asyncio
     async def test_clicking_add_button_refreshes_sidebar(self) -> None:
         """After adding, sidebar should show new item."""
-        from textual.widgets import Button, Input, Tree
-
+        from textual.widgets import Button
+        from textual.widgets import Input
+        from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -463,8 +460,9 @@ class TestAddNewConfig:
     @pytest.mark.asyncio
     async def test_clicking_add_button_adds_smarttap_config(self) -> None:
         """Clicking Add button should add new SmartTap config to app.config."""
-        from textual.widgets import Button, Input, Tree
-
+        from textual.widgets import Button
+        from textual.widgets import Input
+        from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -499,7 +497,6 @@ class TestAddNewConfig:
     async def test_clicking_neuer_eintrag_twice_does_not_error(self) -> None:
         """Clicking 'Neuer Eintrag' twice should not cause duplicate ID error."""
         from textual.widgets import Tree
-
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -531,8 +528,8 @@ class TestExistingConfigButtons:
     @pytest.mark.asyncio
     async def test_existing_vas_form_has_save_button(self) -> None:
         """Existing VAS form should have a save button."""
-        from textual.widgets import Button, Tree
-
+        from textual.widgets import Button
+        from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -557,8 +554,9 @@ class TestExistingConfigButtons:
     @pytest.mark.asyncio
     async def test_clicking_save_button_updates_config(self) -> None:
         """Clicking Save should update the config with form values."""
-        from textual.widgets import Button, Input, Tree
-
+        from textual.widgets import Button
+        from textual.widgets import Input
+        from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -592,8 +590,8 @@ class TestExistingConfigButtons:
     @pytest.mark.asyncio
     async def test_clicking_remove_button_removes_config(self) -> None:
         """Clicking Remove should remove the config from the list."""
-        from textual.widgets import Button, Tree
-
+        from textual.widgets import Button
+        from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -623,8 +621,8 @@ class TestExistingConfigButtons:
     @pytest.mark.asyncio
     async def test_clicking_remove_refreshes_sidebar(self) -> None:
         """After removing, sidebar should update."""
-        from textual.widgets import Button, Tree
-
+        from textual.widgets import Button
+        from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -658,8 +656,8 @@ class TestExistingConfigButtons:
     @pytest.mark.asyncio
     async def test_after_remove_section_stays_expanded(self) -> None:
         """After removing, the section node should stay expanded."""
-        from textual.widgets import Button, Tree
-
+        from textual.widgets import Button
+        from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -696,8 +694,8 @@ class TestExistingConfigButtons:
     @pytest.mark.asyncio
     async def test_after_remove_smarttap_section_stays_expanded(self) -> None:
         """After removing SmartTap, the section node should stay expanded."""
-        from textual.widgets import Button, Tree
-
+        from textual.widgets import Button
+        from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -734,8 +732,8 @@ class TestExistingConfigButtons:
     @pytest.mark.asyncio
     async def test_clicking_duplicate_button_duplicates_config(self) -> None:
         """Clicking Duplicate should create a copy of the config."""
-        from textual.widgets import Button, Tree
-
+        from textual.widgets import Button
+        from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -773,8 +771,9 @@ class TestValidationErrorHandling:
     @pytest.mark.asyncio
     async def test_invalid_vas_merchant_id_shows_error(self) -> None:
         """Invalid merchant_id should show error, not crash."""
-        from textual.widgets import Button, Input, Tree
-
+        from textual.widgets import Button
+        from textual.widgets import Input
+        from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -809,8 +808,9 @@ class TestValidationErrorHandling:
     @pytest.mark.asyncio
     async def test_invalid_vas_shows_error_message(self) -> None:
         """Invalid input should show error message label."""
-        from textual.widgets import Button, Input, Tree
-
+        from textual.widgets import Button
+        from textual.widgets import Input
+        from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -844,8 +844,9 @@ class TestPostAddBehavior:
     @pytest.mark.asyncio
     async def test_after_add_switches_to_edit_view(self) -> None:
         """After adding, should switch to edit view of new entry."""
-        from textual.widgets import Button, Input, Tree
-
+        from textual.widgets import Button
+        from textual.widgets import Input
+        from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -880,8 +881,9 @@ class TestPostAddBehavior:
     @pytest.mark.asyncio
     async def test_after_add_shows_success_message(self) -> None:
         """After adding, should show success message."""
-        from textual.widgets import Button, Input, Tree
-
+        from textual.widgets import Button
+        from textual.widgets import Input
+        from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -915,8 +917,9 @@ class TestPostAddBehavior:
     @pytest.mark.asyncio
     async def test_after_smarttap_add_shows_correct_message(self) -> None:
         """After adding SmartTap, should show SmartTap success message."""
-        from textual.widgets import Button, Input, Tree
-
+        from textual.widgets import Button
+        from textual.widgets import Input
+        from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -949,8 +952,9 @@ class TestPostAddBehavior:
     @pytest.mark.asyncio
     async def test_save_button_shows_success_message(self) -> None:
         """Clicking Save should show a success message."""
-        from textual.widgets import Button, Input, Tree
-
+        from textual.widgets import Button
+        from textual.widgets import Input
+        from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -987,8 +991,8 @@ class TestPostAddBehavior:
     @pytest.mark.asyncio
     async def test_duplicate_button_shows_success_message(self) -> None:
         """Clicking Duplicate should show 'dupliziert' message."""
-        from textual.widgets import Button, Tree
-
+        from textual.widgets import Button
+        from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -1021,8 +1025,9 @@ class TestPostAddBehavior:
     @pytest.mark.asyncio
     async def test_add_success_message_clears_on_save(self) -> None:
         """The 'angelegt' message should clear when clicking Save."""
-        from textual.widgets import Button, Input, Tree
-
+        from textual.widgets import Button
+        from textual.widgets import Input
+        from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -1066,8 +1071,9 @@ class TestPostAddBehavior:
     @pytest.mark.asyncio
     async def test_after_add_tree_node_is_selected(self) -> None:
         """After adding, the new entry should be selected in the tree."""
-        from textual.widgets import Button, Input, Tree
-
+        from textual.widgets import Button
+        from textual.widgets import Input
+        from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -1106,8 +1112,8 @@ class TestPostAddBehavior:
     @pytest.mark.asyncio
     async def test_after_duplicate_tree_node_is_selected(self) -> None:
         """After duplicating, the new entry should be selected in the tree."""
-        from textual.widgets import Button, Tree
-
+        from textual.widgets import Button
+        from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -1145,8 +1151,9 @@ class TestPostAddBehavior:
     @pytest.mark.asyncio
     async def test_success_message_auto_disappears(self) -> None:
         """Success message should auto-disappear after timeout."""
-        from textual.widgets import Button, Input, Tree
-
+        from textual.widgets import Button
+        from textual.widgets import Input
+        from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
         from vtap100.tui.widgets.forms.vas import VASConfigForm
 
@@ -1203,8 +1210,8 @@ class TestKeySlotSelect:
     @pytest.mark.asyncio
     async def test_vas_form_uses_select_for_key_slot(self) -> None:
         """VAS form should use Select for key_slot."""
-        from textual.widgets import Select, Tree
-
+        from textual.widgets import Select
+        from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -1229,8 +1236,8 @@ class TestKeySlotSelect:
     @pytest.mark.asyncio
     async def test_smarttap_form_uses_select_for_key_slot(self) -> None:
         """SmartTap form should use Select for key_slot."""
-        from textual.widgets import Select, Tree
-
+        from textual.widgets import Select
+        from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -1255,8 +1262,8 @@ class TestKeySlotSelect:
     @pytest.mark.asyncio
     async def test_vas_select_has_7_options(self) -> None:
         """VAS key_slot Select should have 7 options (0-6)."""
-        from textual.widgets import Select, Tree
-
+        from textual.widgets import Select
+        from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -1276,7 +1283,7 @@ class TestKeySlotSelect:
             main_content = app.screen.query_one("#main-content")
             select = main_content.query_one("#key_slot", Select)
             # Count options by checking the _options property
-            # Note: Select includes a blank option by default, so we have 8 total (1 blank + 7 slots)
+            # Select includes a blank option by default: 8 total (1 blank + 7 slots)
             options = list(select._options)
             # Filter out blank option to count actual slot options
             slot_options = [opt for opt in options if opt[1] != Select.BLANK]
@@ -1285,8 +1292,8 @@ class TestKeySlotSelect:
     @pytest.mark.asyncio
     async def test_correct_slot_is_selected(self) -> None:
         """The current config's key_slot should be selected in Select."""
-        from textual.widgets import Select, Tree
-
+        from textual.widgets import Select
+        from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -1312,8 +1319,8 @@ class TestKeySlotSelect:
     @pytest.mark.asyncio
     async def test_vas_form_shows_slot_info_text(self) -> None:
         """VAS form should show info text about slot usage below Select."""
-        from textual.widgets import Static, Tree
-
+        from textual.widgets import Static
+        from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -1347,8 +1354,8 @@ class TestKeySlotSelect:
     @pytest.mark.asyncio
     async def test_slot_info_shows_free_slots(self) -> None:
         """Slot info should show which slots are free."""
-        from textual.widgets import Static, Tree
-
+        from textual.widgets import Static
+        from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -1382,7 +1389,6 @@ class TestSidebarTreeLabels:
     async def test_vas_tree_shows_merchant_id(self) -> None:
         """VAS tree entry should show merchant_id instead of #1."""
         from textual.widgets import Tree
-
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -1408,7 +1414,6 @@ class TestSidebarTreeLabels:
     async def test_smarttap_tree_shows_collector_id(self) -> None:
         """SmartTap tree entry should show collector_id instead of #1."""
         from textual.widgets import Tree
-
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -1434,7 +1439,6 @@ class TestSidebarTreeLabels:
     async def test_vas_tree_shows_slot_info(self) -> None:
         """VAS tree entry should show slot info (Slot X or Auto)."""
         from textual.widgets import Tree
-
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
@@ -1458,7 +1462,6 @@ class TestSidebarTreeLabels:
     async def test_vas_tree_shows_auto_for_slot_0(self) -> None:
         """VAS tree entry should show 'Auto' when key_slot is 0."""
         from textual.widgets import Tree
-
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()

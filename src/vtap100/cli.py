@@ -9,30 +9,30 @@ Example:
     $ vtap100 validate config.txt
 """
 
-from pathlib import Path
-
 import click
+from pathlib import Path
 from rich.console import Console
 from rich.panel import Panel
 from rich.syntax import Syntax
 from rich.table import Table
-
 from vtap100 import __version__
 from vtap100.generator import ConfigGenerator
 from vtap100.models.config import VTAPConfig
-from vtap100.models.desfire import DESFireAppConfig, DESFireConfig, DESFireCryptoMode
-from vtap100.models.feedback import (
-    BeepConfig,
-    BeepSequence,
-    FeedbackConfig,
-    LEDConfig,
-    LEDMode,
-    LEDSequence,
-)
+from vtap100.models.desfire import DESFireAppConfig
+from vtap100.models.desfire import DESFireConfig
+from vtap100.models.desfire import DESFireCryptoMode
+from vtap100.models.feedback import BeepConfig
+from vtap100.models.feedback import BeepSequence
+from vtap100.models.feedback import FeedbackConfig
+from vtap100.models.feedback import LEDConfig
+from vtap100.models.feedback import LEDMode
+from vtap100.models.feedback import LEDSequence
 from vtap100.models.keyboard import KeyboardConfig
-from vtap100.models.nfc import NFCTagConfig, NFCTagMode
+from vtap100.models.nfc import NFCTagConfig
+from vtap100.models.nfc import NFCTagMode
 from vtap100.models.smarttap import GoogleSmartTapConfig
 from vtap100.models.vas import AppleVASConfig
+
 
 console = Console()
 
@@ -94,15 +94,18 @@ def main() -> None:
 
 @main.command()
 @click.option(
-    "--apple-vas", "-a",
+    "--apple-vas",
+    "-a",
     help="Apple VAS Merchant ID (e.g., pass.com.example.myapp)",
 )
 @click.option(
-    "--google-st", "-g",
+    "--google-st",
+    "-g",
     help="Google Smart Tap Collector ID",
 )
 @click.option(
-    "--key-slot", "-k",
+    "--key-slot",
+    "-k",
     type=click.IntRange(1, 6),
     default=1,
     help="Key slot for the pass (1-6)",
@@ -119,13 +122,15 @@ def main() -> None:
     help="Enable keyboard emulation",
 )
 @click.option(
-    "--output", "-o",
+    "--output",
+    "-o",
     type=click.Path(dir_okay=False, writable=True),
     default="config.txt",
     help="Output file path",
 )
 @click.option(
-    "--comment", "-c",
+    "--comment",
+    "-c",
     help="Comment to add to the config file",
 )
 def generate(

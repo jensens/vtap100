@@ -1,148 +1,148 @@
 # Keyboard Emulation
 
-Die Keyboard-Emulation ermöglicht es dem VTAP100, NFC-Daten als Tastatureingaben zu senden.
+Keyboard emulation allows the VTAP100 to send NFC data as keyboard input.
 
-## Funktionsweise
+## How It Works
 
-Wenn aktiviert, verhält sich der VTAP100 wie eine USB-Tastatur und "tippt" die gelesenen Daten automatisch ein. Dies ist nützlich für:
+When enabled, the VTAP100 acts as a USB keyboard and automatically "types" the read data. This is useful for:
 
-- POS-Systeme ohne NFC-API
-- Legacy-Anwendungen
-- Schnelle Integration ohne Programmierung
+- POS systems without NFC API
+- Legacy applications
+- Quick integration without programming
 
-## Parameter
+## Parameters
 
 ### KBLogMode
 
-Aktiviert oder deaktiviert die Keyboard-Emulation.
+Enables or disables keyboard emulation.
 
 ```ini
-KBLogMode=1    ; Aktiviert
-KBLogMode=0    ; Deaktiviert
+KBLogMode=1    ; Enabled
+KBLogMode=0    ; Disabled
 ```
 
 ### KBSource
 
-Definiert welche Daten ausgegeben werden sollen. Der Wert ist ein Hex-String.
+Defines which data should be output. The value is a hex string.
 
-**Datenquellen:**
-- `A` = Apple VAS Daten
-- `G` = Google Smart Tap Daten
-- `U` = UID der NFC-Karte/des Smartphones
+**Data sources:**
+- `A` = Apple VAS data
+- `G` = Google Smart Tap data
+- `U` = UID of the NFC card/smartphone
 
-**Datenmenge:**
-- `1` = Erstes Byte
-- `2` = Erste zwei Bytes
-- `3` = Erste drei Bytes
-- `4` = Erste vier Bytes
-- `5` = Alle Bytes (vollständige Daten)
+**Data amount:**
+- `1` = First byte
+- `2` = First two bytes
+- `3` = First three bytes
+- `4` = First four bytes
+- `5` = All bytes (complete data)
 
-**Beispiele:**
+**Examples:**
 ```ini
-KBSource=A1     ; Erstes Byte von Apple VAS
-KBSource=G5     ; Alle Bytes von Google Smart Tap
-KBSource=AG1    ; Erstes Byte von Apple und Google
-KBSource=U1     ; Erstes Byte der UID
-KBSource=AGU5   ; Alle Daten von allen Quellen
+KBSource=A1     ; First byte of Apple VAS
+KBSource=G5     ; All bytes of Google Smart Tap
+KBSource=AG1    ; First byte of Apple and Google
+KBSource=U1     ; First byte of UID
+KBSource=AGU5   ; All data from all sources
 ```
 
 ### KBEnable
 
-Aktiviert oder deaktiviert das USB-Keyboard-Device.
+Enables or disables the USB keyboard device.
 
 ```ini
-KBEnable=1    ; USB-Keyboard aktiviert
-KBEnable=0    ; USB-Keyboard deaktiviert
+KBEnable=1    ; USB keyboard enabled
+KBEnable=0    ; USB keyboard disabled
 ```
 
 ### KBPrefix
 
-Optional: Präfix vor den Daten ausgeben.
+Optional: Output prefix before the data.
 
 ```ini
-KBPrefix=$t          ; Timestamp als Präfix
-KBPrefix=%0A         ; Zeilenumbruch als Präfix
-KBPrefix=ID:         ; Fester Text als Präfix
+KBPrefix=$t          ; Timestamp as prefix
+KBPrefix=%0A         ; Newline as prefix
+KBPrefix=ID:         ; Fixed text as prefix
 ```
 
-**Variablen:**
-- `$t` - Aktueller Timestamp
-- `%XX` - ASCII-Hex-Zeichen (z.B. `%0A` = Newline)
+**Variables:**
+- `$t` - Current timestamp
+- `%XX` - ASCII hex character (e.g., `%0A` = newline)
 
 ### KBPostfix
 
-Suffix nach den Daten (Standard: `%0A` = Newline).
+Suffix after the data (default: `%0A` = newline).
 
 ```ini
-KBPostfix=%0A        ; Newline (Standard)
+KBPostfix=%0A        ; Newline (default)
 KBPostfix=%0D%0A     ; CRLF (Windows)
 KBPostfix=%09        ; Tab
 ```
 
 ### KBDelayMS
 
-Verzögerung zwischen Tastendrücken in Millisekunden (5-255).
+Delay between keystrokes in milliseconds (5-255).
 
 ```ini
-KBDelayMS=5          ; Schnell (Standard)
-KBDelayMS=50         ; Langsamer für ältere Systeme
-KBDelayMS=100        ; Sehr langsam
+KBDelayMS=5          ; Fast (default)
+KBDelayMS=50         ; Slower for older systems
+KBDelayMS=100        ; Very slow
 ```
 
 ### KBPassMode
 
-Aktiviert die Extraktion aus dem Pass-Payload.
+Enables extraction from the pass payload.
 
 ```ini
-KBPassMode=1         ; Extraktion aktiviert
-KBPassMode=0         ; Deaktiviert (Standard)
+KBPassMode=1         ; Extraction enabled
+KBPassMode=0         ; Disabled (default)
 ```
 
 ### KBPassSection
 
-Welcher Abschnitt aus dem Payload extrahiert wird (bei aktiviertem PassMode).
+Which section from the payload is extracted (when PassMode is enabled).
 
 ```ini
-KBPassSection=0      ; Erster Abschnitt (Standard)
-KBPassSection=1      ; Zweiter Abschnitt
-KBPassSection=2      ; Dritter Abschnitt
+KBPassSection=0      ; First section (default)
+KBPassSection=1      ; Second section
+KBPassSection=2      ; Third section
 ```
 
 ### KBPassSeparator
 
-Trennzeichen zwischen Abschnitten im Payload.
+Separator between sections in the payload.
 
 ```ini
-KBPassSeparator=|    ; Pipe (Standard)
-KBPassSeparator=;    ; Semikolon
-KBPassSeparator=,    ; Komma
+KBPassSeparator=|    ; Pipe (default)
+KBPassSeparator=;    ; Semicolon
+KBPassSeparator=,    ; Comma
 ```
 
 ### KBPassStart / KBPassLength
 
-Start-Position und Länge der Extraktion.
+Start position and length of extraction.
 
 ```ini
-KBPassStart=0        ; Ab Anfang (Standard)
-KBPassStart=10       ; Ab Position 10
+KBPassStart=0        ; From beginning (default)
+KBPassStart=10       ; From position 10
 
-KBPassLength=0       ; Alles (Standard)
-KBPassLength=16      ; Nur 16 Zeichen
+KBPassLength=0       ; All (default)
+KBPassLength=16      ; Only 16 characters
 ```
 
-## CLI-Verwendung
+## CLI Usage
 
 ```bash
-# Mit Keyboard-Emulation (Standard)
+# With keyboard emulation (default)
 vtap100 generate --apple-vas pass.com.example.test --keyboard
 
-# Ohne Keyboard-Emulation
+# Without keyboard emulation
 vtap100 generate --apple-vas pass.com.example.test --no-keyboard
 ```
 
 ## Python API
 
-### Einfache Konfiguration
+### Simple Configuration
 
 ```python
 from vtap100.models.keyboard import KeyboardConfig
@@ -157,7 +157,7 @@ print(kb.to_config_lines())
 # ['KBLogMode=1', 'KBSource=AG']
 ```
 
-### Erweiterte Konfiguration
+### Extended Configuration
 
 ```python
 from vtap100.models.keyboard import KeyboardConfig
@@ -165,13 +165,13 @@ from vtap100.models.keyboard import KeyboardConfig
 kb = KeyboardConfig(
     log_mode=True,
     source="AG",
-    prefix="$t:",           # Timestamp als Präfix
-    postfix="%0D%0A",       # CRLF statt LF
-    delay_ms=50,            # Langsamere Ausgabe
-    pass_mode=True,         # Payload-Extraktion
-    pass_section=1,         # Zweiter Abschnitt
-    pass_separator=";",     # Semikolon-Trennung
-    pass_length=32,         # Max 32 Zeichen
+    prefix="$t:",           # Timestamp as prefix
+    postfix="%0D%0A",       # CRLF instead of LF
+    delay_ms=50,            # Slower output
+    pass_mode=True,         # Payload extraction
+    pass_section=1,         # Second section
+    pass_separator=";",     # Semicolon separation
+    pass_length=32,         # Max 32 characters
 )
 
 print(kb.to_config_lines())
@@ -182,7 +182,7 @@ print(kb.to_config_lines())
 
 ### KBSource Builder
 
-Für komplexere Konfigurationen gibt es einen Builder:
+For more complex configurations there is a builder:
 
 ```python
 from vtap100.models.keyboard import KBSourceBuilder
@@ -196,7 +196,7 @@ source = (KBSourceBuilder()
 
 print(source)  # "AG5"
 
-# Mit UID
+# With UID
 source = (KBSourceBuilder()
     .uid()
     .first_byte()
@@ -205,21 +205,21 @@ source = (KBSourceBuilder()
 print(source)  # "U1"
 ```
 
-### Builder-Methoden
+### Builder Methods
 
-**Datenquellen:**
-- `.apple_vas()` - Apple VAS hinzufügen
-- `.google_smarttap()` - Google Smart Tap hinzufügen
-- `.uid()` - UID hinzufügen
+**Data sources:**
+- `.apple_vas()` - Add Apple VAS
+- `.google_smarttap()` - Add Google Smart Tap
+- `.uid()` - Add UID
 
-**Datenmenge:**
-- `.first_byte()` - Nur erstes Byte
-- `.first_two_bytes()` - Erste zwei Bytes
-- `.first_three_bytes()` - Erste drei Bytes
-- `.first_four_bytes()` - Erste vier Bytes
-- `.all_bytes()` - Alle Bytes
+**Data amount:**
+- `.first_byte()` - First byte only
+- `.first_two_bytes()` - First two bytes
+- `.first_three_bytes()` - First three bytes
+- `.first_four_bytes()` - First four bytes
+- `.all_bytes()` - All bytes
 
-## Vollständiges Beispiel
+## Complete Example
 
 ```ini
 !VTAPconfig
@@ -232,26 +232,26 @@ ST1CollectorID=96972794
 ST1KeySlot=2
 ST1KeyVersion=1
 
-; Keyboard Emulation - Alle Daten ausgeben
+; Keyboard Emulation - Output all data
 KBLogMode=1
 KBSource=AG5
 KBEnable=1
 ```
 
-## Ausgabeformat
+## Output Format
 
-Die Daten werden als Hex-String ausgegeben, gefolgt von Enter:
+Data is output as a hex string, followed by Enter:
 
 ```
 A1B2C3D4E5F6<Enter>
 ```
 
-## Anwendungsbeispiele
+## Use Case Examples
 
-### POS-System Integration
+### POS System Integration
 
 ```ini
-; Nur Apple VAS Daten, erstes Byte
+; Only Apple VAS data, first byte
 KBLogMode=1
 KBSource=A1
 ```
@@ -259,27 +259,27 @@ KBSource=A1
 ### Logging/Debugging
 
 ```ini
-; Alle verfügbaren Daten
+; All available data
 KBLogMode=1
 KBSource=AGU5
 ```
 
-### UID-basierte Zugangskontrolle
+### UID-based Access Control
 
 ```ini
-; Nur UID ausgeben
+; Output only UID
 KBLogMode=1
 KBSource=U5
 ```
 
-## Tipps
+## Tips
 
-1. **Testen Sie zuerst mit `U1`** - Die UID ist immer verfügbar
-2. **Für Produktiv-Systeme**: Verwenden Sie spezifische Quellen (A oder G), nicht alle
-3. **Bei Problemen**: Prüfen Sie mit `KBSource=AGU5` welche Daten überhaupt ankommen
+1. **Test first with `U1`** - The UID is always available
+2. **For production systems**: Use specific sources (A or G), not all
+3. **For troubleshooting**: Check with `KBSource=AGU5` which data is actually arriving
 
-## Siehe auch
+## See Also
 
 - [config.txt Format](overview.md)
-- [Apple VAS Konfiguration](apple_vas.md)
-- [Google Smart Tap Konfiguration](google_smarttap.md)
+- [Apple VAS Configuration](apple_vas.md)
+- [Google Smart Tap Configuration](google_smarttap.md)

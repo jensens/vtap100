@@ -6,8 +6,8 @@ Tests should fail until the implementation is complete.
 Phase 5 focuses on LED and Beep/Buzzer settings.
 """
 
-import pytest
 from pydantic import ValidationError
+import pytest
 
 
 class TestLEDMode:
@@ -276,14 +276,16 @@ class TestLEDConfig:
 
     def test_led_config_mode(self) -> None:
         """Can set LED mode."""
-        from vtap100.models.feedback import LEDConfig, LEDMode
+        from vtap100.models.feedback import LEDConfig
+        from vtap100.models.feedback import LEDMode
 
         config = LEDConfig(mode=LEDMode.ON)
         assert config.mode == LEDMode.ON
 
     def test_led_config_select(self) -> None:
         """Can set LED select."""
-        from vtap100.models.feedback import LEDConfig, LEDSelect
+        from vtap100.models.feedback import LEDConfig
+        from vtap100.models.feedback import LEDSelect
 
         config = LEDConfig(select=LEDSelect.EXTERNAL)
         assert config.select == LEDSelect.EXTERNAL
@@ -304,7 +306,8 @@ class TestLEDConfig:
 
     def test_led_config_pass_led(self) -> None:
         """Can set pass LED sequence."""
-        from vtap100.models.feedback import LEDConfig, LEDSequence
+        from vtap100.models.feedback import LEDConfig
+        from vtap100.models.feedback import LEDSequence
 
         seq = LEDSequence(color="00FF00", on_ms=100, off_ms=100, repeats=2)
         config = LEDConfig(pass_led=seq)
@@ -312,7 +315,8 @@ class TestLEDConfig:
 
     def test_led_config_tag_led(self) -> None:
         """Can set tag LED sequence."""
-        from vtap100.models.feedback import LEDConfig, LEDSequence
+        from vtap100.models.feedback import LEDConfig
+        from vtap100.models.feedback import LEDSequence
 
         seq = LEDSequence(color="0000FF")
         config = LEDConfig(tag_led=seq)
@@ -320,7 +324,8 @@ class TestLEDConfig:
 
     def test_led_config_pass_error_led(self) -> None:
         """Can set pass error LED sequence."""
-        from vtap100.models.feedback import LEDConfig, LEDSequence
+        from vtap100.models.feedback import LEDConfig
+        from vtap100.models.feedback import LEDSequence
 
         seq = LEDSequence(color="FF0000")
         config = LEDConfig(pass_error_led=seq)
@@ -328,7 +333,8 @@ class TestLEDConfig:
 
     def test_led_config_start_led(self) -> None:
         """Can set start LED sequence."""
-        from vtap100.models.feedback import LEDConfig, LEDSequence
+        from vtap100.models.feedback import LEDConfig
+        from vtap100.models.feedback import LEDSequence
 
         seq = LEDSequence(color="FFFF00")
         config = LEDConfig(start_led=seq)
@@ -350,7 +356,8 @@ class TestBeepConfig:
 
     def test_beep_config_pass_beep(self) -> None:
         """Can set pass beep sequence."""
-        from vtap100.models.feedback import BeepConfig, BeepSequence
+        from vtap100.models.feedback import BeepConfig
+        from vtap100.models.feedback import BeepSequence
 
         seq = BeepSequence(on_ms=100, off_ms=100, repeats=2)
         config = BeepConfig(pass_beep=seq)
@@ -358,7 +365,8 @@ class TestBeepConfig:
 
     def test_beep_config_tag_beep(self) -> None:
         """Can set tag beep sequence."""
-        from vtap100.models.feedback import BeepConfig, BeepSequence
+        from vtap100.models.feedback import BeepConfig
+        from vtap100.models.feedback import BeepSequence
 
         seq = BeepSequence(on_ms=50, off_ms=50, repeats=1)
         config = BeepConfig(tag_beep=seq)
@@ -366,7 +374,8 @@ class TestBeepConfig:
 
     def test_beep_config_pass_error_beep(self) -> None:
         """Can set pass error beep sequence."""
-        from vtap100.models.feedback import BeepConfig, BeepSequence
+        from vtap100.models.feedback import BeepConfig
+        from vtap100.models.feedback import BeepSequence
 
         seq = BeepSequence(on_ms=200, off_ms=100, repeats=3)
         config = BeepConfig(pass_error_beep=seq)
@@ -374,7 +383,8 @@ class TestBeepConfig:
 
     def test_beep_config_start_beep(self) -> None:
         """Can set start beep sequence."""
-        from vtap100.models.feedback import BeepConfig, BeepSequence
+        from vtap100.models.feedback import BeepConfig
+        from vtap100.models.feedback import BeepSequence
 
         seq = BeepSequence(on_ms=500, off_ms=0, repeats=1)
         config = BeepConfig(start_beep=seq)
@@ -394,7 +404,9 @@ class TestFeedbackConfig:
 
     def test_feedback_config_with_led(self) -> None:
         """Can set LED config."""
-        from vtap100.models.feedback import FeedbackConfig, LEDConfig, LEDMode
+        from vtap100.models.feedback import FeedbackConfig
+        from vtap100.models.feedback import LEDConfig
+        from vtap100.models.feedback import LEDMode
 
         led = LEDConfig(mode=LEDMode.ON)
         config = FeedbackConfig(led=led)
@@ -402,7 +414,9 @@ class TestFeedbackConfig:
 
     def test_feedback_config_with_beep(self) -> None:
         """Can set beep config."""
-        from vtap100.models.feedback import FeedbackConfig, BeepConfig, BeepSequence
+        from vtap100.models.feedback import BeepConfig
+        from vtap100.models.feedback import BeepSequence
+        from vtap100.models.feedback import FeedbackConfig
 
         beep = BeepConfig(pass_beep=BeepSequence())
         config = FeedbackConfig(beep=beep)
@@ -422,7 +436,8 @@ class TestLEDConfigOutput:
 
     def test_to_config_lines_mode(self) -> None:
         """Mode should generate LEDMode line."""
-        from vtap100.models.feedback import LEDConfig, LEDMode
+        from vtap100.models.feedback import LEDConfig
+        from vtap100.models.feedback import LEDMode
 
         config = LEDConfig(mode=LEDMode.ON)
         lines = config.to_config_lines()
@@ -430,7 +445,8 @@ class TestLEDConfigOutput:
 
     def test_to_config_lines_select(self) -> None:
         """Select should generate LEDSelect line."""
-        from vtap100.models.feedback import LEDConfig, LEDSelect
+        from vtap100.models.feedback import LEDConfig
+        from vtap100.models.feedback import LEDSelect
 
         config = LEDConfig(select=LEDSelect.EXTERNAL)
         lines = config.to_config_lines()
@@ -446,7 +462,8 @@ class TestLEDConfigOutput:
 
     def test_to_config_lines_pass_led(self) -> None:
         """Pass LED should generate PassLED line."""
-        from vtap100.models.feedback import LEDConfig, LEDSequence
+        from vtap100.models.feedback import LEDConfig
+        from vtap100.models.feedback import LEDSequence
 
         config = LEDConfig(pass_led=LEDSequence(color="00FF00", on_ms=100, off_ms=100, repeats=2))
         lines = config.to_config_lines()
@@ -454,7 +471,8 @@ class TestLEDConfigOutput:
 
     def test_to_config_lines_tag_led(self) -> None:
         """Tag LED should generate TagLED line."""
-        from vtap100.models.feedback import LEDConfig, LEDSequence
+        from vtap100.models.feedback import LEDConfig
+        from vtap100.models.feedback import LEDSequence
 
         config = LEDConfig(tag_led=LEDSequence(color="0000FF"))
         lines = config.to_config_lines()
@@ -462,7 +480,8 @@ class TestLEDConfigOutput:
 
     def test_to_config_lines_pass_error_led(self) -> None:
         """Pass error LED should generate PassErrorLED line."""
-        from vtap100.models.feedback import LEDConfig, LEDSequence
+        from vtap100.models.feedback import LEDConfig
+        from vtap100.models.feedback import LEDSequence
 
         config = LEDConfig(pass_error_led=LEDSequence(color="FF0000"))
         lines = config.to_config_lines()
@@ -470,7 +489,8 @@ class TestLEDConfigOutput:
 
     def test_to_config_lines_start_led(self) -> None:
         """Start LED should generate StartLED line."""
-        from vtap100.models.feedback import LEDConfig, LEDSequence
+        from vtap100.models.feedback import LEDConfig
+        from vtap100.models.feedback import LEDSequence
 
         config = LEDConfig(start_led=LEDSequence(color="FFFF00"))
         lines = config.to_config_lines()
@@ -478,7 +498,10 @@ class TestLEDConfigOutput:
 
     def test_to_config_lines_full_config(self) -> None:
         """Full LED config should generate all lines."""
-        from vtap100.models.feedback import LEDConfig, LEDMode, LEDSelect, LEDSequence
+        from vtap100.models.feedback import LEDConfig
+        from vtap100.models.feedback import LEDMode
+        from vtap100.models.feedback import LEDSelect
+        from vtap100.models.feedback import LEDSequence
 
         config = LEDConfig(
             mode=LEDMode.CUSTOM,
@@ -513,7 +536,8 @@ class TestBeepConfigOutput:
 
     def test_to_config_lines_pass_beep(self) -> None:
         """Pass beep should generate PassBeep line."""
-        from vtap100.models.feedback import BeepConfig, BeepSequence
+        from vtap100.models.feedback import BeepConfig
+        from vtap100.models.feedback import BeepSequence
 
         config = BeepConfig(pass_beep=BeepSequence(on_ms=100, off_ms=100, repeats=2))
         lines = config.to_config_lines()
@@ -521,15 +545,19 @@ class TestBeepConfigOutput:
 
     def test_to_config_lines_pass_beep_with_frequency(self) -> None:
         """Pass beep with frequency should include it."""
-        from vtap100.models.feedback import BeepConfig, BeepSequence
+        from vtap100.models.feedback import BeepConfig
+        from vtap100.models.feedback import BeepSequence
 
-        config = BeepConfig(pass_beep=BeepSequence(on_ms=100, off_ms=100, repeats=2, frequency=3136))
+        config = BeepConfig(
+            pass_beep=BeepSequence(on_ms=100, off_ms=100, repeats=2, frequency=3136)
+        )
         lines = config.to_config_lines()
         assert "PassBeep=100,100,2,3136" in lines
 
     def test_to_config_lines_tag_beep(self) -> None:
         """Tag beep should generate TagBeep line."""
-        from vtap100.models.feedback import BeepConfig, BeepSequence
+        from vtap100.models.feedback import BeepConfig
+        from vtap100.models.feedback import BeepSequence
 
         config = BeepConfig(tag_beep=BeepSequence())
         lines = config.to_config_lines()
@@ -537,7 +565,8 @@ class TestBeepConfigOutput:
 
     def test_to_config_lines_pass_error_beep(self) -> None:
         """Pass error beep should generate PassErrorBeep line."""
-        from vtap100.models.feedback import BeepConfig, BeepSequence
+        from vtap100.models.feedback import BeepConfig
+        from vtap100.models.feedback import BeepSequence
 
         config = BeepConfig(pass_error_beep=BeepSequence(on_ms=200, off_ms=100, repeats=3))
         lines = config.to_config_lines()
@@ -545,7 +574,8 @@ class TestBeepConfigOutput:
 
     def test_to_config_lines_start_beep(self) -> None:
         """Start beep should generate StartBeep line."""
-        from vtap100.models.feedback import BeepConfig, BeepSequence
+        from vtap100.models.feedback import BeepConfig
+        from vtap100.models.feedback import BeepSequence
 
         config = BeepConfig(start_beep=BeepSequence(on_ms=500, off_ms=0, repeats=1))
         lines = config.to_config_lines()
@@ -553,7 +583,8 @@ class TestBeepConfigOutput:
 
     def test_to_config_lines_full_config(self) -> None:
         """Full beep config should generate all lines."""
-        from vtap100.models.feedback import BeepConfig, BeepSequence
+        from vtap100.models.feedback import BeepConfig
+        from vtap100.models.feedback import BeepSequence
 
         config = BeepConfig(
             pass_beep=BeepSequence(on_ms=100, off_ms=100, repeats=2),
@@ -582,7 +613,9 @@ class TestFeedbackConfigOutput:
 
     def test_to_config_lines_led_only(self) -> None:
         """LED only config should generate LED lines."""
-        from vtap100.models.feedback import FeedbackConfig, LEDConfig, LEDMode
+        from vtap100.models.feedback import FeedbackConfig
+        from vtap100.models.feedback import LEDConfig
+        from vtap100.models.feedback import LEDMode
 
         config = FeedbackConfig(led=LEDConfig(mode=LEDMode.ON))
         lines = config.to_config_lines()
@@ -590,7 +623,9 @@ class TestFeedbackConfigOutput:
 
     def test_to_config_lines_beep_only(self) -> None:
         """Beep only config should generate beep lines."""
-        from vtap100.models.feedback import FeedbackConfig, BeepConfig, BeepSequence
+        from vtap100.models.feedback import BeepConfig
+        from vtap100.models.feedback import BeepSequence
+        from vtap100.models.feedback import FeedbackConfig
 
         config = FeedbackConfig(beep=BeepConfig(pass_beep=BeepSequence()))
         lines = config.to_config_lines()
@@ -598,14 +633,12 @@ class TestFeedbackConfigOutput:
 
     def test_to_config_lines_combined(self) -> None:
         """Combined config should generate all lines."""
-        from vtap100.models.feedback import (
-            FeedbackConfig,
-            LEDConfig,
-            LEDMode,
-            LEDSequence,
-            BeepConfig,
-            BeepSequence,
-        )
+        from vtap100.models.feedback import BeepConfig
+        from vtap100.models.feedback import BeepSequence
+        from vtap100.models.feedback import FeedbackConfig
+        from vtap100.models.feedback import LEDConfig
+        from vtap100.models.feedback import LEDMode
+        from vtap100.models.feedback import LEDSequence
 
         config = FeedbackConfig(
             led=LEDConfig(

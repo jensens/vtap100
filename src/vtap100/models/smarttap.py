@@ -18,7 +18,9 @@ References:
     - https://www.passmeister.com/en/b/nfc_setup_dot_origin_vtap100_google_wallet
 """
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel
+from pydantic import Field
+from pydantic import field_validator
 
 
 class GoogleSmartTapConfig(BaseModel):
