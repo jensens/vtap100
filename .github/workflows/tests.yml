@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.11", "3.12", "3.13"]
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
 
     steps:
       - uses: actions/checkout@v4
@@ -33,13 +33,26 @@ jobs:
       - name: Install dependencies
         run: uv sync --all-extras --python ${{ matrix.python-version }}
 
-      - name: Run tests
-        run: uv run --python ${{ matrix.python-version }} pytest --no-cov -q
+      - name: Run tests with coverage
+        run: uv run --python ${{ matrix.python-version }} pytest --cov --cov-report=
+
+      - name: Rename coverage data
+        run: mv .coverage .coverage.${{ matrix.python-version }}
+
+      - name: Upload coverage data
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-data-${{ matrix.python-version }}
+          path: .coverage.${{ matrix.python-version }}
+          include-hidden-files: true
+          if-no-files-found: ignore
 
   coverage:
-    name: Coverage
-    runs-on: ubuntu-latest
+    name: Combine & check coverage
+    if: always()
     needs: test
+    runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -48,15 +61,21 @@ jobs:
           enable-cache: true
           cache-dependency-glob: "pyproject.toml"
 
-      - name: Install dependencies
-        run: uv sync --all-extras
-
-      - name: Run tests with coverage
-        run: uv run pytest
-
-      - name: Upload coverage reports
-        uses: codecov/codecov-action@v4
+      - uses: actions/download-artifact@v4
         with:
-          fail_ci_if_error: false
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          pattern: coverage-data-*
+          merge-multiple: true
+
+      - name: Combine coverage & check threshold
+        run: |
+          uv run coverage combine
+          uv run coverage html --skip-covered --skip-empty
+          uv run coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
+          uv run coverage report
+
+      - name: Upload HTML report if check failed
+        uses: actions/upload-artifact@v4
+        with:
+          name: html-report
+          path: htmlcov
+        if: ${{ failure() }}
