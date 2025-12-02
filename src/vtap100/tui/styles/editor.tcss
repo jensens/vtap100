@@ -1,0 +1,84 @@
+/* VTAP100 Editor Styles */
+
+/* Main Layout */
+#editor-main {
+    height: 1fr;
+}
+
+#top-row {
+    height: 1fr;
+}
+
+/* Sidebar */
+#sidebar {
+    width: 35;
+    border-right: solid $primary;
+    padding: 1;
+}
+
+#sidebar .section-title {
+    text-style: bold;
+    color: $text;
+    margin-bottom: 1;
+}
+
+#sidebar .nav-item {
+    padding-left: 1;
+    margin-bottom: 0;
+}
+
+#sidebar .nav-item:hover {
+    background: $surface;
+}
+
+/* Main Content */
+#main-content {
+    width: 1fr;
+    padding: 1 2;
+}
+
+#main-content .hint {
+    color: $text-muted;
+    text-style: italic;
+}
+
+/* Help Panel */
+#help-panel {
+    width: 30;
+    border-left: solid $primary;
+    padding: 1;
+    background: $surface;
+}
+
+#help-panel .section-title {
+    text-style: bold;
+    color: $primary;
+    margin-bottom: 1;
+}
+
+#help-panel .help-text {
+    color: $text-muted;
+}
+
+/* Preview Panel */
+#preview-panel {
+    height: 8;
+    border-top: solid $primary;
+    padding: 1;
+    background: $surface-darken-1;
+}
+
+#preview-panel.preview-maximized {
+    height: 1fr;
+}
+
+#preview-panel .preview-content {
+    color: $success;
+}
+
+/* Success Message */
+.success-message {
+    color: $success;
+    text-style: bold;
+    margin-top: 1;
+}

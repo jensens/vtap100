@@ -1,0 +1,65 @@
+section:
+  title: LED / Beep Feedback
+  description: |
+    Konfiguration für visuelle und akustische Rückmeldungen.
+    LED-Farben und Pieptöne für verschiedene Ereignisse.
+
+fields:
+  led_mode:
+    title: LED Modus (LEDMode)
+    description: |
+      Betriebsmodus der LEDs.
+    format: |
+      0 = Aus
+      1 = An (dauerhaft)
+      2 = Status (zeigt Gerätestatus)
+      3 = Custom (benutzerdefinierte Sequenzen)
+    tip: Status-Modus zeigt Verbindung und Aktivität an.
+
+  led_select:
+    title: LED Typ (LEDSelect)
+    description: |
+      Welche LED verwendet werden soll.
+    format: |
+      0 = Externe RGB LED (Common Cathode)
+      1 = Onboard LED (Compact Gehäuse)
+      2 = Onboard LED (Square Gehäuse)
+      3 = Serielle LEDs
+    tip: Wähle passend zu deinem Hardware-Setup.
+
+  default_rgb:
+    title: Standard RGB Farbe (LEDDefaultRGB)
+    description: |
+      Standard-Farbe im Ruhezustand.
+      6 Hex-Zeichen für RGB-Wert.
+    format: "RRGGBB (z.B. 00FF00 = Grün)"
+    example: "0000FF (Blau)"
+    tip: Leer lassen für keine Standard-Farbe.
+
+  pass_led:
+    title: Pass LED Sequenz (PassLED)
+    description: |
+      LED-Sequenz bei erfolgreichem Pass-Lesen.
+      Format: Farbe,An-Zeit,Aus-Zeit,Wiederholungen
+    example: "00FF00,100,100,2 (2x grünes Blinken)"
+
+  tag_led:
+    title: Tag LED Sequenz (TagLED)
+    description: |
+      LED-Sequenz bei erfolgreichem Tag-Lesen.
+      Format: Farbe,An-Zeit,Aus-Zeit,Wiederholungen
+    example: "0000FF,100,100,1 (1x blaues Blinken)"
+
+  pass_beep:
+    title: Pass Beep Sequenz (PassBeep)
+    description: |
+      Piepton bei erfolgreichem Pass-Lesen.
+      Format: An-Zeit,Aus-Zeit,Wiederholungen[,Frequenz]
+    example: "100,50,2 (2 kurze Pieptöne)"
+
+  tag_beep:
+    title: Tag Beep Sequenz (TagBeep)
+    description: |
+      Piepton bei erfolgreichem Tag-Lesen.
+      Format: An-Zeit,Aus-Zeit,Wiederholungen[,Frequenz]
+    example: "100,0,1 (1 kurzer Piepton)"

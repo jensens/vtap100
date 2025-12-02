@@ -1,0 +1,70 @@
+section:
+  title: Keyboard Emulation
+  description: |
+    Keyboard-Emulation sendet Pass-Daten als Tastatureingaben
+    an den verbundenen Computer. Erfolgreiche Pass-Lesungen
+    erscheinen in jedem geöffneten Texteditor.
+
+fields:
+  log_mode:
+    title: Keyboard aktivieren (KBLogMode)
+    description: |
+      Aktiviert die Keyboard-Emulation.
+      Bei Aktivierung werden Pass-Daten als Tastatureingaben gesendet.
+    tip: |
+      Nützlich für einfache Integrationen ohne Software-Entwicklung.
+      Funktioniert mit jedem Programm, das Tastatureingaben akzeptiert.
+
+  source:
+    title: Datenquellen (KBSource)
+    description: |
+      Legt fest, welche Datentypen Keyboard-Ausgabe auslösen.
+      Hex-String aus Zeichen für verschiedene Pass-Typen.
+    format: |
+      A = Apple VAS Pass
+      G = Google Smart Tap Pass
+      0 = MIFARE Card/Tag
+      2 = NFC Type 2
+      4 = NFC Type 4
+      6 = NFC Type 5
+      E = Card Emulation
+      X = Apple Wallet iPhone
+      W = Apple Wallet Watch
+    example: "AG (VAS und SmartTap)"
+    tip: |
+      Kombiniere Buchstaben für mehrere Quellen.
+      Standard ist "A5" (VAS + Type 2 + Type 4 + Type 5).
+
+  prefix:
+    title: Präfix (KBPrefix)
+    description: |
+      Optionaler Text vor den Pass-Daten.
+      Kann ASCII-Hex (%0A) oder Variablen ($t) enthalten.
+    format: |
+      %XX = ASCII-Hex (z.B. %0A für Zeilenumbruch)
+      $t = Zeitstempel
+      $d = Datum
+      $n = Sequenznummer
+    example: "$t|"
+    tip: Leer lassen wenn kein Präfix benötigt wird.
+
+  postfix:
+    title: Suffix (KBPostfix)
+    description: |
+      Text nach den Pass-Daten.
+      Standard ist Zeilenumbruch (%0A).
+    format: "%0A = Zeilenumbruch (Enter)"
+    example: "%0A"
+    tip: |
+      Der Zeilenumbruch simuliert das Drücken der Enter-Taste
+      nach jeder Pass-Lesung.
+
+  delay_ms:
+    title: Verzögerung (KBDelayMS)
+    description: |
+      Verzögerung zwischen einzelnen Tastenanschlägen in Millisekunden.
+    format: "5-255 ms"
+    example: "5"
+    tip: |
+      Erhöhe den Wert wenn Zeichen verloren gehen.
+      Standard 5ms funktioniert für die meisten Systeme.

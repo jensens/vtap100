@@ -1,0 +1,483 @@
+# German translations for VTAP100 TUI Editor
+# ==============================================================================
+
+# Common UI elements
+common:
+  buttons:
+    save: "Speichern"
+    add: "Hinzufügen"
+    remove: "Entfernen"
+    duplicate: "Duplizieren"
+    cancel: "Abbrechen"
+
+  messages:
+    config_saved: "Konfiguration gespeichert"
+    config_added: "{name} Konfiguration angelegt"
+    config_duplicated: "{name} Konfiguration dupliziert"
+    error: "Fehler: {message}"
+    select_section: "Wähle einen Bereich aus der linken Seite"
+
+  labels:
+    auto: "Auto"
+    slot: "Slot {num}"
+    not_set: "Nicht gesetzt"
+    none: "Keine"
+    disabled: "Deaktiviert"
+    new_entry: "+ Neuer Eintrag"
+    configuration: "Konfiguration"
+
+# Sidebar sections
+sections:
+  vas:
+    label: "Apple VAS"
+    new_title: "Neue Apple VAS Konfiguration"
+    edit_title: "Apple VAS #{num}"
+
+  smarttap:
+    label: "Google Smart Tap"
+    new_title: "Neue Smart Tap Konfiguration"
+    edit_title: "Smart Tap #{num}"
+
+  desfire:
+    label: "DESFire"
+    new_title: "Neue DESFire App Konfiguration"
+    edit_title: "DESFire App #{num}"
+
+  keyboard:
+    label: "Keyboard"
+    title: "Keyboard Emulation"
+
+  nfc:
+    label: "NFC Tags"
+    title: "NFC Tag Konfiguration"
+
+  feedback:
+    label: "LED/Beep"
+    title: "LED / Beep Feedback"
+
+# Form fields
+forms:
+  # VAS form
+  vas:
+    merchant_id: "Merchant ID (Pass Type ID)"
+    merchant_id_placeholder: "pass.com.example.myapp"
+    key_slot: "Key Slot"
+    merchant_url: "Merchant URL (optional)"
+    merchant_url_placeholder: "https://..."
+    slot_info_used: "Belegt"
+    slot_info_free: "Frei"
+    slot_info_all_free: "Alle Slots frei"
+
+  # Smart Tap form
+  smarttap:
+    collector_id: "Collector ID"
+    collector_id_placeholder: "96972794"
+    key_slot: "Key Slot"
+    key_version: "Key Version"
+
+  # DESFire form
+  desfire:
+    app_id: "App ID (Hex)"
+    app_id_placeholder: "AABBCC"
+    file_id: "File ID"
+    file_id_placeholder: "1-255"
+    key_num: "Key Number"
+    key_num_placeholder: "0-14"
+    key_slot: "Key Slot"
+    crypto: "Verschlüsselung"
+    crypto_none: "Keine"
+    crypto_3des: "3DES"
+    crypto_aes: "AES"
+    format: "Datenformat"
+    format_raw: "Raw"
+    format_keyid_v1: "KEY-ID v1"
+    format_keyid_v2: "KEY-ID v2"
+    read_length: "Leselänge"
+    read_length_placeholder: "1-255 (Standard: 3)"
+    read_offset: "Lese-Offset"
+    read_offset_placeholder: "0-255 (Standard: 0)"
+    diversification: "Diversifikation"
+
+  # Keyboard form
+  keyboard:
+    enable: "Keyboard aktivieren (KBLogMode)"
+    source: "Datenquellen (KBSource)"
+    source_placeholder: "A5 (A=VAS, G=SmartTap, 0=MIFARE, etc.)"
+    prefix: "Präfix (KBPrefix)"
+    prefix_placeholder: "z.B. $t für Zeitstempel"
+    postfix: "Suffix (KBPostfix)"
+    postfix_placeholder: "%0A (Zeilenumbruch)"
+    delay_ms: "Verzögerung in ms (KBDelayMS)"
+    delay_ms_placeholder: "5-255"
+
+  # NFC form
+  nfc:
+    type2: "NFC Type 2 (NTAG, Ultralight)"
+    type4: "NFC Type 4 (DESFire, ISO 14443-4)"
+    type5: "NFC Type 5 (ICODE, ISO 15693)"
+    report_read_error: "Fehler melden (NFCReportReadError)"
+    ignore_random_uid: "Zufällige UIDs ignorieren"
+    byte_order_reversed: "Byte-Reihenfolge umkehren"
+    mode_disabled: "Deaktiviert"
+    mode_uid: "UID"
+    mode_ndef: "NDEF"
+    mode_block: "Block"
+    mode_desfire: "DESFire"
+
+  # Feedback form
+  feedback:
+    led_section: "LED Einstellungen"
+    led_mode: "LED Modus"
+    led_mode_off: "Aus"
+    led_mode_on: "An"
+    led_mode_status: "Status"
+    led_mode_custom: "Custom"
+    led_select: "LED Typ"
+    led_external: "Extern (RGB)"
+    led_onboard_compact: "Onboard (Compact)"
+    led_onboard_square: "Onboard (Square)"
+    led_serial: "Seriell"
+    default_rgb: "Standard RGB Farbe (6 Hex-Zeichen)"
+    default_rgb_placeholder: "00FF00 (Grün)"
+
+# Help panel UI
+help:
+  select_field: "Wähle ein Feld für kontextbezogene Hilfe"
+  no_help: "Keine Hilfe für '{context}' verfügbar"
+  format: "Format"
+  example: "Beispiel"
+
+# Help content (loaded from help/de/*.yaml)
+_help_content:
+  vas:
+    section:
+      title: "Apple VAS (Value Added Services)"
+      description: |
+        Konfiguration für Apple Wallet Pässe.
+        Bis zu 6 verschiedene Pass-Konfigurationen möglich.
+
+    fields:
+      merchant_id:
+        title: "Merchant ID (Pass Type ID)"
+        description: |
+          Die eindeutige ID deines Apple Wallet Passes.
+          Wird im Apple Developer Portal erstellt.
+        format: "Muss mit 'pass.' beginnen"
+        example: "pass.com.example.loyalty"
+        tip: |
+          Findest du im Apple Developer Portal unter:
+          Certificates, Identifiers & Profiles > Pass Type IDs
+
+      key_slot:
+        title: "Key Slot"
+        description: |
+          Slot (0-6) in dem der private Schlüssel gespeichert ist.
+        tip: |
+          Der Schlüssel muss als private1.pem (für Slot 1) etc.
+          auf den Reader kopiert werden.
+          Slot 0 bedeutet automatische Erkennung.
+
+      merchant_url:
+        title: "Merchant URL"
+        description: |
+          Optionale URL für Pass-Präsentation.
+          Wird bei manchen Pass-Typen verwendet.
+        example: "https://example.com/pass"
+
+  smarttap:
+    section:
+      title: "Google Smart Tap"
+      description: |
+        Konfiguration für Google Wallet Pässe.
+        Ermöglicht das Lesen von Smart Tap fähigen Pässen.
+
+    fields:
+      collector_id:
+        title: "Collector ID"
+        description: |
+          Die eindeutige Collector ID für Smart Tap.
+          Wird von Google Wallet bereitgestellt.
+        format: "8 Zeichen"
+        example: "96972794"
+
+      key_slot:
+        title: "Key Slot"
+        description: |
+          Slot (0-6) in dem der Authentifizierungsschlüssel gespeichert ist.
+        tip: |
+          Slot 0 für automatische Erkennung.
+
+      key_version:
+        title: "Key Version"
+        description: |
+          Version des Schlüssels für Smart Tap Authentifizierung.
+
+  keyboard:
+    section:
+      title: "Keyboard Emulation"
+      description: |
+        Keyboard-Emulation sendet Pass-Daten als Tastatureingaben
+        an den verbundenen Computer. Erfolgreiche Pass-Lesungen
+        erscheinen in jedem geöffneten Texteditor.
+
+    fields:
+      log_mode:
+        title: "Keyboard aktivieren (KBLogMode)"
+        description: |
+          Aktiviert die Keyboard-Emulation.
+          Bei Aktivierung werden Pass-Daten als Tastatureingaben gesendet.
+        tip: |
+          Nützlich für einfache Integrationen ohne Software-Entwicklung.
+          Funktioniert mit jedem Programm, das Tastatureingaben akzeptiert.
+
+      source:
+        title: "Datenquellen (KBSource)"
+        description: |
+          Legt fest, welche Datentypen Keyboard-Ausgabe auslösen.
+          Hex-String aus Zeichen für verschiedene Pass-Typen.
+        format: |
+          A = Apple VAS Pass
+          G = Google Smart Tap Pass
+          0 = MIFARE Card/Tag
+          2 = NFC Type 2
+          4 = NFC Type 4
+          6 = NFC Type 5
+          E = Card Emulation
+          X = Apple Wallet iPhone
+          W = Apple Wallet Watch
+        example: "AG (VAS und SmartTap)"
+        tip: |
+          Kombiniere Buchstaben für mehrere Quellen.
+          Standard ist "A5" (VAS + Type 2 + Type 4 + Type 5).
+
+      prefix:
+        title: "Präfix (KBPrefix)"
+        description: |
+          Optionaler Text vor den Pass-Daten.
+          Kann ASCII-Hex (%0A) oder Variablen ($t) enthalten.
+        format: |
+          %XX = ASCII-Hex (z.B. %0A für Zeilenumbruch)
+          $t = Zeitstempel
+          $d = Datum
+          $n = Sequenznummer
+        example: "$t|"
+        tip: "Leer lassen wenn kein Präfix benötigt wird."
+
+      postfix:
+        title: "Suffix (KBPostfix)"
+        description: |
+          Text nach den Pass-Daten.
+          Standard ist Zeilenumbruch (%0A).
+        format: "%0A = Zeilenumbruch (Enter)"
+        example: "%0A"
+        tip: |
+          Der Zeilenumbruch simuliert das Drücken der Enter-Taste
+          nach jeder Pass-Lesung.
+
+      delay_ms:
+        title: "Verzögerung (KBDelayMS)"
+        description: |
+          Verzögerung zwischen einzelnen Tastenanschlägen in Millisekunden.
+        format: "5-255 ms"
+        example: "5"
+        tip: |
+          Erhöhe den Wert wenn Zeichen verloren gehen.
+          Standard 5ms funktioniert für die meisten Systeme.
+
+  nfc:
+    section:
+      title: "NFC Tag Konfiguration"
+      description: |
+        Einstellungen für verschiedene NFC-Tag-Typen.
+        Jeder Tag-Typ kann individuell konfiguriert werden.
+
+    fields:
+      type2:
+        title: "NFC Type 2"
+        description: |
+          Einstellungen für NFC Type 2 Tags.
+          Beinhaltet NTAG und Ultralight Tags.
+
+      type4:
+        title: "NFC Type 4"
+        description: |
+          Einstellungen für NFC Type 4 Tags.
+          Beinhaltet DESFire und ISO 14443-4 kompatible Karten.
+
+      type5:
+        title: "NFC Type 5"
+        description: |
+          Einstellungen für NFC Type 5 Tags.
+          Beinhaltet ICODE und ISO 15693 kompatible Tags.
+
+      report_read_error:
+        title: "Fehler melden"
+        description: |
+          Wenn aktiviert, werden Lesefehler als Payload gemeldet.
+
+      ignore_random_uid:
+        title: "Zufällige UIDs ignorieren"
+        description: |
+          Filtert Tags mit zufälligen UIDs aus.
+          Nützlich bei bestimmten Kartentypen.
+
+      byte_order_reversed:
+        title: "Byte-Reihenfolge umkehren"
+        description: |
+          Kehrt die Byte-Reihenfolge der UID um.
+          Für Kompatibilität mit älteren Systemen.
+
+  desfire:
+    section:
+      title: "MIFARE DESFire"
+      description: |
+        DESFire-Karten sind kontaktlose Smartcards mit verschlüsselter
+        Kommunikation. Bis zu 9 verschiedene Applikationen können
+        gleichzeitig konfiguriert werden.
+
+    fields:
+      app_id:
+        title: "Application ID (DESFireAppID)"
+        description: |
+          Die DESFire Application ID identifiziert die Anwendung
+          auf der Karte. Dies ist ein 3-Byte Hex-Wert.
+        format: "6 Hex-Zeichen (3 Bytes)"
+        example: "AABBCC, F00001"
+        tip: |
+          Die Application ID wird vom Kartenaussteller festgelegt.
+          Prüfe die Kartendokumentation für die korrekte ID.
+
+      file_id:
+        title: "File ID (DESFireFileID)"
+        description: |
+          Die ID der Datei innerhalb der Applikation, die gelesen
+          werden soll.
+        format: "1-255"
+        example: "1"
+        tip: "Leer lassen für Standarddatei."
+
+      key_num:
+        title: "Key Number (DESFireKeyNum)"
+        description: |
+          Die Schlüsselnummer für die Authentifizierung.
+          DESFire-Apps können bis zu 14 Schlüssel haben.
+        format: "0-14"
+        example: "0"
+        tip: |
+          Schlüssel 0 ist oft der Master-Key.
+          Leer lassen wenn keine Authentifizierung erforderlich.
+
+      key_slot:
+        title: "Key Slot (DESFireKeySlot)"
+        description: |
+          Der Slot im VTAP100, in dem der Authentifizierungsschlüssel
+          gespeichert ist.
+        format: "1-9"
+        tip: |
+          Schlüssel müssen vorher über die VTAP100-Konfiguration
+          auf das Gerät geladen werden.
+
+      crypto:
+        title: "Verschlüsselung (DESFireCrypto)"
+        description: |
+          Der kryptografische Modus für die Kommunikation mit der Karte.
+        format: |
+          Keine = Keine Verschlüsselung
+          3DES = Triple-DES (112-bit)
+          AES = AES-128
+        tip: |
+          AES ist sicherer und schneller als 3DES.
+          Der Modus muss zur Kartenonfiguration passen.
+
+      format:
+        title: "Datenformat (DESFireFormat)"
+        description: |
+          Das Ausgabeformat für die gelesenen Daten.
+        format: |
+          Raw = Rohdaten (Hex)
+          KEY-ID v1 = KEY-ID Format Version 1
+          KEY-ID v2 = KEY-ID Format Version 2
+        tip: "Wähle das Format passend zur empfangenden Software."
+
+      read_length:
+        title: "Leselänge (DESFireReadLength)"
+        description: |
+          Anzahl der zu lesenden Bytes aus der Datei.
+        format: "1-255 Bytes"
+        example: "3 (Standard)"
+        tip: |
+          Nur die benötigte Datenmenge lesen um die
+          Kommunikationszeit zu minimieren.
+
+      read_offset:
+        title: "Lese-Offset (DESFireReadOffset)"
+        description: |
+          Startposition innerhalb der Datei von der gelesen wird.
+        format: "0-255 Bytes"
+        example: "0 (Standard = Dateianfang)"
+        tip: "Zum Überspringen von Header-Daten."
+
+      diversification:
+        title: "Schlüssel-Diversifikation (DESFireDiversification)"
+        description: |
+          Aktiviert die Schlüssel-Diversifikation basierend auf
+          der Karten-UID.
+        tip: |
+          Bei Diversifikation wird der Master-Schlüssel mit der
+          Karten-UID kombiniert um einen kartenspezifischen
+          Schlüssel zu erzeugen.
+
+  feedback:
+    section:
+      title: "LED / Beep Feedback"
+      description: |
+        Konfiguration für visuelle (LED) und akustische (Beep)
+        Rückmeldungen des Readers.
+
+    fields:
+      led_mode:
+        title: "LED Modus"
+        description: |
+          Bestimmt das Verhalten der Status-LED.
+        format: |
+          Aus = LED deaktiviert
+          An = LED dauerhaft an
+          Status = Zeigt Lesestatus an
+          Custom = Benutzerdefinierte Steuerung
+
+      led_select:
+        title: "LED Typ"
+        description: |
+          Wählt die zu verwendende LED-Hardware.
+        format: |
+          Extern = Externe RGB-LED
+          Onboard Compact = Eingebaute LED (Compact-Modell)
+          Onboard Square = Eingebaute LED (Square-Modell)
+          Seriell = Seriell angesteuerte LED
+
+      default_rgb:
+        title: "Standard RGB Farbe"
+        description: |
+          Die Standard-Farbe der LED im Ruhezustand.
+          Angabe als 6-stelliger Hex-Wert (RRGGBB).
+        format: "6 Hex-Zeichen"
+        example: "00FF00 (Grün)"
+
+# Export dialog
+export:
+  title: "Export"
+  format_label: "Exportformat:"
+  format_full: "Vollständige config.txt"
+  format_template: "Template (ohne VAS/SmartTap)"
+  template_hint: |
+    Template-Modus exportiert einen Jinja2-Platzhalter
+    für Wallet-Passes. Keyboard, NFC, DESFire und
+    LED/Beep werden vollständig exportiert.
+  target_label: "Ziel:"
+  target_file: "In Datei speichern"
+  target_clipboard: "In Zwischenablage kopieren"
+  button: "Exportieren"
+  copied_to_clipboard: "In Zwischenablage kopiert"
+  saved_to_file: "Gespeichert: {path}"
+  no_output_path: "Kein Ausgabepfad angegeben"
+  clipboard_error: "Clipboard-Fehler: {message}"

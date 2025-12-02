@@ -22,6 +22,30 @@ from typing import TextIO
 
 from vtap100.models.config import VTAPConfig
 
+# Jinja2 template for dynamic wallet passes (VAS/SmartTap)
+# fmt: off
+JINJA_PASSES_TEMPLATE = """\
+; === MOBILE WALLET PASSES ===
+; (Rendered by Jinja2 - passes variable required)
+{% for passinfo in passes %}
+{% if passinfo.apple %}
+VAS{{ passinfo.slot }}MerchantID={{ passinfo.apple.merchant_id }}
+VAS{{ passinfo.slot }}KeySlot={{ passinfo.slot }}
+{% if passinfo.apple.merchant_url -%}
+VAS{{ passinfo.slot }}MerchantURL={{ passinfo.apple.merchant_url }}
+{% endif -%}
+{% endif %}
+{% if passinfo.google %}
+ST{{ passinfo.slot }}CollectorID={{ passinfo.google.collector_id }}
+ST{{ passinfo.slot }}KeySlot={{ passinfo.slot }}
+{% if passinfo.google.key_version is defined -%}
+ST{{ passinfo.slot }}KeyVersion={{ passinfo.google.key_version }}
+{% endif -%}
+{% endif %}
+{% endfor %}
+"""
+# fmt: on
+
 
 class ConfigGenerator:
     """Generator for VTAP100 config.txt files.
@@ -128,3 +152,69 @@ class ConfigGenerator:
         """
         content = self.generate(comment=comment)
         stream.write(content)
+
+    def generate_template(self, comment: str | None = None) -> str:
+        """Generate a Jinja2 template config without VAS/SmartTap.
+
+        This method generates a config.txt template where the VAS and SmartTap
+        sections are replaced with a Jinja2 loop placeholder. The static
+        configuration (keyboard, NFC, DESFire, feedback) is included as-is.
+
+        Use this when you want to dynamically generate the passes section
+        from an external data source (e.g., database, API).
+
+        Args:
+            comment: Optional comment to include after the header.
+
+        Returns:
+            Config content with Jinja2 placeholder for wallet passes.
+
+        Example:
+            >>> generator = ConfigGenerator(config)
+            >>> template = generator.generate_template()
+            >>> # Use Jinja2 to render with your passes data:
+            >>> # from jinja2 import Template
+            >>> # result = Template(template).render(passes=my_passes)
+        """
+        lines: list[str] = []
+
+        # Header
+        lines.append(self.HEADER)
+
+        # Optional comment
+        if comment:
+            lines.append(f"; {comment}")
+
+        # Jinja2 placeholder for dynamic passes
+        lines.append(JINJA_PASSES_TEMPLATE)
+
+        # Static configuration section
+        lines.append("; === STATIC CONFIGURATION ===")
+
+        # Keyboard emulation
+        if self.config.keyboard:
+            lines.append("; Keyboard Emulation")
+            lines.extend(self.config.keyboard.to_config_lines())
+
+        # NFC tag settings
+        if self.config.nfc:
+            nfc_lines = self.config.nfc.to_config_lines()
+            if nfc_lines:
+                lines.append("; NFC Tag Settings")
+                lines.extend(nfc_lines)
+
+        # MIFARE DESFire settings
+        if self.config.desfire:
+            desfire_lines = self.config.desfire.to_config_lines()
+            if desfire_lines:
+                lines.append("; MIFARE DESFire Settings")
+                lines.extend(desfire_lines)
+
+        # LED/Beep feedback settings
+        if self.config.feedback:
+            feedback_lines = self.config.feedback.to_config_lines()
+            if feedback_lines:
+                lines.append("; LED/Beep Settings")
+                lines.extend(feedback_lines)
+
+        return "\n".join(lines)

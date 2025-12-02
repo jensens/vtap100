@@ -1,0 +1,479 @@
+# English translations for VTAP100 TUI Editor
+# ==============================================================================
+
+# Common UI elements
+common:
+  buttons:
+    save: "Save"
+    add: "Add"
+    remove: "Remove"
+    duplicate: "Duplicate"
+    cancel: "Cancel"
+
+  messages:
+    config_saved: "Configuration saved"
+    config_added: "{name} configuration created"
+    config_duplicated: "{name} configuration duplicated"
+    error: "Error: {message}"
+    select_section: "Select a section from the left sidebar"
+
+  labels:
+    auto: "Auto"
+    slot: "Slot {num}"
+    not_set: "Not set"
+    none: "None"
+    disabled: "Disabled"
+    new_entry: "+ New Entry"
+    configuration: "Configuration"
+
+# Sidebar sections
+sections:
+  vas:
+    label: "Apple VAS"
+    new_title: "New Apple VAS Configuration"
+    edit_title: "Apple VAS #{num}"
+
+  smarttap:
+    label: "Google Smart Tap"
+    new_title: "New Smart Tap Configuration"
+    edit_title: "Smart Tap #{num}"
+
+  desfire:
+    label: "DESFire"
+    new_title: "New DESFire App Configuration"
+    edit_title: "DESFire App #{num}"
+
+  keyboard:
+    label: "Keyboard"
+    title: "Keyboard Emulation"
+
+  nfc:
+    label: "NFC Tags"
+    title: "NFC Tag Configuration"
+
+  feedback:
+    label: "LED/Beep"
+    title: "LED / Beep Feedback"
+
+# Form fields
+forms:
+  # VAS form
+  vas:
+    merchant_id: "Merchant ID (Pass Type ID)"
+    merchant_id_placeholder: "pass.com.example.myapp"
+    key_slot: "Key Slot"
+    merchant_url: "Merchant URL (optional)"
+    merchant_url_placeholder: "https://..."
+    slot_info_used: "Used"
+    slot_info_free: "Free"
+    slot_info_all_free: "All slots free"
+
+  # Smart Tap form
+  smarttap:
+    collector_id: "Collector ID"
+    collector_id_placeholder: "96972794"
+    key_slot: "Key Slot"
+    key_version: "Key Version"
+
+  # DESFire form
+  desfire:
+    app_id: "App ID (Hex)"
+    app_id_placeholder: "AABBCC"
+    file_id: "File ID"
+    file_id_placeholder: "1-255"
+    key_num: "Key Number"
+    key_num_placeholder: "0-14"
+    key_slot: "Key Slot"
+    crypto: "Encryption"
+    crypto_none: "None"
+    crypto_3des: "3DES"
+    crypto_aes: "AES"
+    format: "Data Format"
+    format_raw: "Raw"
+    format_keyid_v1: "KEY-ID v1"
+    format_keyid_v2: "KEY-ID v2"
+    read_length: "Read Length"
+    read_length_placeholder: "1-255 (Default: 3)"
+    read_offset: "Read Offset"
+    read_offset_placeholder: "0-255 (Default: 0)"
+    diversification: "Diversification"
+
+  # Keyboard form
+  keyboard:
+    enable: "Enable Keyboard (KBLogMode)"
+    source: "Data Sources (KBSource)"
+    source_placeholder: "A5 (A=VAS, G=SmartTap, 0=MIFARE, etc.)"
+    prefix: "Prefix (KBPrefix)"
+    prefix_placeholder: "e.g. $t for timestamp"
+    postfix: "Suffix (KBPostfix)"
+    postfix_placeholder: "%0A (newline)"
+    delay_ms: "Delay in ms (KBDelayMS)"
+    delay_ms_placeholder: "5-255"
+
+  # NFC form
+  nfc:
+    type2: "NFC Type 2 (NTAG, Ultralight)"
+    type4: "NFC Type 4 (DESFire, ISO 14443-4)"
+    type5: "NFC Type 5 (ICODE, ISO 15693)"
+    report_read_error: "Report Errors (NFCReportReadError)"
+    ignore_random_uid: "Ignore Random UIDs"
+    byte_order_reversed: "Reverse Byte Order"
+    mode_disabled: "Disabled"
+    mode_uid: "UID"
+    mode_ndef: "NDEF"
+    mode_block: "Block"
+    mode_desfire: "DESFire"
+
+  # Feedback form
+  feedback:
+    led_section: "LED Settings"
+    led_mode: "LED Mode"
+    led_mode_off: "Off"
+    led_mode_on: "On"
+    led_mode_status: "Status"
+    led_mode_custom: "Custom"
+    led_select: "LED Type"
+    led_external: "External (RGB)"
+    led_onboard_compact: "Onboard (Compact)"
+    led_onboard_square: "Onboard (Square)"
+    led_serial: "Serial"
+    default_rgb: "Default RGB Color (6 Hex chars)"
+    default_rgb_placeholder: "00FF00 (Green)"
+
+# Help panel UI
+help:
+  select_field: "Select a field for context-sensitive help"
+  no_help: "No help available for '{context}'"
+  format: "Format"
+  example: "Example"
+
+# Help content (loaded from help/en/*.yaml)
+_help_content:
+  vas:
+    section:
+      title: "Apple VAS (Value Added Services)"
+      description: |
+        Configuration for Apple Wallet passes.
+        Up to 6 different pass configurations possible.
+
+    fields:
+      merchant_id:
+        title: "Merchant ID (Pass Type ID)"
+        description: |
+          The unique ID of your Apple Wallet pass.
+          Created in the Apple Developer Portal.
+        format: "Must start with 'pass.'"
+        example: "pass.com.example.loyalty"
+        tip: |
+          Find it in Apple Developer Portal under:
+          Certificates, Identifiers & Profiles > Pass Type IDs
+
+      key_slot:
+        title: "Key Slot"
+        description: |
+          Slot (0-6) where the private key is stored.
+        tip: |
+          The key must be copied to the reader as private1.pem (for slot 1) etc.
+          Slot 0 means automatic detection.
+
+      merchant_url:
+        title: "Merchant URL"
+        description: |
+          Optional URL for pass presentation.
+          Used by some pass types.
+        example: "https://example.com/pass"
+
+  smarttap:
+    section:
+      title: "Google Smart Tap"
+      description: |
+        Configuration for Google Wallet passes.
+        Enables reading of Smart Tap enabled passes.
+
+    fields:
+      collector_id:
+        title: "Collector ID"
+        description: |
+          The unique Collector ID for Smart Tap.
+          Provided by Google Wallet.
+        format: "8 characters"
+        example: "96972794"
+
+      key_slot:
+        title: "Key Slot"
+        description: |
+          Slot (0-6) where the authentication key is stored.
+        tip: |
+          Slot 0 for automatic detection.
+
+      key_version:
+        title: "Key Version"
+        description: |
+          Key version for Smart Tap authentication.
+
+  keyboard:
+    section:
+      title: "Keyboard Emulation"
+      description: |
+        Keyboard emulation sends pass data as keyboard input
+        to the connected computer. Successful pass readings
+        appear in any open text editor.
+
+    fields:
+      log_mode:
+        title: "Enable Keyboard (KBLogMode)"
+        description: |
+          Enables keyboard emulation.
+          When enabled, pass data is sent as keyboard input.
+        tip: |
+          Useful for simple integrations without software development.
+          Works with any program that accepts keyboard input.
+
+      source:
+        title: "Data Sources (KBSource)"
+        description: |
+          Defines which data types trigger keyboard output.
+          Hex string of characters for different pass types.
+        format: |
+          A = Apple VAS Pass
+          G = Google Smart Tap Pass
+          0 = MIFARE Card/Tag
+          2 = NFC Type 2
+          4 = NFC Type 4
+          6 = NFC Type 5
+          E = Card Emulation
+          X = Apple Wallet iPhone
+          W = Apple Wallet Watch
+        example: "AG (VAS and SmartTap)"
+        tip: |
+          Combine letters for multiple sources.
+          Default is "A5" (VAS + Type 2 + Type 4 + Type 5).
+
+      prefix:
+        title: "Prefix (KBPrefix)"
+        description: |
+          Optional text before pass data.
+          Can contain ASCII-Hex (%0A) or variables ($t).
+        format: |
+          %XX = ASCII-Hex (e.g. %0A for newline)
+          $t = Timestamp
+          $d = Date
+          $n = Sequence number
+        example: "$t|"
+        tip: "Leave empty if no prefix needed."
+
+      postfix:
+        title: "Suffix (KBPostfix)"
+        description: |
+          Text after pass data.
+          Default is newline (%0A).
+        format: "%0A = Newline (Enter)"
+        example: "%0A"
+        tip: |
+          The newline simulates pressing the Enter key
+          after each pass reading.
+
+      delay_ms:
+        title: "Delay (KBDelayMS)"
+        description: |
+          Delay between individual keystrokes in milliseconds.
+        format: "5-255 ms"
+        example: "5"
+        tip: |
+          Increase the value if characters are lost.
+          Default 5ms works for most systems.
+
+  nfc:
+    section:
+      title: "NFC Tag Configuration"
+      description: |
+        Settings for different NFC tag types.
+        Each tag type can be configured individually.
+
+    fields:
+      type2:
+        title: "NFC Type 2"
+        description: |
+          Settings for NFC Type 2 tags.
+          Includes NTAG and Ultralight tags.
+
+      type4:
+        title: "NFC Type 4"
+        description: |
+          Settings for NFC Type 4 tags.
+          Includes DESFire and ISO 14443-4 compatible cards.
+
+      type5:
+        title: "NFC Type 5"
+        description: |
+          Settings for NFC Type 5 tags.
+          Includes ICODE and ISO 15693 compatible tags.
+
+      report_read_error:
+        title: "Report Errors"
+        description: |
+          When enabled, read errors are reported as payload.
+
+      ignore_random_uid:
+        title: "Ignore Random UIDs"
+        description: |
+          Filters out tags with random UIDs.
+          Useful with certain card types.
+
+      byte_order_reversed:
+        title: "Reverse Byte Order"
+        description: |
+          Reverses the byte order of the UID.
+          For compatibility with older systems.
+
+  desfire:
+    section:
+      title: "MIFARE DESFire"
+      description: |
+        DESFire cards are contactless smartcards with encrypted
+        communication. Up to 9 different applications can be
+        configured simultaneously.
+
+    fields:
+      app_id:
+        title: "Application ID (DESFireAppID)"
+        description: |
+          The DESFire Application ID identifies the application
+          on the card. This is a 3-byte hex value.
+        format: "6 hex characters (3 bytes)"
+        example: "AABBCC, F00001"
+        tip: |
+          The Application ID is set by the card issuer.
+          Check the card documentation for the correct ID.
+
+      file_id:
+        title: "File ID (DESFireFileID)"
+        description: |
+          The ID of the file within the application to read.
+        format: "1-255"
+        example: "1"
+        tip: "Leave empty for default file."
+
+      key_num:
+        title: "Key Number (DESFireKeyNum)"
+        description: |
+          The key number for authentication.
+          DESFire apps can have up to 14 keys.
+        format: "0-14"
+        example: "0"
+        tip: |
+          Key 0 is often the master key.
+          Leave empty if no authentication required.
+
+      key_slot:
+        title: "Key Slot (DESFireKeySlot)"
+        description: |
+          The slot in the VTAP100 where the authentication key
+          is stored.
+        format: "1-9"
+        tip: |
+          Keys must be loaded onto the device beforehand
+          via the VTAP100 configuration.
+
+      crypto:
+        title: "Encryption (DESFireCrypto)"
+        description: |
+          The cryptographic mode for communication with the card.
+        format: |
+          None = No encryption
+          3DES = Triple-DES (112-bit)
+          AES = AES-128
+        tip: |
+          AES is more secure and faster than 3DES.
+          The mode must match the card configuration.
+
+      format:
+        title: "Data Format (DESFireFormat)"
+        description: |
+          The output format for the read data.
+        format: |
+          Raw = Raw data (Hex)
+          KEY-ID v1 = KEY-ID Format Version 1
+          KEY-ID v2 = KEY-ID Format Version 2
+        tip: "Choose the format matching the receiving software."
+
+      read_length:
+        title: "Read Length (DESFireReadLength)"
+        description: |
+          Number of bytes to read from the file.
+        format: "1-255 bytes"
+        example: "3 (Default)"
+        tip: |
+          Only read the required amount of data to minimize
+          communication time.
+
+      read_offset:
+        title: "Read Offset (DESFireReadOffset)"
+        description: |
+          Starting position within the file to read from.
+        format: "0-255 bytes"
+        example: "0 (Default = file start)"
+        tip: "To skip header data."
+
+      diversification:
+        title: "Key Diversification (DESFireDiversification)"
+        description: |
+          Enables key diversification based on the card UID.
+        tip: |
+          With diversification, the master key is combined with
+          the card UID to generate a card-specific key.
+
+  feedback:
+    section:
+      title: "LED / Beep Feedback"
+      description: |
+        Configuration for visual (LED) and audible (beep)
+        feedback from the reader.
+
+    fields:
+      led_mode:
+        title: "LED Mode"
+        description: |
+          Determines the behavior of the status LED.
+        format: |
+          Off = LED disabled
+          On = LED always on
+          Status = Shows read status
+          Custom = User-defined control
+
+      led_select:
+        title: "LED Type"
+        description: |
+          Selects the LED hardware to use.
+        format: |
+          External = External RGB LED
+          Onboard Compact = Built-in LED (Compact model)
+          Onboard Square = Built-in LED (Square model)
+          Serial = Serially controlled LED
+
+      default_rgb:
+        title: "Default RGB Color"
+        description: |
+          The default color of the LED when idle.
+          Specified as 6-digit hex value (RRGGBB).
+        format: "6 hex characters"
+        example: "00FF00 (Green)"
+
+# Export dialog
+export:
+  title: "Export"
+  format_label: "Export format:"
+  format_full: "Full config.txt"
+  format_template: "Template (without VAS/SmartTap)"
+  template_hint: |
+    Template mode exports a Jinja2 placeholder for
+    wallet passes. Keyboard, NFC, DESFire and
+    LED/Beep are fully exported.
+  target_label: "Target:"
+  target_file: "Save to file"
+  target_clipboard: "Copy to clipboard"
+  button: "Export"
+  copied_to_clipboard: "Copied to clipboard"
+  saved_to_file: "Saved: {path}"
+  no_output_path: "No output path specified"
+  clipboard_error: "Clipboard error: {message}"

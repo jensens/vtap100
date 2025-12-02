@@ -1,0 +1,70 @@
+section:
+  title: Keyboard Emulation
+  description: |
+    Keyboard emulation sends pass data as keystrokes
+    to the connected computer. Successful pass reads
+    appear in any open text editor.
+
+fields:
+  log_mode:
+    title: Enable Keyboard (KBLogMode)
+    description: |
+      Enables keyboard emulation.
+      When enabled, pass data is sent as keystrokes.
+    tip: |
+      Useful for simple integrations without software development.
+      Works with any program that accepts keyboard input.
+
+  source:
+    title: Data Sources (KBSource)
+    description: |
+      Defines which data types trigger keyboard output.
+      Hex string of characters for different pass types.
+    format: |
+      A = Apple VAS Pass
+      G = Google Smart Tap Pass
+      0 = MIFARE Card/Tag
+      2 = NFC Type 2
+      4 = NFC Type 4
+      6 = NFC Type 5
+      E = Card Emulation
+      X = Apple Wallet iPhone
+      W = Apple Wallet Watch
+    example: "AG (VAS and SmartTap)"
+    tip: |
+      Combine characters for multiple sources.
+      Default is "A5" (VAS + Type 2 + Type 4 + Type 5).
+
+  prefix:
+    title: Prefix (KBPrefix)
+    description: |
+      Optional text before pass data.
+      Can contain ASCII-hex (%0A) or variables ($t).
+    format: |
+      %XX = ASCII-hex (e.g. %0A for newline)
+      $t = Timestamp
+      $d = Date
+      $n = Sequence number
+    example: "$t|"
+    tip: Leave empty if no prefix is needed.
+
+  postfix:
+    title: Suffix (KBPostfix)
+    description: |
+      Text after pass data.
+      Default is newline (%0A).
+    format: "%0A = Newline (Enter)"
+    example: "%0A"
+    tip: |
+      The newline simulates pressing the Enter key
+      after each pass read.
+
+  delay_ms:
+    title: Delay (KBDelayMS)
+    description: |
+      Delay between individual keystrokes in milliseconds.
+    format: "5-255 ms"
+    example: "5"
+    tip: |
+      Increase the value if characters are lost.
+      Default 5ms works for most systems.

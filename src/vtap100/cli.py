@@ -647,5 +647,27 @@ def docs() -> None:
     console.print("\n[dim]Vollständige Dokumentation: docs/[/dim]")
 
 
+@main.command()
+@click.argument("filename", required=False, type=click.Path())
+@click.option("--output", "-o", type=click.Path(), help="Ausgabedatei")
+def editor(filename: str | None, output: str | None) -> None:
+    """Öffnet den interaktiven TUI-Editor.
+
+    Ermöglicht das visuelle Bearbeiten von VTAP100-Konfigurationen
+    mit kontextbezogener Hilfe und Live-Vorschau.
+
+    Examples:
+        vtap100 editor                  # Neue Konfiguration
+        vtap100 editor config.txt       # Datei öffnen
+        vtap100 editor -o output.txt    # Mit Ausgabedatei
+    """
+    from vtap100.tui import run
+
+    input_path = Path(filename) if filename else None
+    output_path = Path(output) if output else input_path
+
+    run(input_path=input_path, output_path=output_path)
+
+
 if __name__ == "__main__":
     main()

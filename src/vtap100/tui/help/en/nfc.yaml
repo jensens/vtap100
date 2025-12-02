@@ -1,0 +1,66 @@
+section:
+  title: NFC Tag Configuration
+  description: |
+    Configuration for reading NFC tags.
+    Supports Type 2, Type 4 and Type 5 tags.
+
+fields:
+  type2:
+    title: NFC Type 2 (NFCType2)
+    description: |
+      Read mode for NFC Type 2 tags.
+      Supports NTAG and MIFARE Ultralight tags.
+    format: |
+      0 = Disabled
+      U = Read UID
+      N = Read NDEF
+      B = Read block data
+    tip: UID is the fastest mode for simple identification.
+
+  type4:
+    title: NFC Type 4 (NFCType4)
+    description: |
+      Read mode for NFC Type 4 tags.
+      Supports DESFire and ISO 14443-4 compatible tags.
+    format: |
+      0 = Disabled
+      U = Read UID
+      N = Read NDEF
+      B = Read block data
+      D = DESFire mode
+    tip: |
+      DESFire mode enables encrypted access
+      to DESFire applications.
+
+  type5:
+    title: NFC Type 5 (NFCType5)
+    description: |
+      Read mode for NFC Type 5 tags.
+      Supports ICODE and ISO 15693 tags.
+    format: |
+      0 = Disabled
+      U = Read UID
+      N = Read NDEF
+      B = Read block data
+    tip: Type 5 tags have longer range than other types.
+
+  report_read_error:
+    title: Report Errors (NFCReportReadError)
+    description: |
+      Send error payload on read errors.
+      Useful for debugging and error analysis.
+    tip: Leave disabled in normal operation.
+
+  ignore_random_uid:
+    title: Ignore Random UIDs (IgnoreRandomUID)
+    description: |
+      Filter randomly generated Type 4 UIDs.
+      Some smartphones generate random UIDs.
+    tip: Enable if only real tag UIDs should be detected.
+
+  byte_order_reversed:
+    title: Reverse Byte Order (TagByteOrder)
+    description: |
+      Reverses the byte order in output.
+      Sometimes needed for compatibility with other systems.
+    tip: Default is disabled (normal order).

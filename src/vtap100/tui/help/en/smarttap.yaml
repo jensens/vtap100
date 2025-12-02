@@ -1,0 +1,43 @@
+section:
+  title: Google Smart Tap
+  description: |
+    Configuration for Google Wallet passes with Smart Tap.
+    Up to 6 different configurations possible.
+
+fields:
+  collector_id:
+    title: Collector ID
+    description: |
+      The unique ID of your Google Wallet Collector.
+      Created in the Google Pay & Wallet Console.
+    format: "8-digit number"
+    example: "96972794"
+    tip: |
+      Find the Collector ID in Google Pay Console
+      under Business Console > Smart Tap.
+
+  key_slot:
+    title: Key Slot
+    description: |
+      Slot (0-6) where the private key is stored.
+      VAS and Smart Tap share the same key slots.
+    values:
+      - value: 0
+        label: Automatic (reader selects)
+      - value: 1-6
+        label: Specific slot
+    tip: |
+      The key must be uploaded as private1.pem (for slot 1) etc.
+      to the reader.
+      Note: VAS and Smart Tap use the same slots!
+
+  key_version:
+    title: Key Version
+    description: |
+      Version of the key being used.
+      Must match the version in the Google Console.
+    format: "Positive integer"
+    example: "1"
+    tip: |
+      The key version is set during key creation
+      in the Google Console.

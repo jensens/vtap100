@@ -226,3 +226,167 @@ class TestConfigGeneratorFile:
         content = buffer.getvalue()
         assert "!VTAPconfig" in content
         assert "VAS1MerchantID=pass.com.example.test" in content
+
+
+class TestTemplateGeneration:
+    """Tests for Jinja2 template generation."""
+
+    def test_generate_template_excludes_vas(self) -> None:
+        """Template mode should exclude VAS configs."""
+        from vtap100.generator import ConfigGenerator
+        from vtap100.models.config import VTAPConfig
+        from vtap100.models.vas import AppleVASConfig
+
+        vas = AppleVASConfig(merchant_id="pass.com.test", key_slot=1)
+        config = VTAPConfig(vas_configs=[vas])
+        generator = ConfigGenerator(config)
+
+        result = generator.generate_template()
+
+        assert "VAS1MerchantID" not in result
+        assert "{% for passinfo in passes %}" in result
+
+    def test_generate_template_excludes_smarttap(self) -> None:
+        """Template mode should exclude SmartTap configs."""
+        from vtap100.generator import ConfigGenerator
+        from vtap100.models.config import VTAPConfig
+        from vtap100.models.smarttap import GoogleSmartTapConfig
+
+        st = GoogleSmartTapConfig(collector_id="12345678", key_slot=1)
+        config = VTAPConfig(smarttap_configs=[st])
+        generator = ConfigGenerator(config)
+
+        result = generator.generate_template()
+
+        assert "ST1CollectorID" not in result
+
+    def test_generate_template_includes_keyboard(self) -> None:
+        """Template mode should include keyboard config."""
+        from vtap100.generator import ConfigGenerator
+        from vtap100.models.config import VTAPConfig
+        from vtap100.models.keyboard import KeyboardConfig
+
+        kb = KeyboardConfig(log_mode=True, source="AG")
+        config = VTAPConfig(keyboard=kb)
+        generator = ConfigGenerator(config)
+
+        result = generator.generate_template()
+
+        assert "KBLogMode=1" in result
+        assert "KBSource=AG" in result
+
+    def test_generate_template_includes_nfc(self) -> None:
+        """Template mode should include NFC config."""
+        from vtap100.generator import ConfigGenerator
+        from vtap100.models.config import VTAPConfig
+        from vtap100.models.nfc import NFCTagConfig, NFCTagMode
+
+        nfc = NFCTagConfig(type2=NFCTagMode.UID)
+        config = VTAPConfig(nfc=nfc)
+        generator = ConfigGenerator(config)
+
+        result = generator.generate_template()
+
+        assert "NFCType2=U" in result
+
+    def test_generate_template_includes_desfire(self) -> None:
+        """Template mode should include DESFire config."""
+        from vtap100.generator import ConfigGenerator
+        from vtap100.models.config import VTAPConfig
+        from vtap100.models.desfire import DESFireConfig, DESFireAppConfig
+
+        app = DESFireAppConfig(app_id="AABBCC")
+        desfire = DESFireConfig(apps=[app])
+        config = VTAPConfig(desfire=desfire)
+        generator = ConfigGenerator(config)
+
+        result = generator.generate_template()
+
+        assert "DESFire1AppID=AABBCC" in result
+
+    def test_generate_template_includes_feedback(self) -> None:
+        """Template mode should include LED/Beep config."""
+        from vtap100.generator import ConfigGenerator
+        from vtap100.models.config import VTAPConfig
+        from vtap100.models.feedback import FeedbackConfig, LEDConfig, LEDMode
+
+        led = LEDConfig(mode=LEDMode.CUSTOM)
+        feedback = FeedbackConfig(led=led)
+        config = VTAPConfig(feedback=feedback)
+        generator = ConfigGenerator(config)
+
+        result = generator.generate_template()
+
+        assert "LEDMode=3" in result
+
+    def test_generate_template_includes_jinja_placeholder(self) -> None:
+        """Template mode should include Jinja2 placeholder."""
+        from vtap100.generator import ConfigGenerator
+        from vtap100.models.config import VTAPConfig
+
+        config = VTAPConfig()
+        generator = ConfigGenerator(config)
+
+        result = generator.generate_template()
+
+        assert "{% for passinfo in passes %}" in result
+        assert "{% if passinfo.apple %}" in result
+        assert "{% if passinfo.google %}" in result
+        assert "{% endfor %}" in result
+
+    def test_generate_template_has_correct_structure(self) -> None:
+        """Template should have passes section before static config."""
+        from vtap100.generator import ConfigGenerator
+        from vtap100.models.config import VTAPConfig
+        from vtap100.models.keyboard import KeyboardConfig
+
+        kb = KeyboardConfig(log_mode=True)
+        config = VTAPConfig(keyboard=kb)
+        generator = ConfigGenerator(config)
+
+        result = generator.generate_template()
+
+        # Jinja block should come before keyboard config
+        jinja_pos = result.find("{% for passinfo")
+        kb_pos = result.find("KBLogMode")
+        assert jinja_pos < kb_pos
+
+    def test_generate_template_has_header(self) -> None:
+        """Template should start with !VTAPconfig header."""
+        from vtap100.generator import ConfigGenerator
+        from vtap100.models.config import VTAPConfig
+
+        config = VTAPConfig()
+        generator = ConfigGenerator(config)
+
+        result = generator.generate_template()
+
+        assert result.startswith("!VTAPconfig")
+
+    def test_generate_template_with_comment(self) -> None:
+        """Template can include a comment."""
+        from vtap100.generator import ConfigGenerator
+        from vtap100.models.config import VTAPConfig
+
+        config = VTAPConfig()
+        generator = ConfigGenerator(config)
+
+        result = generator.generate_template(comment="Template for Phil")
+
+        assert "; Template for Phil" in result
+
+    def test_generate_template_jinja_vars_correct(self) -> None:
+        """Jinja template should use correct variable names."""
+        from vtap100.generator import ConfigGenerator
+        from vtap100.models.config import VTAPConfig
+
+        config = VTAPConfig()
+        generator = ConfigGenerator(config)
+
+        result = generator.generate_template()
+
+        # Check Apple VAS variables
+        assert "{{ passinfo.apple.merchant_id }}" in result
+        assert "{{ passinfo.slot }}" in result
+        # Check Google SmartTap variables
+        assert "{{ passinfo.google.collector_id }}" in result

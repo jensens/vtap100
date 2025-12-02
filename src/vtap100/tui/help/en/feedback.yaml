@@ -1,0 +1,65 @@
+section:
+  title: LED / Beep Feedback
+  description: |
+    Configuration for visual and audible feedback.
+    LED colors and beep sounds for different events.
+
+fields:
+  led_mode:
+    title: LED Mode (LEDMode)
+    description: |
+      Operating mode of the LEDs.
+    format: |
+      0 = Off
+      1 = On (permanent)
+      2 = Status (shows device status)
+      3 = Custom (user-defined sequences)
+    tip: Status mode shows connection and activity.
+
+  led_select:
+    title: LED Type (LEDSelect)
+    description: |
+      Which LED to use.
+    format: |
+      0 = External RGB LED (Common Cathode)
+      1 = Onboard LED (Compact case)
+      2 = Onboard LED (Square case)
+      3 = Serial LEDs
+    tip: Choose according to your hardware setup.
+
+  default_rgb:
+    title: Default RGB Color (LEDDefaultRGB)
+    description: |
+      Default color in idle state.
+      6 hex characters for RGB value.
+    format: "RRGGBB (e.g. 00FF00 = Green)"
+    example: "0000FF (Blue)"
+    tip: Leave empty for no default color.
+
+  pass_led:
+    title: Pass LED Sequence (PassLED)
+    description: |
+      LED sequence on successful pass read.
+      Format: Color,On-Time,Off-Time,Repetitions
+    example: "00FF00,100,100,2 (2x green blink)"
+
+  tag_led:
+    title: Tag LED Sequence (TagLED)
+    description: |
+      LED sequence on successful tag read.
+      Format: Color,On-Time,Off-Time,Repetitions
+    example: "0000FF,100,100,1 (1x blue blink)"
+
+  pass_beep:
+    title: Pass Beep Sequence (PassBeep)
+    description: |
+      Beep on successful pass read.
+      Format: On-Time,Off-Time,Repetitions[,Frequency]
+    example: "100,50,2 (2 short beeps)"
+
+  tag_beep:
+    title: Tag Beep Sequence (TagBeep)
+    description: |
+      Beep on successful tag read.
+      Format: On-Time,Off-Time,Repetitions[,Frequency]
+    example: "100,0,1 (1 short beep)"

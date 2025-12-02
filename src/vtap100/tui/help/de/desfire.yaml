@@ -1,0 +1,98 @@
+section:
+  title: MIFARE DESFire
+  description: |
+    DESFire-Karten sind kontaktlose Smartcards mit verschlüsselter
+    Kommunikation. Bis zu 9 verschiedene Applikationen können
+    gleichzeitig konfiguriert werden.
+
+fields:
+  app_id:
+    title: Application ID (DESFireAppID)
+    description: |
+      Die DESFire Application ID identifiziert die Anwendung
+      auf der Karte. Dies ist ein 3-Byte Hex-Wert.
+    format: "6 Hex-Zeichen (3 Bytes)"
+    example: "AABBCC, F00001"
+    tip: |
+      Die Application ID wird vom Kartenaussteller festgelegt.
+      Prüfe die Kartendokumentation für die korrekte ID.
+
+  file_id:
+    title: File ID (DESFireFileID)
+    description: |
+      Die ID der Datei innerhalb der Applikation, die gelesen
+      werden soll.
+    format: "1-255"
+    example: "1"
+    tip: Leer lassen für Standarddatei.
+
+  key_num:
+    title: Key Number (DESFireKeyNum)
+    description: |
+      Die Schlüsselnummer für die Authentifizierung.
+      DESFire-Apps können bis zu 14 Schlüssel haben.
+    format: "0-14"
+    example: "0"
+    tip: |
+      Schlüssel 0 ist oft der Master-Key.
+      Leer lassen wenn keine Authentifizierung erforderlich.
+
+  key_slot:
+    title: Key Slot (DESFireKeySlot)
+    description: |
+      Der Slot im VTAP100, in dem der Authentifizierungsschlüssel
+      gespeichert ist.
+    format: "1-9"
+    tip: |
+      Schlüssel müssen vorher über die VTAP100-Konfiguration
+      auf das Gerät geladen werden.
+
+  crypto:
+    title: Verschlüsselung (DESFireCrypto)
+    description: |
+      Der kryptografische Modus für die Kommunikation mit der Karte.
+    format: |
+      Keine = Keine Verschlüsselung
+      3DES = Triple-DES (112-bit)
+      AES = AES-128
+    tip: |
+      AES ist sicherer und schneller als 3DES.
+      Der Modus muss zur Kartenonfiguration passen.
+
+  format:
+    title: Datenformat (DESFireFormat)
+    description: |
+      Das Ausgabeformat für die gelesenen Daten.
+    format: |
+      Raw = Rohdaten (Hex)
+      KEY-ID v1 = KEY-ID Format Version 1
+      KEY-ID v2 = KEY-ID Format Version 2
+    tip: Wähle das Format passend zur empfangenden Software.
+
+  read_length:
+    title: Leselänge (DESFireReadLength)
+    description: |
+      Anzahl der zu lesenden Bytes aus der Datei.
+    format: "1-255 Bytes"
+    example: "3 (Standard)"
+    tip: |
+      Nur die benötigte Datenmenge lesen um die
+      Kommunikationszeit zu minimieren.
+
+  read_offset:
+    title: Lese-Offset (DESFireReadOffset)
+    description: |
+      Startposition innerhalb der Datei von der gelesen wird.
+    format: "0-255 Bytes"
+    example: "0 (Standard = Dateianfang)"
+    tip: Zum Überspringen von Header-Daten.
+
+  diversification:
+    title: Schlüssel-Diversifikation (DESFireDiversification)
+    description: |
+      Aktiviert die Schlüssel-Diversifikation basierend auf
+      der Karten-UID.
+    tip: |
+      Bei Diversifikation wird der Master-Schlüssel mit der
+      Karten-UID kombiniert um einen kartenspezifischen
+      Schlüssel zu erzeugen.

@@ -1,0 +1,39 @@
+section:
+  title: Apple VAS (Value Added Services)
+  description: |
+    Configuration for Apple Wallet passes.
+    Up to 6 different pass configurations possible.
+
+fields:
+  merchant_id:
+    title: Merchant ID (Pass Type ID)
+    description: |
+      The unique ID of your Apple Wallet Pass.
+      Created in the Apple Developer Portal.
+    format: "Must start with 'pass.'"
+    example: "pass.com.example.loyalty"
+    tip: |
+      Find it in Apple Developer Portal under:
+      Certificates, Identifiers & Profiles > Pass Type IDs
+
+  key_slot:
+    title: Key Slot
+    description: |
+      Slot (0-6) where the private key is stored.
+    values:
+      - value: 0
+        label: Automatic (reader selects)
+      - value: 1-6
+        label: Specific slot
+    tip: |
+      The key must be uploaded as private1.pem (for slot 1) etc.
+      to the reader.
+      Slot 0 means automatic detection.
+
+  merchant_url:
+    title: Merchant URL
+    description: |
+      Optional URL for pass presentation.
+      Used for some pass types.
+    required: false
+    example: "https://example.com/pass"

@@ -1,0 +1,66 @@
+section:
+  title: NFC Tag Konfiguration
+  description: |
+    Konfiguration für das Lesen von NFC Tags.
+    Unterstützt Type 2, Type 4 und Type 5 Tags.
+
+fields:
+  type2:
+    title: NFC Type 2 (NFCType2)
+    description: |
+      Lesemodus für NFC Type 2 Tags.
+      Unterstützt NTAG und MIFARE Ultralight Tags.
+    format: |
+      0 = Deaktiviert
+      U = UID lesen
+      N = NDEF lesen
+      B = Block-Daten lesen
+    tip: UID ist der schnellste Modus für einfache Identifikation.
+
+  type4:
+    title: NFC Type 4 (NFCType4)
+    description: |
+      Lesemodus für NFC Type 4 Tags.
+      Unterstützt DESFire und ISO 14443-4 kompatible Tags.
+    format: |
+      0 = Deaktiviert
+      U = UID lesen
+      N = NDEF lesen
+      B = Block-Daten lesen
+      D = DESFire-Modus
+    tip: |
+      DESFire-Modus ermöglicht verschlüsselten Zugriff
+      auf DESFire-Anwendungen.
+
+  type5:
+    title: NFC Type 5 (NFCType5)
+    description: |
+      Lesemodus für NFC Type 5 Tags.
+      Unterstützt ICODE und ISO 15693 Tags.
+    format: |
+      0 = Deaktiviert
+      U = UID lesen
+      N = NDEF lesen
+      B = Block-Daten lesen
+    tip: Type 5 Tags haben größere Reichweite als andere Typen.
+
+  report_read_error:
+    title: Fehler melden (NFCReportReadError)
+    description: |
+      Bei Lesefehlern einen Fehler-Payload senden.
+      Nützlich für Debugging und Fehleranalyse.
+    tip: Im Normalbetrieb deaktiviert lassen.
+
+  ignore_random_uid:
+    title: Zufällige UIDs ignorieren (IgnoreRandomUID)
+    description: |
+      Zufällig generierte Type 4 UIDs filtern.
+      Einige Smartphones generieren zufällige UIDs.
+    tip: Aktivieren wenn nur echte Tag-UIDs erkannt werden sollen.
+
+  byte_order_reversed:
+    title: Byte-Reihenfolge umkehren (TagByteOrder)
+    description: |
+      Kehrt die Byte-Reihenfolge in der Ausgabe um.
+      Manchmal für Kompatibilität mit anderen Systemen nötig.
+    tip: Standard ist deaktiviert (normale Reihenfolge).

@@ -1,0 +1,96 @@
+section:
+  title: MIFARE DESFire
+  description: |
+    DESFire cards are contactless smart cards with encrypted
+    communication. Up to 9 different applications can be
+    configured simultaneously.
+
+fields:
+  app_id:
+    title: Application ID (DESFireAppID)
+    description: |
+      The DESFire Application ID identifies the application
+      on the card. This is a 3-byte hex value.
+    format: "6 hex characters (3 bytes)"
+    example: "AABBCC, F00001"
+    tip: |
+      The Application ID is set by the card issuer.
+      Check the card documentation for the correct ID.
+
+  file_id:
+    title: File ID (DESFireFileID)
+    description: |
+      The ID of the file within the application to be read.
+    format: "1-255"
+    example: "1"
+    tip: Leave empty for default file.
+
+  key_num:
+    title: Key Number (DESFireKeyNum)
+    description: |
+      The key number for authentication.
+      DESFire apps can have up to 14 keys.
+    format: "0-14"
+    example: "0"
+    tip: |
+      Key 0 is often the master key.
+      Leave empty if no authentication is required.
+
+  key_slot:
+    title: Key Slot (DESFireKeySlot)
+    description: |
+      The slot in the VTAP100 where the authentication key
+      is stored.
+    format: "1-9"
+    tip: |
+      Keys must be loaded to the device first via
+      VTAP100 configuration.
+
+  crypto:
+    title: Encryption (DESFireCrypto)
+    description: |
+      The cryptographic mode for card communication.
+    format: |
+      None = No encryption
+      3DES = Triple-DES (112-bit)
+      AES = AES-128
+    tip: |
+      AES is more secure and faster than 3DES.
+      The mode must match the card configuration.
+
+  format:
+    title: Data Format (DESFireFormat)
+    description: |
+      The output format for read data.
+    format: |
+      Raw = Raw data (Hex)
+      KEY-ID v1 = KEY-ID Format Version 1
+      KEY-ID v2 = KEY-ID Format Version 2
+    tip: Choose the format matching your receiving software.
+
+  read_length:
+    title: Read Length (DESFireReadLength)
+    description: |
+      Number of bytes to read from the file.
+    format: "1-255 bytes"
+    example: "3 (default)"
+    tip: |
+      Read only the required amount of data to
+      minimize communication time.
+
+  read_offset:
+    title: Read Offset (DESFireReadOffset)
+    description: |
+      Starting position within the file to read from.
+    format: "0-255 bytes"
+    example: "0 (default = file start)"
+    tip: Use to skip header data.
+
+  diversification:
+    title: Key Diversification (DESFireDiversification)
+    description: |
+      Enables key diversification based on
+      the card UID.
+    tip: |
+      With diversification, the master key is combined
+      with the card UID to create a card-specific key.
