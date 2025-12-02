@@ -1,0 +1,228 @@
+"""Unit tests for config.txt generator.
+
+TDD Red Phase: These tests define the expected behavior of the config generator.
+Tests should fail until the implementation is complete.
+"""
+
+from pathlib import Path
+from io import StringIO
+
+import pytest
+
+
+class TestVTAPConfig:
+    """Tests for VTAPConfig main configuration model."""
+
+    def test_vtap_config_empty(self) -> None:
+        """Empty config should be valid."""
+        from vtap100.models.config import VTAPConfig
+
+        config = VTAPConfig()
+        assert config.vas_configs == []
+        assert config.smarttap_configs == []
+
+    def test_vtap_config_with_vas(self) -> None:
+        """Config with VAS should store configs."""
+        from vtap100.models.config import VTAPConfig
+        from vtap100.models.vas import AppleVASConfig
+
+        vas = AppleVASConfig(merchant_id="pass.com.example.test", key_slot=1)
+        config = VTAPConfig(vas_configs=[vas])
+
+        assert len(config.vas_configs) == 1
+        assert config.vas_configs[0].merchant_id == "pass.com.example.test"
+
+    def test_vtap_config_with_smarttap(self) -> None:
+        """Config with Smart Tap should store configs."""
+        from vtap100.models.config import VTAPConfig
+        from vtap100.models.smarttap import GoogleSmartTapConfig
+
+        st = GoogleSmartTapConfig(collector_id="96972794", key_slot=2)
+        config = VTAPConfig(smarttap_configs=[st])
+
+        assert len(config.smarttap_configs) == 1
+        assert config.smarttap_configs[0].collector_id == "96972794"
+
+    def test_vtap_config_with_keyboard(self) -> None:
+        """Config with keyboard settings should store config."""
+        from vtap100.models.config import VTAPConfig
+        from vtap100.models.keyboard import KeyboardConfig
+
+        kb = KeyboardConfig(log_mode=True, source="A1")
+        config = VTAPConfig(keyboard=kb)
+
+        assert config.keyboard is not None
+        assert config.keyboard.log_mode is True
+
+    def test_vtap_config_combined(self) -> None:
+        """Config can have VAS, Smart Tap, and keyboard together."""
+        from vtap100.models.config import VTAPConfig
+        from vtap100.models.vas import AppleVASConfig
+        from vtap100.models.smarttap import GoogleSmartTapConfig
+        from vtap100.models.keyboard import KeyboardConfig
+
+        vas = AppleVASConfig(merchant_id="pass.com.example.test", key_slot=1)
+        st = GoogleSmartTapConfig(collector_id="96972794", key_slot=2)
+        kb = KeyboardConfig(log_mode=True, source="AG")
+
+        config = VTAPConfig(
+            vas_configs=[vas],
+            smarttap_configs=[st],
+            keyboard=kb,
+        )
+
+        assert len(config.vas_configs) == 1
+        assert len(config.smarttap_configs) == 1
+        assert config.keyboard is not None
+
+
+class TestConfigGenerator:
+    """Tests for config.txt file generator."""
+
+    def test_generate_header(self) -> None:
+        """Generated config should start with !VTAPconfig."""
+        from vtap100.generator import ConfigGenerator
+        from vtap100.models.config import VTAPConfig
+
+        config = VTAPConfig()
+        generator = ConfigGenerator(config)
+        output = generator.generate()
+
+        assert output.startswith("!VTAPconfig")
+
+    def test_generate_with_comment(self) -> None:
+        """Generated config can include a comment."""
+        from vtap100.generator import ConfigGenerator
+        from vtap100.models.config import VTAPConfig
+
+        config = VTAPConfig()
+        generator = ConfigGenerator(config)
+        output = generator.generate(comment="Test configuration")
+
+        assert "!VTAPconfig" in output
+        assert "; Test configuration" in output
+
+    def test_generate_vas_only(self) -> None:
+        """Generate config with only Apple VAS."""
+        from vtap100.generator import ConfigGenerator
+        from vtap100.models.config import VTAPConfig
+        from vtap100.models.vas import AppleVASConfig
+
+        vas = AppleVASConfig(merchant_id="pass.com.example.test", key_slot=1)
+        config = VTAPConfig(vas_configs=[vas])
+        generator = ConfigGenerator(config)
+        output = generator.generate()
+
+        assert "VAS1MerchantID=pass.com.example.test" in output
+        assert "VAS1KeySlot=1" in output
+
+    def test_generate_smarttap_only(self) -> None:
+        """Generate config with only Google Smart Tap."""
+        from vtap100.generator import ConfigGenerator
+        from vtap100.models.config import VTAPConfig
+        from vtap100.models.smarttap import GoogleSmartTapConfig
+
+        st = GoogleSmartTapConfig(collector_id="96972794", key_slot=2, key_version=1)
+        config = VTAPConfig(smarttap_configs=[st])
+        generator = ConfigGenerator(config)
+        output = generator.generate()
+
+        assert "ST1CollectorID=96972794" in output
+        assert "ST1KeySlot=2" in output
+        assert "ST1KeyVersion=1" in output
+
+    def test_generate_keyboard_settings(self) -> None:
+        """Generate config with keyboard settings."""
+        from vtap100.generator import ConfigGenerator
+        from vtap100.models.config import VTAPConfig
+        from vtap100.models.keyboard import KeyboardConfig
+
+        kb = KeyboardConfig(log_mode=True, source="A1")
+        config = VTAPConfig(keyboard=kb)
+        generator = ConfigGenerator(config)
+        output = generator.generate()
+
+        assert "KBLogMode=1" in output
+        assert "KBSource=A1" in output
+
+    def test_generate_combined(self) -> None:
+        """Generate config with VAS, Smart Tap, and keyboard."""
+        from vtap100.generator import ConfigGenerator
+        from vtap100.models.config import VTAPConfig
+        from vtap100.models.vas import AppleVASConfig
+        from vtap100.models.smarttap import GoogleSmartTapConfig
+        from vtap100.models.keyboard import KeyboardConfig
+
+        vas = AppleVASConfig(merchant_id="pass.com.example.test", key_slot=1)
+        st = GoogleSmartTapConfig(collector_id="96972794", key_slot=2, key_version=1)
+        kb = KeyboardConfig(log_mode=True, source="AG")
+
+        config = VTAPConfig(
+            vas_configs=[vas],
+            smarttap_configs=[st],
+            keyboard=kb,
+        )
+        generator = ConfigGenerator(config)
+        output = generator.generate()
+
+        # Check all components present
+        assert "!VTAPconfig" in output
+        assert "VAS1MerchantID=pass.com.example.test" in output
+        assert "ST1CollectorID=96972794" in output
+        assert "KBLogMode=1" in output
+
+    def test_generate_multiple_vas(self) -> None:
+        """Generate config with multiple VAS configurations."""
+        from vtap100.generator import ConfigGenerator
+        from vtap100.models.config import VTAPConfig
+        from vtap100.models.vas import AppleVASConfig
+
+        vas1 = AppleVASConfig(merchant_id="pass.com.example.one", key_slot=1)
+        vas2 = AppleVASConfig(merchant_id="pass.com.example.two", key_slot=2)
+        config = VTAPConfig(vas_configs=[vas1, vas2])
+        generator = ConfigGenerator(config)
+        output = generator.generate()
+
+        assert "VAS1MerchantID=pass.com.example.one" in output
+        assert "VAS1KeySlot=1" in output
+        assert "VAS2MerchantID=pass.com.example.two" in output
+        assert "VAS2KeySlot=2" in output
+
+
+class TestConfigGeneratorFile:
+    """Tests for writing config to file."""
+
+    def test_write_to_file(self, tmp_path: Path) -> None:
+        """Can write config to a file."""
+        from vtap100.generator import ConfigGenerator
+        from vtap100.models.config import VTAPConfig
+        from vtap100.models.vas import AppleVASConfig
+
+        vas = AppleVASConfig(merchant_id="pass.com.example.test", key_slot=1)
+        config = VTAPConfig(vas_configs=[vas])
+        generator = ConfigGenerator(config)
+
+        output_file = tmp_path / "config.txt"
+        generator.write_to_file(output_file)
+
+        assert output_file.exists()
+        content = output_file.read_text()
+        assert "!VTAPconfig" in content
+        assert "VAS1MerchantID=pass.com.example.test" in content
+
+    def test_write_to_stringio(self) -> None:
+        """Can write config to a StringIO object."""
+        from vtap100.generator import ConfigGenerator
+        from vtap100.models.config import VTAPConfig
+        from vtap100.models.vas import AppleVASConfig
+
+        vas = AppleVASConfig(merchant_id="pass.com.example.test", key_slot=1)
+        config = VTAPConfig(vas_configs=[vas])
+        generator = ConfigGenerator(config)
+
+        buffer = StringIO()
+        generator.write_to_stream(buffer)
+
+        content = buffer.getvalue()
+        assert "!VTAPconfig" in content
+        assert "VAS1MerchantID=pass.com.example.test" in content
