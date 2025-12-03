@@ -40,7 +40,29 @@ vtap100 generate --apple-vas pass.com.example.mypass --key-slot 1 --output ./con
 vtap100 generate --google-st 96972794 --key-slot 2 --key-version 1 --output ./config.txt
 ```
 
-### Interactive Mode
+### TUI Editor
+
+Launch the full-featured terminal user interface for configuration:
+
+```bash
+# Start with empty configuration
+vtap100 editor
+
+# Edit existing configuration file
+vtap100 editor config.txt
+```
+
+The TUI editor provides:
+- Visual configuration of Apple VAS and Google Smart Tap
+- DESFire and NFC tag settings
+- LED/Buzzer feedback configuration
+- Live preview of generated configuration
+- Load/Save/Export functionality
+- Bilingual interface (English/German)
+
+### Interactive Wizard
+
+For quick step-by-step configuration:
 
 ```bash
 vtap100 wizard
