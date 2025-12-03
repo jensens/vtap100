@@ -4,6 +4,21 @@ from pathlib import Path
 import pytest
 
 
+@pytest.fixture(autouse=True)
+def reset_language():
+    """Reset language to German (DE) before each test.
+
+    This ensures tests don't affect each other through language state.
+    """
+    from vtap100.tui.i18n import Language
+    from vtap100.tui.i18n import set_language
+
+    set_language(Language.DE)
+    yield
+    # Reset again after test
+    set_language(Language.DE)
+
+
 @pytest.fixture
 def fixtures_dir() -> Path:
     """Return path to test fixtures directory."""

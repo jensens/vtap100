@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(uv pip install:*)",
-      "Bash(timeout 2 uv run vtap100 editor --help:*)"
+      "Bash(timeout 2 uv run vtap100 editor --help:*)",
+      "Bash(gh run view:*)"
     ],
     "deny": [],
     "ask": []

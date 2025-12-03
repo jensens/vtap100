@@ -71,9 +71,8 @@ relative_files = true
 [tool.coverage.report]
 skip_covered = true
 skip_empty = true
-fail_under = 60
-# Note: Coverage target reduced to 60% for Phase 1 due to CLI being difficult to test
-# without Click testing fixtures. Will be increased in later phases.
+fail_under = 85
+# Coverage increased to 85% after adding comprehensive CLI and TUI tests.
 exclude_lines = [
     "pragma: no cover",
     "if TYPE_CHECKING:",

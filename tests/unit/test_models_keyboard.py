@@ -197,6 +197,75 @@ class TestKBSourceHelper:
         source = KBSourceBuilder().build()
         assert source is not None
 
+    def test_kb_source_mifare(self) -> None:
+        """Can add MIFARE to source."""
+        from vtap100.models.keyboard import KBSourceBuilder
+
+        source = KBSourceBuilder().mifare().build()
+        assert "0" in source
+
+    def test_kb_source_nfc_type5(self) -> None:
+        """Can add NFC Type 5 to source."""
+        from vtap100.models.keyboard import KBSourceBuilder
+
+        source = KBSourceBuilder().nfc_type5().build()
+        assert "6" in source
+
+    def test_kb_source_card_emulation(self) -> None:
+        """Can add card emulation to source."""
+        from vtap100.models.keyboard import KBSourceBuilder
+
+        source = KBSourceBuilder().card_emulation().build()
+        assert "E" in source
+
+    def test_kb_source_apple_wallet_iphone(self) -> None:
+        """Can add Apple Wallet iPhone to source."""
+        from vtap100.models.keyboard import KBSourceBuilder
+
+        source = KBSourceBuilder().apple_wallet_iphone().build()
+        assert "X" in source
+
+    def test_kb_source_apple_wallet_watch(self) -> None:
+        """Can add Apple Wallet Watch to source."""
+        from vtap100.models.keyboard import KBSourceBuilder
+
+        source = KBSourceBuilder().apple_wallet_watch().build()
+        assert "W" in source
+
+    def test_kb_source_all_types(self) -> None:
+        """Can combine all source types."""
+        from vtap100.models.keyboard import KBSourceBuilder
+
+        source = (
+            KBSourceBuilder()
+            .apple_vas()
+            .google_smarttap()
+            .mifare()
+            .nfc_type2()
+            .nfc_type4()
+            .nfc_type5()
+            .card_emulation()
+            .apple_wallet_iphone()
+            .apple_wallet_watch()
+            .build()
+        )
+        assert "A" in source
+        assert "G" in source
+        assert "0" in source
+        assert "2" in source
+        assert "4" in source
+        assert "6" in source
+        assert "E" in source
+        assert "X" in source
+        assert "W" in source
+
+    def test_kb_source_no_duplicates(self) -> None:
+        """Adding same source twice should not create duplicates."""
+        from vtap100.models.keyboard import KBSourceBuilder
+
+        source = KBSourceBuilder().apple_vas().apple_vas().apple_vas().build()
+        assert source.count("A") == 1
+
 
 class TestKeyboardConfigExtended:
     """Tests for extended keyboard configuration (Phase 2)."""
