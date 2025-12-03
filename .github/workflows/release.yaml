@@ -4,7 +4,7 @@ name: Build & upload PyPI package
 on:
   push:
     branches: [main]
-    tags: ["*"]
+    tags: ["v[0-9]+.[0-9]+.[0-9]+*"]
   release:
     types:
       - published
