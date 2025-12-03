@@ -9,5 +9,9 @@ Example:
     >>> config = AppleVASConfig(merchant_id="pass.com.example.test", key_slot=1)
 """
 
-__version__ = "0.1.0"
+try:
+    from vtap100._version import __version__
+except ImportError:
+    __version__ = "0.0.0.dev0"
+
 __author__ = "HEIDI Team"
