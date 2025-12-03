@@ -26,7 +26,7 @@ class TestAppLoadConfig:
         with tempfile.TemporaryDirectory() as tmpdir:
             config_path = Path(tmpdir) / "config.txt"
             config_path.write_text(
-                "!VTAPconfig\n" "VAS1MerchantID=pass.com.example.test\n" "VAS1KeySlot=1\n"
+                "!VTAPconfig\nVAS1MerchantID=pass.com.example.test\nVAS1KeySlot=1\n"
             )
 
             app = VTAPEditorApp(input_path=config_path)

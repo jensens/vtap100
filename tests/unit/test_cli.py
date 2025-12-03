@@ -347,10 +347,7 @@ class TestValidateCommand:
         with tempfile.TemporaryDirectory() as tmpdir:
             config_file = Path(tmpdir) / "config.txt"
             config_file.write_text(
-                "!VTAPconfig\n"
-                "; Comment\n"
-                "VAS1MerchantID=pass.com.example.test\n"
-                "VAS1KeySlot=1\n"
+                "!VTAPconfig\n; Comment\nVAS1MerchantID=pass.com.example.test\nVAS1KeySlot=1\n"
             )
             result = runner.invoke(main, ["validate", str(config_file)])
             assert result.exit_code == 0
@@ -371,7 +368,7 @@ class TestValidateCommand:
         runner = CliRunner()
         with tempfile.TemporaryDirectory() as tmpdir:
             config_file = Path(tmpdir) / "config.txt"
-            config_file.write_text("!VTAPconfig\n" "InvalidLineWithoutEquals\n")
+            config_file.write_text("!VTAPconfig\nInvalidLineWithoutEquals\n")
             result = runner.invoke(main, ["validate", str(config_file)])
             assert result.exit_code == 0
             assert "Invalid format" in result.output
@@ -389,11 +386,7 @@ class TestValidateCommand:
         with tempfile.TemporaryDirectory() as tmpdir:
             config_file = Path(tmpdir) / "config.txt"
             config_file.write_text(
-                "!VTAPconfig\n"
-                "\n"
-                "; This is a comment\n"
-                "  \n"
-                "VAS1MerchantID=pass.com.example.test\n"
+                "!VTAPconfig\n\n; This is a comment\n  \nVAS1MerchantID=pass.com.example.test\n"
             )
             result = runner.invoke(main, ["validate", str(config_file)])
             assert result.exit_code == 0
