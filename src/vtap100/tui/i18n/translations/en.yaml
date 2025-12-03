@@ -459,6 +459,12 @@ _help_content:
         format: "6 hex characters"
         example: "00FF00 (Green)"
 
+# Quit confirmation dialog
+quit:
+  title: "Quit?"
+  message: "You have unsaved changes. Really quit?"
+  button: "Quit"
+
 # Export dialog
 export:
   title: "Export"
@@ -472,6 +478,8 @@ export:
   target_label: "Target:"
   target_file: "Save to file"
   target_clipboard: "Copy to clipboard"
+  filename_label: "Filename:"
+  filename_placeholder: "Enter filename..."
   button: "Export"
   copied_to_clipboard: "Copied to clipboard"
   saved_to_file: "Saved: {path}"

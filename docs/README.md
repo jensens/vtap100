@@ -6,7 +6,7 @@ Welcome to the VTAP100 Configuration Generator documentation.
 
 ### Getting Started
 - [Quickstart](quickstart.md) - Get started in minutes
-- [Installation](quickstart.md#installation) - Installation guide
+- [TUI Editor](tui.md) - Visual configuration editor
 
 ### Configuration (Phase 1-5 - Complete)
 - [Overview](configuration/overview.md) - config.txt format and basics
@@ -27,8 +27,8 @@ Examples can be found in the respective configuration pages:
 - Combined configuration: see [Quickstart](quickstart.md)
 
 ### Development
-- [Developer Guide](development.md) - TDD, code style, contributing
-- [Implementation Plan](PLAN.md) - Project plan and specification
+- [Developer Guide](development.md) - TDD, testing, contributing
+- [Releasing](RELEASING.md) - Release process
 
 ### Reference
 - [Reference Sources](references/sources.md) - All sources and links used

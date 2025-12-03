@@ -1,141 +1,123 @@
-# Developer Guide
+# Development Guide
 
-This document describes the development practices for the VTAP100 project.
-
-## Setting Up Development Environment
+## Setup
 
 ```bash
-# Clone repository
-git clone <repository-url>
+git clone https://github.com/jensens/vtap100.git
 cd vtap100
-
-# Install dependencies with uv
 uv sync --extra dev
-
-# Or with pip
-pip install -e ".[dev]"
 ```
 
 ## Test-Driven Development (TDD)
 
-This project uses TDD. The workflow is:
-
-### 1. Red: Write Test
-
-```python
-# tests/unit/test_new_feature.py
-def test_new_feature_does_something():
-    from vtap100.new_module import new_function
-
-    result = new_function("input")
-    assert result == "expected_output"
-```
-
-### 2. Green: Implementation
-
-```python
-# src/vtap100/new_module.py
-def new_function(input: str) -> str:
-    return "expected_output"
-```
-
-### 3. Refactor
-
-Improve code while tests continue to pass.
-
-## Running Tests
+This project follows strict TDD: **Write tests first, then implementation.**
 
 ```bash
-# All tests
+# Run all tests
 uv run pytest
 
 # With coverage
 uv run pytest --cov=vtap100 --cov-report=html
 
-# Single test file
+# Single file
 uv run pytest tests/unit/test_models_vas.py -v
-
-# Without coverage check
-uv run pytest --no-cov
 ```
+
+### TDD Cycle
+
+1. **Red**: Write failing test
+2. **Green**: Minimal implementation to pass
+3. **Refactor**: Improve code, tests stay green
 
 ## Code Quality
 
-### Linting with Ruff
-
 ```bash
-# Check
+# Lint & format
 uv run ruff check src tests
-
-# Auto-fix
 uv run ruff check --fix src tests
-
-# Format
 uv run ruff format src tests
-```
 
-### Type Checking with mypy
-
-```bash
+# Type checking
 uv run mypy src
 ```
 
 ## Project Structure
 
 ```
-vtap100/
-├── src/vtap100/          # Source code
-│   ├── models/           # Pydantic models
-│   ├── generator.py      # config.txt generator
-│   ├── cli.py            # CLI with Rich
-│   └── templates/        # Predefined configurations
-├── tests/
-│   ├── unit/             # Unit tests
-│   ├── integration/      # Integration tests
-│   └── fixtures/         # Test data
-└── docs/                 # Documentation
+src/vtap100/
+├── models/           # Pydantic models (vas, smarttap, keyboard, nfc, desfire, feedback)
+├── generator.py      # config.txt generator
+├── parser.py         # config.txt parser
+├── cli.py            # CLI commands
+└── tui/              # Terminal UI (Textual)
+    ├── app.py        # Main app
+    ├── screens/      # Editor, dialogs
+    ├── widgets/      # Sidebar, forms, help panel, preview
+    ├── i18n/         # Translations (de.yaml, en.yaml)
+    └── help/         # Context-sensitive help (YAML)
+
+tests/
+├── unit/             # Unit tests
+├── integration/      # Integration tests
+└── fixtures/         # Test data
 ```
 
-## Docstring Standard
+## TUI Development
 
-We use Google-style docstrings:
+### i18n System
+
+Translations in `tui/i18n/translations/{de,en}.yaml`:
+
+```python
+from vtap100.tui.i18n import t, set_language, Language
+
+set_language(Language.DE)
+label = t("common.buttons.save")  # "Speichern"
+```
+
+Language switch (Ctrl+L) preserves form values and tree expansion state.
+
+## TUI Testing
+
+Uses Textual's Pilot mode for async UI testing:
+
+```python
+@pytest.mark.asyncio
+async def test_sidebar_navigation():
+    app = VTAPEditorApp()
+    async with app.run_test() as pilot:
+        await pilot.pause()
+        await pilot.click("#vas-section")
+        assert app.query_one("VASConfigForm") is not None
+```
+
+Coverage target: 85%+
+
+## Docstrings
+
+Google-style:
 
 ```python
 def generate_config(config: VTAPConfig, output_path: Path) -> None:
     """Generate a VTAP100 config.txt file.
 
     Args:
-        config: The VTAP configuration object containing all settings.
-        output_path: Path where the config.txt will be written.
+        config: Configuration object.
+        output_path: Output file path.
 
     Raises:
-        ValidationError: If the configuration is invalid.
-        FileExistsError: If output file exists and overwrite=False.
-
-    Example:
-        >>> config = VTAPConfig(vas=[AppleVASConfig(...)])
-        >>> generate_config(config, Path("./config.txt"))
+        ValidationError: If configuration is invalid.
     """
 ```
 
-## Adding New Features
+## Releases
 
-1. **Write documentation:** What should the feature do?
-2. **Write tests:** Define expected behavior
-3. **Implementation:** Write code until tests pass
-4. **Finalize documentation:** Update examples and API docs
-5. **Update changelog:** Document changes
+Releases are managed via [GitHub Releases](https://github.com/jensens/vtap100/releases).
+See [RELEASING.md](RELEASING.md) for the full process.
 
-## Phase Overview
-
-- **Phase 1 (current):** Apple VAS, Google Smart Tap, Keyboard Emulation
-- **Phase 2:** Extended Keyboard Emulation
-- **Phase 3:** NFC Tags
-- **Phase 4:** MIFARE DESFire
-- **Phase 5:** LED/Beep + Extras
+Version is derived from Git tags via `hatch-vcs`.
 
 ## Resources
 
-- [VTAP Configuration Guide](https://www.vtapnfc.com/downloads/VTAP_Configuration_Guide.pdf)
+- [VTAP Configuration Guide (PDF)](https://www.vtapnfc.com/downloads/VTAP_Configuration_Guide.pdf)
 - [Reference Sources](references/sources.md)
-- [Implementation Plan](PLAN.md)

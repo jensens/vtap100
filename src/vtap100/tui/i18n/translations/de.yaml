@@ -463,6 +463,12 @@ _help_content:
         format: "6 Hex-Zeichen"
         example: "00FF00 (Grün)"
 
+# Quit confirmation dialog
+quit:
+  title: "Beenden?"
+  message: "Es gibt ungespeicherte Änderungen. Wirklich beenden?"
+  button: "Beenden"
+
 # Export dialog
 export:
   title: "Export"
@@ -476,6 +482,8 @@ export:
   target_label: "Ziel:"
   target_file: "In Datei speichern"
   target_clipboard: "In Zwischenablage kopieren"
+  filename_label: "Dateiname:"
+  filename_placeholder: "Dateiname eingeben..."
   button: "Exportieren"
   copied_to_clipboard: "In Zwischenablage kopiert"
   saved_to_file: "Gespeichert: {path}"

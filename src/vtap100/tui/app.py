@@ -3,10 +3,13 @@
 The main Textual App for editing VTAP100 configurations.
 """
 
+from __future__ import annotations
+
 from enum import Enum
 from pathlib import Path
 from textual.app import App
 from textual.reactive import reactive
+from typing import TYPE_CHECKING
 from vtap100 import __version__
 from vtap100.generator import ConfigGenerator
 from vtap100.models.config import VTAPConfig
@@ -16,6 +19,12 @@ from vtap100.tui.i18n import get_language
 from vtap100.tui.i18n import set_language
 from vtap100.tui.i18n import t
 from vtap100.tui.screens.editor import EditorScreen
+
+
+if TYPE_CHECKING:
+    from vtap100.tui.widgets.forms.base import ConfigAdded
+    from vtap100.tui.widgets.forms.base import ConfigChanged
+    from vtap100.tui.widgets.forms.base import ConfigRemoved
 
 
 class PreviewMode(str, Enum):
@@ -39,6 +48,7 @@ class VTAPEditorApp(App):
         output_path: Path to save configuration to.
         config: The current VTAPConfig being edited.
         current_field: Currently focused field for context-sensitive help.
+        has_unsaved_changes: True if configuration has been modified since last save.
     """
 
     TITLE = f"VTAP100 Editor {__version__}"
@@ -56,6 +66,7 @@ class VTAPEditorApp(App):
     # Reactive state
     config: reactive[VTAPConfig] = reactive(VTAPConfig, init=False)
     current_field: reactive[str] = reactive("", init=False)
+    has_unsaved_changes: bool = False
 
     def __init__(
         self,
@@ -227,6 +238,7 @@ class VTAPEditorApp(App):
             try:
                 generator = ConfigGenerator(self.config)
                 generator.write_to_file(self.output_path)
+                self.has_unsaved_changes = False
                 self.notify(t("common.messages.config_saved"))
             except OSError as e:
                 self.notify(
@@ -239,17 +251,30 @@ class VTAPEditorApp(App):
                 severity="error",
             )
 
+    async def action_quit(self) -> None:
+        """Quit the application, prompting if there are unsaved changes."""
+        if self.has_unsaved_changes:
+            from vtap100.tui.screens.quit_confirm_dialog import QuitConfirmDialog
+
+            def handle_quit_confirm(result: bool | None) -> None:
+                if result is True:
+                    self.exit()
+
+            self.push_screen(QuitConfirmDialog(), handle_quit_confirm)
+        else:
+            self.exit()
+
     def action_export(self) -> None:
         """Open the export dialog."""
         from vtap100.tui.screens.export_dialog import ExportDialog
         from vtap100.tui.screens.export_dialog import ExportFormat
         from vtap100.tui.screens.export_dialog import ExportTarget
 
-        def handle_export(result: tuple[ExportFormat, ExportTarget] | None) -> None:
+        def handle_export(result: tuple[ExportFormat, ExportTarget, Path | None] | None) -> None:
             if result is None:
                 return  # Cancelled
 
-            export_format, export_target = result
+            export_format, export_target, file_path = result
             generator = ConfigGenerator(self.config)
 
             if export_format == ExportFormat.TEMPLATE:
@@ -270,15 +295,16 @@ class VTAPEditorApp(App):
                     )
             else:
                 # File export
-                if self.output_path:
+                if file_path:
                     # Determine file extension based on format
-                    output_file = self.output_path
+                    output_file = file_path
                     if export_format == ExportFormat.TEMPLATE:
                         # Use .j2 extension for templates
-                        output_file = self.output_path.with_suffix(".j2")
+                        output_file = file_path.with_suffix(".j2")
 
                     try:
                         output_file.write_text(content, encoding="utf-8")
+                        self.has_unsaved_changes = False
                         self.notify(t("export.saved_to_file", path=str(output_file)))
                     except OSError as e:
                         self.notify(
@@ -288,4 +314,18 @@ class VTAPEditorApp(App):
                 else:
                     self.notify(t("export.no_output_path"), severity="error")
 
-        self.push_screen(ExportDialog(), handle_export)
+        # Default filename is the output path if set
+        default_filename = str(self.output_path) if self.output_path else ""
+        self.push_screen(ExportDialog(default_filename=default_filename), handle_export)
+
+    def on_config_changed(self, event: ConfigChanged) -> None:
+        """Handle config field changes - marks as having unsaved changes."""
+        self.has_unsaved_changes = True
+
+    def on_config_added(self, event: ConfigAdded) -> None:
+        """Handle config added - marks as having unsaved changes."""
+        self.has_unsaved_changes = True
+
+    def on_config_removed(self, event: ConfigRemoved) -> None:
+        """Handle config removed - marks as having unsaved changes."""
+        self.has_unsaved_changes = True

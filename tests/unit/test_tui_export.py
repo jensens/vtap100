@@ -5,6 +5,7 @@ Tests for:
 - Format selection (full vs template)
 - Target selection (file vs clipboard)
 - Cancel functionality
+- Filename input field for file export
 """
 
 import pytest
@@ -301,3 +302,293 @@ class TestExportDialogCombinations:
                 call_args = mock_copy.call_args[0][0]
                 assert "VAS1MerchantID" not in call_args
                 assert "{% for passinfo in passes %}" in call_args
+
+
+class TestExportDialogFilenameInput:
+    """Tests for filename input field in export dialog."""
+
+    @pytest.mark.asyncio
+    async def test_filename_input_visible_when_file_selected(self) -> None:
+        """Filename input should be visible when file target is selected."""
+        from textual.widgets import Input
+        from vtap100.tui.app import VTAPEditorApp
+        from vtap100.tui.screens.export_dialog import ExportDialog
+
+        app = VTAPEditorApp()
+        async with app.run_test() as pilot:
+            await pilot.pause()
+            await pilot.press("ctrl+e")
+            await pilot.pause()
+
+            assert isinstance(app.screen, ExportDialog)
+            # File is default target, so input should be visible
+            filename_input = app.screen.query_one("#filename-input", Input)
+            assert filename_input.display is True
+
+    @pytest.mark.asyncio
+    async def test_filename_input_hidden_when_clipboard_selected(self) -> None:
+        """Filename input should be hidden when clipboard target is selected."""
+        from textual.widgets import Input
+        from textual.widgets import RadioButton
+        from vtap100.tui.app import VTAPEditorApp
+        from vtap100.tui.screens.export_dialog import ExportDialog
+
+        app = VTAPEditorApp()
+        async with app.run_test() as pilot:
+            await pilot.pause()
+            await pilot.press("ctrl+e")
+            await pilot.pause()
+
+            assert isinstance(app.screen, ExportDialog)
+
+            # Select clipboard target
+            clipboard_radio = app.screen.query_one("#target-clipboard", RadioButton)
+            clipboard_radio.toggle()
+            await pilot.pause()
+
+            # Filename input should be hidden
+            filename_input = app.screen.query_one("#filename-input", Input)
+            assert filename_input.display is False
+
+    @pytest.mark.asyncio
+    async def test_filename_input_defaults_to_loaded_file(self, tmp_path) -> None:
+        """Filename input should default to the loaded file path."""
+        from textual.widgets import Input
+        from vtap100.tui.app import VTAPEditorApp
+        from vtap100.tui.screens.export_dialog import ExportDialog
+
+        # Create a config file
+        config_file = tmp_path / "config.txt"
+        config_file.write_text("!VTAPconfig\n")
+
+        app = VTAPEditorApp(input_path=config_file, output_path=config_file)
+        async with app.run_test() as pilot:
+            await pilot.pause()
+            await pilot.press("ctrl+e")
+            await pilot.pause()
+
+            assert isinstance(app.screen, ExportDialog)
+            filename_input = app.screen.query_one("#filename-input", Input)
+            assert filename_input.value == str(config_file)
+
+    @pytest.mark.asyncio
+    async def test_filename_input_empty_when_no_loaded_file(self) -> None:
+        """Filename input should be empty when no file was loaded."""
+        from textual.widgets import Input
+        from vtap100.tui.app import VTAPEditorApp
+        from vtap100.tui.screens.export_dialog import ExportDialog
+
+        app = VTAPEditorApp()
+        async with app.run_test() as pilot:
+            await pilot.pause()
+            await pilot.press("ctrl+e")
+            await pilot.pause()
+
+            assert isinstance(app.screen, ExportDialog)
+            filename_input = app.screen.query_one("#filename-input", Input)
+            assert filename_input.value == ""
+
+    @pytest.mark.asyncio
+    async def test_export_uses_filename_from_input(self, tmp_path) -> None:
+        """Export should use the filename from the input field."""
+        from textual.widgets import Button
+        from textual.widgets import Input
+        from vtap100.tui.app import VTAPEditorApp
+        from vtap100.tui.screens.export_dialog import ExportDialog
+
+        custom_output = tmp_path / "custom_config.txt"
+        app = VTAPEditorApp()
+
+        async with app.run_test() as pilot:
+            await pilot.pause()
+            await pilot.press("ctrl+e")
+            await pilot.pause()
+
+            assert isinstance(app.screen, ExportDialog)
+
+            # Enter custom filename
+            filename_input = app.screen.query_one("#filename-input", Input)
+            filename_input.value = str(custom_output)
+            await pilot.pause()
+
+            # Export
+            export_btn = app.screen.query_one("#export-btn", Button)
+            export_btn.press()
+            await pilot.pause()
+
+            # Custom file should exist
+            assert custom_output.exists()
+            content = custom_output.read_text()
+            assert "!VTAPconfig" in content
+
+    @pytest.mark.asyncio
+    async def test_template_export_adds_j2_extension(self, tmp_path) -> None:
+        """Template export should use .j2 extension for the entered filename."""
+        from textual.widgets import Button
+        from textual.widgets import Input
+        from textual.widgets import RadioButton
+        from vtap100.tui.app import VTAPEditorApp
+        from vtap100.tui.screens.export_dialog import ExportDialog
+
+        custom_output = tmp_path / "custom_config.txt"
+        expected_output = tmp_path / "custom_config.j2"
+        app = VTAPEditorApp()
+
+        async with app.run_test() as pilot:
+            await pilot.pause()
+            await pilot.press("ctrl+e")
+            await pilot.pause()
+
+            assert isinstance(app.screen, ExportDialog)
+
+            # Enter custom filename
+            filename_input = app.screen.query_one("#filename-input", Input)
+            filename_input.value = str(custom_output)
+            await pilot.pause()
+
+            # Select template format
+            template_radio = app.screen.query_one("#format-template", RadioButton)
+            template_radio.toggle()
+            await pilot.pause()
+
+            # Export
+            export_btn = app.screen.query_one("#export-btn", Button)
+            export_btn.press()
+            await pilot.pause()
+
+            # Template file should exist with .j2 extension
+            assert expected_output.exists()
+            content = expected_output.read_text()
+            assert "{% for passinfo in passes %}" in content
+
+    @pytest.mark.asyncio
+    async def test_empty_filename_shows_error(self) -> None:
+        """Export with empty filename should show error."""
+        from textual.widgets import Button
+        from textual.widgets import Input
+        from vtap100.tui.app import VTAPEditorApp
+        from vtap100.tui.screens.export_dialog import ExportDialog
+
+        app = VTAPEditorApp()
+
+        async with app.run_test() as pilot:
+            await pilot.pause()
+            await pilot.press("ctrl+e")
+            await pilot.pause()
+
+            assert isinstance(app.screen, ExportDialog)
+
+            # Ensure filename is empty
+            filename_input = app.screen.query_one("#filename-input", Input)
+            filename_input.value = ""
+            await pilot.pause()
+
+            # Export should trigger error (not crash)
+            export_btn = app.screen.query_one("#export-btn", Button)
+            export_btn.press()
+            await pilot.pause()
+
+            # Should not crash - error notification shown
+
+    @pytest.mark.asyncio
+    async def test_filename_input_shows_again_when_file_reselected(self) -> None:
+        """Filename input should reappear when switching back to file target."""
+        from textual.widgets import Input
+        from textual.widgets import RadioButton
+        from vtap100.tui.app import VTAPEditorApp
+        from vtap100.tui.screens.export_dialog import ExportDialog
+
+        app = VTAPEditorApp()
+        async with app.run_test() as pilot:
+            await pilot.pause()
+            await pilot.press("ctrl+e")
+            await pilot.pause()
+
+            assert isinstance(app.screen, ExportDialog)
+            filename_input = app.screen.query_one("#filename-input", Input)
+
+            # Initially visible (file is default)
+            assert filename_input.display is True
+
+            # Switch to clipboard
+            clipboard_radio = app.screen.query_one("#target-clipboard", RadioButton)
+            clipboard_radio.toggle()
+            await pilot.pause()
+            assert filename_input.display is False
+
+            # Switch back to file
+            file_radio = app.screen.query_one("#target-file", RadioButton)
+            file_radio.toggle()
+            await pilot.pause()
+            assert filename_input.display is True
+
+    @pytest.mark.asyncio
+    async def test_file_export_clears_unsaved_changes(self, tmp_path) -> None:
+        """File export should clear the unsaved changes flag."""
+        from textual.widgets import Button
+        from textual.widgets import Input
+        from vtap100.tui.app import VTAPEditorApp
+        from vtap100.tui.screens.export_dialog import ExportDialog
+
+        output_file = tmp_path / "config.txt"
+        app = VTAPEditorApp()
+
+        async with app.run_test() as pilot:
+            await pilot.pause()
+
+            # Mark as having unsaved changes
+            app.has_unsaved_changes = True
+
+            # Open export dialog
+            await pilot.press("ctrl+e")
+            await pilot.pause()
+
+            assert isinstance(app.screen, ExportDialog)
+
+            # Enter filename and export
+            filename_input = app.screen.query_one("#filename-input", Input)
+            filename_input.value = str(output_file)
+            await pilot.pause()
+
+            export_btn = app.screen.query_one("#export-btn", Button)
+            export_btn.press()
+            await pilot.pause()
+
+            # Unsaved changes should be cleared
+            assert app.has_unsaved_changes is False
+
+    @pytest.mark.asyncio
+    async def test_clipboard_export_does_not_clear_unsaved_changes(self) -> None:
+        """Clipboard export should NOT clear the unsaved changes flag."""
+        from textual.widgets import Button
+        from textual.widgets import RadioButton
+        from vtap100.tui.app import VTAPEditorApp
+        from vtap100.tui.screens.export_dialog import ExportDialog
+
+        app = VTAPEditorApp()
+
+        async with app.run_test() as pilot:
+            await pilot.pause()
+
+            # Mark as having unsaved changes
+            app.has_unsaved_changes = True
+
+            # Open export dialog
+            await pilot.press("ctrl+e")
+            await pilot.pause()
+
+            assert isinstance(app.screen, ExportDialog)
+
+            # Select clipboard target
+            clipboard_radio = app.screen.query_one("#target-clipboard", RadioButton)
+            clipboard_radio.toggle()
+            await pilot.pause()
+
+            # Export to clipboard
+            with patch("pyperclip.copy"):
+                export_btn = app.screen.query_one("#export-btn", Button)
+                export_btn.press()
+                await pilot.pause()
+
+            # Unsaved changes should still be True (clipboard is not a save)
+            assert app.has_unsaved_changes is True

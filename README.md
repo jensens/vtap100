@@ -4,6 +4,7 @@ A Python tool for generating configuration files for the **dotOrigin VTAP100** N
 
 ## Features
 
+- **TUI Editor** - Visual terminal interface for configuration
 - **Apple VAS** (Value Added Services) configuration
 - **Google Smart Tap** configuration
 - **Keyboard emulation** settings
@@ -13,66 +14,55 @@ A Python tool for generating configuration files for the **dotOrigin VTAP100** N
 - **Validation** of all parameters
 - **Rich CLI** with colored output
 
-## Installation
+## Usage
+
+### Run directly with uvx (no installation)
 
 ```bash
-# With uv (recommended)
-uv sync
+# TUI Editor
+uvx vtap100 editor
+uvx vtap100 editor config.txt
 
-# Development dependencies
-uv sync --extra dev
+# Generate configuration
+uvx vtap100 generate --apple-vas pass.com.example.mypass --key-slot 1
 
-# Alternatively with pip
-pip install -e ".[dev]"
+# Interactive wizard
+uvx vtap100 wizard
 ```
 
-## Quickstart
-
-### Apple VAS Configuration
+### Install from PyPI
 
 ```bash
-vtap100 generate --apple-vas pass.com.example.mypass --key-slot 1 --output ./config.txt
+# With uv
+uv tool install vtap100
+
+# With pip
+pip install vtap100
 ```
 
-### Google Smart Tap Configuration
+Then use without `uvx` prefix:
 
 ```bash
-vtap100 generate --google-st 96972794 --key-slot 2 --key-version 1 --output ./config.txt
-```
-
-### TUI Editor
-
-Launch the full-featured terminal user interface for configuration:
-
-```bash
-# Start with empty configuration
-vtap100 editor
-
-# Edit existing configuration file
 vtap100 editor config.txt
 ```
 
-The TUI editor provides:
-- Visual configuration of Apple VAS and Google Smart Tap
-- DESFire and NFC tag settings
-- LED/Buzzer feedback configuration
-- Live preview of generated configuration
-- Load/Save/Export functionality
-- Bilingual interface (English/German)
+## TUI Editor
 
-### Interactive Wizard
-
-For quick step-by-step configuration:
+Launch the full-featured terminal user interface:
 
 ```bash
-vtap100 wizard
+vtap100 editor              # New configuration
+vtap100 editor config.txt   # Edit existing file
 ```
 
-### Validate Configuration
+Features:
+- Visual configuration of all settings
+- Live preview of generated config.txt
+- Context-sensitive help
+- Load/Save/Export
+- Bilingual (English/German)
 
-```bash
-vtap100 validate ./config.txt
-```
+See [TUI Editor Documentation](https://github.com/jensens/vtap100/blob/main/docs/tui.md) for keyboard shortcuts and details.
 
 ## Documentation
 
@@ -87,22 +77,7 @@ Detailed documentation can be found in the [docs/](https://github.com/jensens/vt
 
 ## Development
 
-This project uses **Test-Driven Development (TDD)**.
-
-```bash
-# Run tests
-uv run pytest
-
-# With coverage
-uv run pytest --cov=vtap100 --cov-report=html
-
-# Linting
-uv run ruff check src tests
-uv run ruff format src tests
-
-# Type checking
-uv run mypy src
-```
+See [docs/development.md](https://github.com/jensens/vtap100/blob/main/docs/development.md) for the full development guide (TDD, testing, TUI architecture).
 
 ## License
 
