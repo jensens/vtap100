@@ -54,14 +54,14 @@ vtap100 validate ./config.txt
 
 ## Documentation
 
-Detailed documentation can be found in the [docs/](docs/) directory:
+Detailed documentation can be found in the [docs/](https://github.com/jensens/vtap100/tree/main/docs) directory:
 
-- [Quickstart](docs/quickstart.md)
-- [Apple VAS Configuration](docs/configuration/apple_vas.md)
-- [Google Smart Tap Configuration](docs/configuration/google_smarttap.md)
-- [Keyboard Emulation](docs/configuration/keyboard.md)
-- [Deployment to Reader](docs/deployment/upload_to_reader.md)
-- [Reference Sources](docs/references/sources.md)
+- [Quickstart](https://github.com/jensens/vtap100/blob/main/docs/quickstart.md)
+- [Apple VAS Configuration](https://github.com/jensens/vtap100/blob/main/docs/configuration/apple_vas.md)
+- [Google Smart Tap Configuration](https://github.com/jensens/vtap100/blob/main/docs/configuration/google_smarttap.md)
+- [Keyboard Emulation](https://github.com/jensens/vtap100/blob/main/docs/configuration/keyboard.md)
+- [Deployment to Reader](https://github.com/jensens/vtap100/blob/main/docs/deployment/upload_to_reader.md)
+- [Reference Sources](https://github.com/jensens/vtap100/blob/main/docs/references/sources.md)
 
 ## Development
 
@@ -84,7 +84,7 @@ uv run mypy src
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) for details.
+MIT License - see [LICENSE](https://github.com/jensens/vtap100/blob/main/LICENSE) for details.
 
 ## Links
 
