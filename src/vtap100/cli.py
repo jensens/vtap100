@@ -41,8 +41,7 @@ def print_header() -> None:
     """Print the CLI header with version info."""
     console.print(
         Panel.fit(
-            f"[bold blue]VTAP100 Configuration Generator[/bold blue]\n"
-            f"[dim]Version {__version__}[/dim]",
+            f"[bold blue]VTAP100 Editor[/bold blue] [dim]{__version__}[/dim]",
             border_style="blue",
         )
     )
