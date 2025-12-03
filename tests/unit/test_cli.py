@@ -491,3 +491,392 @@ class TestWizardCommand:
         result = runner.invoke(main, ["wizard", "--help"])
         assert result.exit_code == 0
         assert "Interactive wizard" in result.output
+
+    def test_wizard_skipping_all_sections(self) -> None:
+        """Wizard should work when all sections are skipped."""
+        runner = CliRunner()
+        # Answer 'n' to all config questions, then provide output filename
+        inputs = "\n".join(
+            [
+                "n",  # Apple VAS
+                "n",  # Google Smart Tap
+                "n",  # NFC Tags
+                "n",  # MIFARE DESFire
+                "n",  # Keyboard Emulation
+                "n",  # LED/Beep Feedback
+                "wizard_output.txt",  # Output file
+                "n",  # Don't save
+            ]
+        )
+        result = runner.invoke(main, ["wizard"], input=inputs)
+        assert result.exit_code == 0
+        assert "VTAPconfig" in result.output or "Wizard" in result.output
+
+    def test_wizard_with_apple_vas(self) -> None:
+        """Wizard should configure Apple VAS."""
+        runner = CliRunner()
+        with runner.isolated_filesystem():
+            inputs = "\n".join(
+                [
+                    "y",  # Apple VAS
+                    "pass.com.example.test",  # Merchant ID
+                    "1",  # Key slot
+                    "n",  # Google Smart Tap
+                    "n",  # NFC Tags
+                    "n",  # MIFARE DESFire
+                    "y",  # Keyboard Emulation
+                    "A1",  # KBSource
+                    "n",  # Extended keyboard options
+                    "n",  # LED/Beep Feedback
+                    "wizard_vas.txt",  # Output file
+                    "y",  # Save
+                ]
+            )
+            result = runner.invoke(main, ["wizard"], input=inputs)
+            assert result.exit_code == 0
+            assert Path("wizard_vas.txt").exists()
+            content = Path("wizard_vas.txt").read_text()
+            assert "VAS1MerchantID=pass.com.example.test" in content
+
+    def test_wizard_with_google_smarttap(self) -> None:
+        """Wizard should configure Google Smart Tap."""
+        runner = CliRunner()
+        with runner.isolated_filesystem():
+            inputs = "\n".join(
+                [
+                    "n",  # Apple VAS
+                    "y",  # Google Smart Tap
+                    "96972794",  # Collector ID
+                    "2",  # Key slot
+                    "1",  # Key version
+                    "n",  # NFC Tags
+                    "n",  # MIFARE DESFire
+                    "y",  # Keyboard Emulation
+                    "G1",  # KBSource
+                    "n",  # Extended keyboard options
+                    "n",  # LED/Beep Feedback
+                    "wizard_st.txt",  # Output file
+                    "y",  # Save
+                ]
+            )
+            result = runner.invoke(main, ["wizard"], input=inputs)
+            assert result.exit_code == 0
+            assert Path("wizard_st.txt").exists()
+            content = Path("wizard_st.txt").read_text()
+            assert "ST1CollectorID=96972794" in content
+
+    def test_wizard_with_nfc_tags(self) -> None:
+        """Wizard should configure NFC tags."""
+        runner = CliRunner()
+        with runner.isolated_filesystem():
+            inputs = "\n".join(
+                [
+                    "n",  # Apple VAS
+                    "n",  # Google Smart Tap
+                    "y",  # NFC Tags
+                    "U",  # Type 2 mode (UID)
+                    "N",  # Type 4 mode (NDEF)
+                    "0",  # Type 5 mode (disabled)
+                    "n",  # Ignore random UID
+                    "n",  # MIFARE DESFire
+                    "y",  # Keyboard Emulation
+                    "241",  # KBSource
+                    "n",  # Extended keyboard options
+                    "n",  # LED/Beep Feedback
+                    "wizard_nfc.txt",  # Output file
+                    "y",  # Save
+                ]
+            )
+            result = runner.invoke(main, ["wizard"], input=inputs)
+            assert result.exit_code == 0
+            assert Path("wizard_nfc.txt").exists()
+            content = Path("wizard_nfc.txt").read_text()
+            assert "NFCType2=U" in content
+            assert "NFCType4=N" in content
+
+    def test_wizard_with_nfc_ignore_random_uid(self) -> None:
+        """Wizard should configure NFC with ignore random UID."""
+        runner = CliRunner()
+        with runner.isolated_filesystem():
+            inputs = "\n".join(
+                [
+                    "n",  # Apple VAS
+                    "n",  # Google Smart Tap
+                    "y",  # NFC Tags
+                    "U",  # Type 2 mode
+                    "0",  # Type 4 mode
+                    "0",  # Type 5 mode
+                    "y",  # Ignore random UID
+                    "n",  # MIFARE DESFire
+                    "n",  # Keyboard Emulation
+                    "n",  # LED/Beep Feedback
+                    "wizard_nfc_rand.txt",  # Output file
+                    "y",  # Save
+                ]
+            )
+            result = runner.invoke(main, ["wizard"], input=inputs)
+            assert result.exit_code == 0
+            assert Path("wizard_nfc_rand.txt").exists()
+            content = Path("wizard_nfc_rand.txt").read_text()
+            assert "IgnoreRandomUID=1" in content
+
+    def test_wizard_with_desfire(self) -> None:
+        """Wizard should configure MIFARE DESFire."""
+        runner = CliRunner()
+        with runner.isolated_filesystem():
+            inputs = "\n".join(
+                [
+                    "n",  # Apple VAS
+                    "n",  # Google Smart Tap
+                    "n",  # NFC Tags
+                    "y",  # MIFARE DESFire
+                    "AABBCC",  # App ID
+                    "1",  # File ID
+                    "1",  # Key slot
+                    "3",  # Crypto (AES)
+                    "n",  # Add another app
+                    "n",  # Keyboard Emulation
+                    "n",  # LED/Beep Feedback
+                    "wizard_desfire.txt",  # Output file
+                    "y",  # Save
+                ]
+            )
+            result = runner.invoke(main, ["wizard"], input=inputs)
+            assert result.exit_code == 0
+            assert Path("wizard_desfire.txt").exists()
+            content = Path("wizard_desfire.txt").read_text()
+            assert "DESFire1AppID=AABBCC" in content
+
+    def test_wizard_with_keyboard_extended(self) -> None:
+        """Wizard should configure extended keyboard options."""
+        runner = CliRunner()
+        with runner.isolated_filesystem():
+            inputs = "\n".join(
+                [
+                    "n",  # Apple VAS
+                    "n",  # Google Smart Tap
+                    "n",  # NFC Tags
+                    "n",  # MIFARE DESFire
+                    "y",  # Keyboard Emulation
+                    "A1",  # KBSource
+                    "y",  # Extended keyboard options
+                    "PREFIX_",  # Prefix
+                    "%0D",  # Postfix
+                    "10",  # Delay
+                    "n",  # LED/Beep Feedback
+                    "wizard_kb.txt",  # Output file
+                    "y",  # Save
+                ]
+            )
+            result = runner.invoke(main, ["wizard"], input=inputs)
+            assert result.exit_code == 0
+            assert Path("wizard_kb.txt").exists()
+            content = Path("wizard_kb.txt").read_text()
+            assert "KBPrefix=PREFIX_" in content
+            assert "KBPostfix=%0D" in content
+
+    def test_wizard_with_led_feedback(self) -> None:
+        """Wizard should configure LED feedback."""
+        runner = CliRunner()
+        with runner.isolated_filesystem():
+            inputs = "\n".join(
+                [
+                    "n",  # Apple VAS
+                    "n",  # Google Smart Tap
+                    "n",  # NFC Tags
+                    "n",  # MIFARE DESFire
+                    "n",  # Keyboard Emulation
+                    "y",  # LED/Beep Feedback
+                    "y",  # LED configuration
+                    "3",  # LED mode (Custom)
+                    "y",  # LED for successful scan
+                    "00FF00",  # Color
+                    "2",  # Repeats
+                    "y",  # LED for error
+                    "FF0000",  # Color
+                    "3",  # Repeats
+                    "n",  # Beep configuration
+                    "wizard_led.txt",  # Output file
+                    "y",  # Save
+                ]
+            )
+            result = runner.invoke(main, ["wizard"], input=inputs)
+            assert result.exit_code == 0
+            assert Path("wizard_led.txt").exists()
+            content = Path("wizard_led.txt").read_text()
+            assert "LEDMode=3" in content
+            assert "PassLED=" in content
+
+    def test_wizard_with_beep_feedback(self) -> None:
+        """Wizard should configure beep feedback."""
+        runner = CliRunner()
+        with runner.isolated_filesystem():
+            inputs = "\n".join(
+                [
+                    "n",  # Apple VAS
+                    "n",  # Google Smart Tap
+                    "n",  # NFC Tags
+                    "n",  # MIFARE DESFire
+                    "n",  # Keyboard Emulation
+                    "y",  # LED/Beep Feedback
+                    "n",  # LED configuration
+                    "y",  # Beep configuration
+                    "y",  # Beep for successful scan
+                    "2",  # Repeats
+                    "y",  # Beep for error
+                    "3",  # Repeats
+                    "200",  # On time
+                    "wizard_beep.txt",  # Output file
+                    "y",  # Save
+                ]
+            )
+            result = runner.invoke(main, ["wizard"], input=inputs)
+            assert result.exit_code == 0
+            assert Path("wizard_beep.txt").exists()
+            content = Path("wizard_beep.txt").read_text()
+            assert "PassBeep=" in content
+
+    def test_wizard_invalid_apple_vas(self) -> None:
+        """Wizard should handle invalid Apple VAS merchant ID."""
+        runner = CliRunner()
+        inputs = "\n".join(
+            [
+                "y",  # Apple VAS
+                "invalid",  # Invalid Merchant ID (missing pass. prefix)
+                "1",  # Key slot
+                "n",  # Google Smart Tap
+                "n",  # NFC Tags
+                "n",  # MIFARE DESFire
+                "n",  # Keyboard Emulation
+                "n",  # LED/Beep Feedback
+                "wizard_invalid.txt",  # Output file
+                "n",  # Don't save
+            ]
+        )
+        result = runner.invoke(main, ["wizard"], input=inputs)
+        assert "Ungültige Konfiguration" in result.output
+
+    def test_wizard_invalid_desfire_app_id(self) -> None:
+        """Wizard should handle invalid DESFire App ID."""
+        runner = CliRunner()
+        inputs = "\n".join(
+            [
+                "n",  # Apple VAS
+                "n",  # Google Smart Tap
+                "n",  # NFC Tags
+                "y",  # MIFARE DESFire
+                "INVALID123",  # Invalid App ID (too long, not 6 hex chars)
+                "1",  # File ID
+                "1",  # Key slot
+                "0",  # Crypto
+                "n",  # Add another app
+                "n",  # Keyboard Emulation
+                "n",  # LED/Beep Feedback
+                "wizard_invalid_df.txt",  # Output file
+                "n",  # Don't save
+            ]
+        )
+        result = runner.invoke(main, ["wizard"], input=inputs)
+        assert "Ungültige Konfiguration" in result.output
+
+    def test_wizard_with_multiple_desfire_apps(self) -> None:
+        """Wizard should allow adding multiple DESFire apps."""
+        runner = CliRunner()
+        with runner.isolated_filesystem():
+            inputs = "\n".join(
+                [
+                    "n",  # Apple VAS
+                    "n",  # Google Smart Tap
+                    "n",  # NFC Tags
+                    "y",  # MIFARE DESFire
+                    "AABBCC",  # App 1 ID
+                    "1",  # File ID
+                    "1",  # Key slot
+                    "1",  # Crypto (3DES)
+                    "y",  # Add another app
+                    "DDEEFF",  # App 2 ID
+                    "2",  # File ID
+                    "0",  # Key slot (none)
+                    "0",  # Crypto (none)
+                    "n",  # Add another app
+                    "n",  # Keyboard Emulation
+                    "n",  # LED/Beep Feedback
+                    "wizard_multi_df.txt",  # Output file
+                    "y",  # Save
+                ]
+            )
+            result = runner.invoke(main, ["wizard"], input=inputs)
+            assert result.exit_code == 0
+            assert Path("wizard_multi_df.txt").exists()
+            content = Path("wizard_multi_df.txt").read_text()
+            assert "DESFire1AppID=AABBCC" in content
+            assert "DESFire2AppID=DDEEFF" in content
+
+    def test_wizard_with_led_mode_non_custom(self) -> None:
+        """Wizard should handle LED modes other than custom."""
+        runner = CliRunner()
+        with runner.isolated_filesystem():
+            inputs = "\n".join(
+                [
+                    "n",  # Apple VAS
+                    "n",  # Google Smart Tap
+                    "n",  # NFC Tags
+                    "n",  # MIFARE DESFire
+                    "n",  # Keyboard Emulation
+                    "y",  # LED/Beep Feedback
+                    "y",  # LED configuration
+                    "2",  # LED mode (Status)
+                    "n",  # Beep configuration
+                    "wizard_led_status.txt",  # Output file
+                    "y",  # Save
+                ]
+            )
+            result = runner.invoke(main, ["wizard"], input=inputs)
+            assert result.exit_code == 0
+            assert Path("wizard_led_status.txt").exists()
+            content = Path("wizard_led_status.txt").read_text()
+            assert "LEDMode=2" in content
+
+
+class TestEditorCommandExecution:
+    """Test actual execution of editor command."""
+
+    def test_editor_calls_tui_run(self) -> None:
+        """Editor command should call the TUI run function."""
+        runner = CliRunner()
+        with patch("vtap100.tui.run") as mock_run:
+            result = runner.invoke(main, ["editor"])
+            mock_run.assert_called_once_with(input_path=None, output_path=None)
+            assert result.exit_code == 0
+
+    def test_editor_with_input_file(self) -> None:
+        """Editor command should pass input file to TUI."""
+        runner = CliRunner()
+        with runner.isolated_filesystem():
+            Path("config.txt").write_text("!VTAPconfig\n")
+            with patch("vtap100.tui.run") as mock_run:
+                runner.invoke(main, ["editor", "config.txt"])
+                mock_run.assert_called_once()
+                call_args = mock_run.call_args
+                assert call_args[1]["input_path"] == Path("config.txt")
+
+    def test_editor_with_output_option(self) -> None:
+        """Editor command should pass output option to TUI."""
+        runner = CliRunner()
+        with patch("vtap100.tui.run") as mock_run:
+            runner.invoke(main, ["editor", "-o", "output.txt"])
+            mock_run.assert_called_once()
+            call_args = mock_run.call_args
+            assert call_args[1]["output_path"] == Path("output.txt")
+
+    def test_editor_with_both_input_and_output(self) -> None:
+        """Editor command should pass both input and output to TUI."""
+        runner = CliRunner()
+        with runner.isolated_filesystem():
+            Path("input.txt").write_text("!VTAPconfig\n")
+            with patch("vtap100.tui.run") as mock_run:
+                runner.invoke(main, ["editor", "input.txt", "-o", "output.txt"])
+                mock_run.assert_called_once()
+                call_args = mock_run.call_args
+                assert call_args[1]["input_path"] == Path("input.txt")
+                assert call_args[1]["output_path"] == Path("output.txt")
