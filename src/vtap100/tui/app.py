@@ -7,6 +7,7 @@ from enum import Enum
 from pathlib import Path
 from textual.app import App
 from textual.reactive import reactive
+from vtap100 import __version__
 from vtap100.generator import ConfigGenerator
 from vtap100.models.config import VTAPConfig
 from vtap100.parser import parse
@@ -40,6 +41,7 @@ class VTAPEditorApp(App):
         current_field: Currently focused field for context-sensitive help.
     """
 
+    TITLE = f"VTAP100 Editor {__version__}"
     CSS_PATH = "styles/editor.tcss"
 
     BINDINGS = [
