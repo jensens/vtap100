@@ -213,6 +213,48 @@ KBSource=AG
         assert config.keyboard is not None
 
 
+class TestConfigParserIncompleteData:
+    """Test parsing incomplete configuration data."""
+
+    def test_parse_vas_without_merchant_id(self) -> None:
+        """VAS config with only key_slot should not create config."""
+        from vtap100.parser import parse
+
+        content = """!VTAPconfig
+VAS1KeySlot=1
+"""
+        config = parse(content)
+        # Should not create VAS config since merchant_id is required
+        assert len(config.vas_configs) == 0
+
+    def test_parse_smarttap_without_collector_id(self) -> None:
+        """Smart Tap config with only key_slot should not create config."""
+        from vtap100.parser import parse
+
+        content = """!VTAPconfig
+ST1KeySlot=2
+ST1KeyVersion=1
+"""
+        config = parse(content)
+        # Should not create SmartTap config since collector_id is required
+        assert len(config.smarttap_configs) == 0
+
+    def test_parse_vas_partial_then_complete(self) -> None:
+        """VAS config partial data followed by complete config."""
+        from vtap100.parser import parse
+
+        content = """!VTAPconfig
+VAS1KeySlot=1
+VAS2MerchantID=pass.com.example.test
+VAS2KeySlot=2
+"""
+        config = parse(content)
+        # Only VAS2 should be created since VAS1 has no merchant_id
+        assert len(config.vas_configs) == 1
+        assert config.vas_configs[0].merchant_id == "pass.com.example.test"
+        assert config.vas_configs[0].key_slot == 2
+
+
 class TestConfigParserRoundTrip:
     """Test generate -> parse roundtrip."""
 

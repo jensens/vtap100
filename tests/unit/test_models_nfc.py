@@ -459,3 +459,55 @@ class TestTagReadConfigOutput:
         assert "TagReadLength=8" in lines
         assert "TagReadFormat=a" in lines
         assert "TagReadMinDigits=A" in lines
+
+
+class TestNFCTagConfigWithTagRead:
+    """Tests for NFCTagConfig with TagReadConfig."""
+
+    def test_nfc_config_with_tag_read(self) -> None:
+        """NFC config with tag_read should extend lines."""
+        from vtap100.models.nfc import NFCTagConfig
+        from vtap100.models.nfc import NFCTagMode
+        from vtap100.models.nfc import TagReadConfig
+
+        tag_read = TagReadConfig(block_num=10, length=8)
+        config = NFCTagConfig(type2=NFCTagMode.BLOCK, tag_read=tag_read)
+        lines = config.to_config_lines()
+
+        assert "NFCType2=B" in lines
+        assert "TagReadBlockNum=10" in lines
+        assert "TagReadLength=8" in lines
+
+    def test_nfc_config_with_full_tag_read(self) -> None:
+        """NFC config with full tag_read config."""
+        from vtap100.models.nfc import NFCTagConfig
+        from vtap100.models.nfc import NFCTagMode
+        from vtap100.models.nfc import TagKeyType
+        from vtap100.models.nfc import TagReadConfig
+        from vtap100.models.nfc import TagReadFormat
+
+        tag_read = TagReadConfig(
+            block_num=5,
+            key_slot=2,
+            key_type=TagKeyType.A,
+            offset=4,
+            length=8,
+            format=TagReadFormat.HEX,
+            min_digits=10,
+        )
+        config = NFCTagConfig(
+            type2=NFCTagMode.BLOCK,
+            type4=NFCTagMode.UID,
+            tag_read=tag_read,
+        )
+        lines = config.to_config_lines()
+
+        assert "NFCType2=B" in lines
+        assert "NFCType4=U" in lines
+        assert "TagReadBlockNum=5" in lines
+        assert "TagReadKeySlot=2" in lines
+        assert "TagReadKeyType=A" in lines
+        assert "TagReadOffset=4" in lines
+        assert "TagReadLength=8" in lines
+        assert "TagReadFormat=h" in lines
+        assert "TagReadMinDigits=10" in lines

@@ -103,6 +103,13 @@ class TestLEDSequence:
         with pytest.raises(ValidationError):
             LEDSequence(color="FF00")
 
+    def test_led_sequence_color_invalid_hex(self) -> None:
+        """Color with invalid hex characters should fail."""
+        from vtap100.models.feedback import LEDSequence
+
+        with pytest.raises(ValidationError):
+            LEDSequence(color="GGHHII")
+
     def test_led_sequence_on_ms_range(self) -> None:
         """On time must be 0-65535."""
         from vtap100.models.feedback import LEDSequence
@@ -303,6 +310,13 @@ class TestLEDConfig:
 
         with pytest.raises(ValidationError):
             LEDConfig(default_rgb="invalid")
+
+    def test_led_config_default_rgb_invalid_hex(self) -> None:
+        """Default RGB with invalid hex characters should fail."""
+        from vtap100.models.feedback import LEDConfig
+
+        with pytest.raises(ValidationError):
+            LEDConfig(default_rgb="GGHHII")
 
     def test_led_config_pass_led(self) -> None:
         """Can set pass LED sequence."""

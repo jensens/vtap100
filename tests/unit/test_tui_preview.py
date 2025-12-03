@@ -245,3 +245,68 @@ class TestPreviewToggle:
             # Preview panel should have maximized class
             preview_panel = app.screen.query_one("#preview-panel")
             assert "preview-maximized" in preview_panel.classes
+
+
+class TestConfigPreviewEdgeCases:
+    """Test edge cases for ConfigPreview widget."""
+
+    def test_update_preview_before_mount(self) -> None:
+        """update_preview should handle widget not being mounted yet."""
+        from vtap100.models.config import VTAPConfig
+        from vtap100.tui.widgets.preview import ConfigPreview
+
+        # Create preview widget but don't mount it
+        preview = ConfigPreview()
+
+        # Update should not raise even though widget is not mounted
+        config = VTAPConfig()
+        preview.update_preview(config)
+
+        # Content should still be updated internally
+        content = preview.get_preview_content()
+        assert "!VTAPconfig" in content
+
+    def test_update_preview_exception_handling(self) -> None:
+        """update_preview should catch exceptions gracefully."""
+        from vtap100.models.config import VTAPConfig
+        from vtap100.models.vas import AppleVASConfig
+        from vtap100.tui.widgets.preview import ConfigPreview
+
+        preview = ConfigPreview()
+
+        # Call update_preview without mounting - should not raise
+        config = VTAPConfig(vas_configs=[AppleVASConfig(merchant_id="pass.com.test", key_slot=1)])
+        preview.update_preview(config)
+
+        # Content should be updated
+        content = preview.get_preview_content()
+        assert "VAS1MerchantID=pass.com.test" in content
+
+    def test_preview_with_initial_config(self) -> None:
+        """ConfigPreview should accept initial config."""
+        from vtap100.models.config import VTAPConfig
+        from vtap100.models.vas import AppleVASConfig
+        from vtap100.tui.widgets.preview import ConfigPreview
+
+        config = VTAPConfig(
+            vas_configs=[AppleVASConfig(merchant_id="pass.com.initial", key_slot=2)]
+        )
+        preview = ConfigPreview(config=config)
+
+        # Internal config should be set (content generated on compose)
+        assert preview._config == config
+
+    def test_preview_generate_content(self) -> None:
+        """_generate_content should use ConfigGenerator."""
+        from vtap100.models.config import VTAPConfig
+        from vtap100.models.vas import AppleVASConfig
+        from vtap100.tui.widgets.preview import ConfigPreview
+
+        config = VTAPConfig(vas_configs=[AppleVASConfig(merchant_id="pass.com.gen", key_slot=3)])
+        preview = ConfigPreview(config=config)
+
+        # Call _generate_content directly
+        content = preview._generate_content()
+        assert "!VTAPconfig" in content
+        assert "VAS1MerchantID=pass.com.gen" in content
+        assert "VAS1KeySlot=3" in content

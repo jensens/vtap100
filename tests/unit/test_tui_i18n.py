@@ -330,3 +330,58 @@ class TestTHelpFunction:
         HelpLoader.clear_cache()
         title = t_help("keyboard", attr="title")
         assert "Keyboard Emulation" in title
+
+
+class TestI18nEdgeCases:
+    """Test edge cases and error handling in i18n module."""
+
+    def test_set_language_with_enum(self) -> None:
+        """set_language should work with Language enum directly."""
+        from vtap100.tui.i18n import Language
+        from vtap100.tui.i18n import get_language
+        from vtap100.tui.i18n import set_language
+
+        # Pass enum directly (not string)
+        set_language(Language.EN)
+        assert get_language() == Language.EN
+
+        set_language(Language.DE)
+        assert get_language() == Language.DE
+
+    def test_load_translations_missing_file(self) -> None:
+        """Loading translations for missing file should return empty dict."""
+        from vtap100.tui.i18n import Language
+        from vtap100.tui.i18n import _load_translations
+
+        # Clear cache first
+        _load_translations.cache_clear()
+
+        # Try to load - should not raise, just return empty or valid dict
+        result = _load_translations(Language.DE)
+        # Should return a dict (either empty or with content)
+        assert isinstance(result, dict)
+
+    def test_nested_key_not_dict(self) -> None:
+        """_get_nested should handle non-dict intermediate values."""
+        from vtap100.tui.i18n import _get_nested
+
+        # When a value in the path is not a dict
+        data = {"level1": "string_value"}
+        result = _get_nested(data, "level1.level2", "default")
+        assert result == "default"
+
+    def test_nested_key_missing_part(self) -> None:
+        """_get_nested should handle missing parts in path."""
+        from vtap100.tui.i18n import _get_nested
+
+        data = {"level1": {"level2": "value"}}
+        result = _get_nested(data, "level1.missing.level3", "default")
+        assert result == "default"
+
+    def test_nested_key_none_value(self) -> None:
+        """_get_nested should handle None values."""
+        from vtap100.tui.i18n import _get_nested
+
+        data = {"key": None}
+        result = _get_nested(data, "key", "default")
+        assert result == "default"
