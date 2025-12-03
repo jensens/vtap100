@@ -15,13 +15,17 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  qa:
+    uses: "./.github/workflows/qa.yaml"
+
   tests:
-    uses: "./.github/workflows/tests.yml"
+    uses: "./.github/workflows/tests.yaml"
 
   # Always build & lint package.
   build-package:
     name: Build & verify package
     needs:
+      - qa
       - tests
     runs-on: ubuntu-latest
     permissions:

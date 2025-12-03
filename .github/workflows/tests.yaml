@@ -1,15 +1,7 @@
 name: Tests
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
   workflow_call:
-
-concurrency:
-  group: tests-${{ github.ref }}
-  cancel-in-progress: true
 
 jobs:
   test:
