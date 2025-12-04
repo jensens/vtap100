@@ -6,9 +6,12 @@ Welcome to the VTAP100 Configuration Generator documentation.
 
 ### Getting Started
 - [Quickstart](quickstart.md) - Get started in minutes
+- [Wizard Guide](wizard.md) - Interactive configuration wizard
 - [TUI Editor](tui.md) - Visual configuration editor
+- [Python API](api.md) - Use as a library
 
-### Configuration (Phase 1-5 - Complete)
+### Configuration
+- [Settings Reference](configuration/settings_reference.md) - All parameters at a glance
 - [Overview](configuration/overview.md) - config.txt format and basics
 - [Apple VAS](configuration/apple_vas.md) - Apple Wallet Value Added Services
 - [Google Smart Tap](configuration/google_smarttap.md) - Google Wallet Smart Tap
@@ -20,33 +23,29 @@ Welcome to the VTAP100 Configuration Generator documentation.
 ### Deployment
 - [Upload to Reader](deployment/upload_to_reader.md) - File transfer
 
-### Examples (integrated in documentation)
-Examples can be found in the respective configuration pages:
-- Apple VAS examples: see [Apple VAS](configuration/apple_vas.md)
-- Google Smart Tap examples: see [Google Smart Tap](configuration/google_smarttap.md)
-- Combined configuration: see [Quickstart](quickstart.md)
+### Troubleshooting
+- [Troubleshooting](troubleshooting.md) - Common issues and solutions
+
+### Reference
+- [CLI Reference](references/cli.md) - All commands and options
+- [Reference Sources](references/sources.md) - External links and resources
 
 ### Development
 - [Developer Guide](development.md) - TDD, testing, contributing
 - [Releasing](RELEASING.md) - Release process
 
-### Reference
-- [Reference Sources](references/sources.md) - All sources and links used
-
 ## About the Project
 
 The VTAP100 Configuration Generator is a Python tool for easily creating configuration files for the [Dot Origin VTAP100](https://www.vtapnfc.com/) NFC Reader.
 
-### Features (Phase 1-5 - Complete)
+### Features
 
-- Apple VAS support
-- Google Smart Tap support
-- Keyboard emulation (extended)
-- NFC tag support (Type 2, 4, 5)
-- MIFARE DESFire support
-- LED/Buzzer configuration
-- Validation
-- Rich CLI with colored output
+- Apple VAS and Google Smart Tap support
+- NFC tag support (Type 2, 4, 5) and MIFARE DESFire
+- Keyboard emulation with flexible data sources
+- LED/Buzzer feedback configuration
+- Interactive wizard, TUI editor, and CLI
+- Config validation
 
 ### Quickstart
 

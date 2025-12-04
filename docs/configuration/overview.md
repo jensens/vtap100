@@ -44,7 +44,7 @@ ST1KeyVersion=1
 
 ; Keyboard Emulation
 KBLogMode=1
-KBSource=AG1
+KBSource=81
 ```
 
 ## Parameter Categories
@@ -79,17 +79,22 @@ Up to 6 Smart Tap configurations possible (ST1 to ST6).
 
 ### KBSource Values
 
-The KBSource value is a hex string that defines the data sources:
+KBSource uses hexadecimal bitmasks:
 
-- `A` = Apple VAS data
-- `G` = Google Smart Tap data
-- `U` = UID of NFC card
-- `1-5` = Data bytes (1=first byte, 5=all bytes)
+| Bit | Value | Source |
+|-----|-------|--------|
+| 7 | 0x80 | Mobile Pass (Apple VAS / Google Smart Tap) |
+| 6 | 0x40 | STUID |
+| 5 | 0x20 | Card Emulation |
+| 2 | 0x04 | Scanners |
+| 1 | 0x02 | Command Interface |
+| 0 | 0x01 | Card/Tag UID |
 
 Examples:
-- `A1` = First byte of Apple VAS
-- `AG5` = All bytes from Apple and Google
-- `U1` = First byte of UID
+- `A5` = Mobile + Emulation + Scanners + UID (default)
+- `81` = Mobile Pass + Card/Tag UID
+- `80` = Mobile Pass only
+- `01` = Card/Tag UID only
 
 ## Private Keys
 

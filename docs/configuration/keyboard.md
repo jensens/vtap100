@@ -23,27 +23,35 @@ KBLogMode=0    ; Disabled
 
 ### KBSource
 
-Defines which data should be output. The value is a hex string.
+Defines which data sources trigger keyboard output. The value is a **hexadecimal bitmask**.
 
-**Data sources:**
-- `A` = Apple VAS data
-- `G` = Google Smart Tap data
-- `U` = UID of the NFC card/smartphone
+**Bit masks:**
 
-**Data amount:**
-- `1` = First byte
-- `2` = First two bytes
-- `3` = First three bytes
-- `4` = First four bytes
-- `5` = All bytes (complete data)
+| Bit | Hex Value | Source |
+|-----|-----------|--------|
+| 7 | 0x80 | Mobile Pass (Apple VAS / Google Smart Tap) |
+| 6 | 0x40 | STUID |
+| 5 | 0x20 | Card Emulation Write Mode |
+| 2 | 0x04 | Scanners |
+| 1 | 0x02 | Command Interface Messages |
+| 0 | 0x01 | Card/Tag UID |
+
+**Common values:**
+
+| Value | Description |
+|-------|-------------|
+| A5 | Mobile Pass + Card Emulation + Scanners + UID (default) |
+| 81 | Mobile Pass + Card/Tag UID |
+| 80 | Mobile Pass only |
+| 01 | Card/Tag UID only |
 
 **Examples:**
 ```ini
-KBSource=A1     ; First byte of Apple VAS
-KBSource=G5     ; All bytes of Google Smart Tap
-KBSource=AG1    ; First byte of Apple and Google
-KBSource=U1     ; First byte of UID
-KBSource=AGU5   ; All data from all sources
+KBSource=A5     ; Default: Mobile passes, card emulation, scanners, UID
+KBSource=80     ; Mobile passes only (Apple VAS / Google Smart Tap)
+KBSource=81     ; Mobile passes + Card/Tag UID
+KBSource=01     ; Card/Tag UID only
+KBSource=E7     ; All sources enabled (0x80+0x40+0x20+0x04+0x02+0x01)
 ```
 
 ### KBEnable
@@ -149,12 +157,12 @@ from vtap100.models.keyboard import KeyboardConfig
 
 kb = KeyboardConfig(
     log_mode=True,
-    source="AG",
+    source="A5",
     enable=True
 )
 
 print(kb.to_config_lines())
-# ['KBLogMode=1', 'KBSource=AG']
+# ['KBLogMode=1', 'KBSource=A5']
 ```
 
 ### Extended Configuration
@@ -164,7 +172,7 @@ from vtap100.models.keyboard import KeyboardConfig
 
 kb = KeyboardConfig(
     log_mode=True,
-    source="AG",
+    source="81",            # Mobile Pass + UID
     prefix="$t:",           # Timestamp as prefix
     postfix="%0D%0A",       # CRLF instead of LF
     delay_ms=50,            # Slower output
@@ -175,49 +183,46 @@ kb = KeyboardConfig(
 )
 
 print(kb.to_config_lines())
-# ['KBLogMode=1', 'KBSource=AG', 'KBPrefix=$t:', 'KBPostfix=%0D%0A',
+# ['KBLogMode=1', 'KBSource=81', 'KBPrefix=$t:', 'KBPostfix=%0D%0A',
 #  'KBDelayMS=50', 'KBPassMode=1', 'KBPassSection=1',
 #  'KBPassSeparator=;', 'KBPassLength=32']
 ```
 
 ### KBSource Builder
 
-For more complex configurations there is a builder:
+For constructing hex bitmask values there is a fluent builder:
 
 ```python
 from vtap100.models.keyboard import KBSourceBuilder
 
-# Fluent API
+# Mobile Pass + Card/Tag UID
 source = (KBSourceBuilder()
-    .apple_vas()
-    .google_smarttap()
-    .all_bytes()
+    .mobile_pass()
+    .card_tag_uid()
     .build())
 
-print(source)  # "AG5"
+print(source)  # "81"
 
-# With UID
+# Default A5 configuration
 source = (KBSourceBuilder()
-    .uid()
-    .first_byte()
+    .mobile_pass()
+    .card_emulation()
+    .scanners()
+    .card_tag_uid()
     .build())
 
-print(source)  # "U1"
+print(source)  # "A5"
 ```
 
 ### Builder Methods
 
-**Data sources:**
-- `.apple_vas()` - Add Apple VAS
-- `.google_smarttap()` - Add Google Smart Tap
-- `.uid()` - Add UID
-
-**Data amount:**
-- `.first_byte()` - First byte only
-- `.first_two_bytes()` - First two bytes
-- `.first_three_bytes()` - First three bytes
-- `.first_four_bytes()` - First four bytes
-- `.all_bytes()` - All bytes
+**Data sources (each sets a bit):**
+- `.mobile_pass()` - Bit 7 (0x80): Apple VAS / Google Smart Tap
+- `.stuid()` - Bit 6 (0x40): STUID
+- `.card_emulation()` - Bit 5 (0x20): Card Emulation Write Mode
+- `.scanners()` - Bit 2 (0x04): Scanners
+- `.command_interface()` - Bit 1 (0x02): Command Interface Messages
+- `.card_tag_uid()` - Bit 0 (0x01): Card/Tag UID
 
 ## Complete Example
 
@@ -232,9 +237,9 @@ ST1CollectorID=96972794
 ST1KeySlot=2
 ST1KeyVersion=1
 
-; Keyboard Emulation - Output all data
+; Keyboard Emulation - Mobile passes + UID
 KBLogMode=1
-KBSource=AG5
+KBSource=81
 KBEnable=1
 ```
 
@@ -248,35 +253,35 @@ A1B2C3D4E5F6<Enter>
 
 ## Use Case Examples
 
-### POS System Integration
+### Mobile Pass Only
 
 ```ini
-; Only Apple VAS data, first byte
+; Only mobile passes (Apple VAS / Google Smart Tap)
 KBLogMode=1
-KBSource=A1
+KBSource=80
 ```
 
-### Logging/Debugging
+### Full Integration
 
 ```ini
-; All available data
+; Mobile passes + Card emulation + UID (common setup)
 KBLogMode=1
-KBSource=AGU5
+KBSource=A1
 ```
 
 ### UID-based Access Control
 
 ```ini
-; Output only UID
+; Output only Card/Tag UID
 KBLogMode=1
-KBSource=U5
+KBSource=01
 ```
 
 ## Tips
 
-1. **Test first with `U1`** - The UID is always available
-2. **For production systems**: Use specific sources (A or G), not all
-3. **For troubleshooting**: Check with `KBSource=AGU5` which data is actually arriving
+1. **Test first with `01`** - The Card/Tag UID is always available
+2. **For mobile passes**: Use `80` or `81` (mobile passes, optionally with UID)
+3. **Default `A5`**: Covers most use cases (mobile + emulation + scanners + UID)
 
 ## See Also
 

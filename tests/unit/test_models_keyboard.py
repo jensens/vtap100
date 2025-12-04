@@ -57,18 +57,18 @@ class TestKeyboardConfig:
         assert config.source == "FF"
 
     def test_keyboard_config_source_common_values(self) -> None:
-        """Source accepts common preset values."""
+        """Source accepts common hex bitmask values."""
         from vtap100.models.keyboard import KeyboardConfig
 
-        # A1 = Apple VAS only (A=Apple, 1=enable)
+        # 80 = Mobile pass only (0x80)
+        config = KeyboardConfig(source="80")
+        assert config.source == "80"
+
+        # A1 = Mobile pass + card emulation + card/tag UID (0x80+0x20+0x01)
         config = KeyboardConfig(source="A1")
         assert config.source == "A1"
 
-        # G1 = Google Smart Tap only
-        config = KeyboardConfig(source="G1")
-        assert config.source == "G1"
-
-        # A5 = Default (Apple + various)
+        # A5 = Default: mobile pass + card emulation + scanners + UID
         config = KeyboardConfig(source="A5")
         assert config.source == "A5"
 
@@ -150,121 +150,124 @@ class TestKeyboardConfigOutput:
         assert all(isinstance(line, str) for line in lines)
 
 
-class TestKBSourceHelper:
-    """Tests for KBSource helper to build source values."""
+class TestKBSourceBuilder:
+    """Tests for KBSourceBuilder - builds hex bitmask values.
 
-    def test_kb_source_apple_only(self) -> None:
-        """Can create source for Apple VAS only."""
+    KBSource uses hexadecimal bitmasks per official VTAP documentation:
+    - Bit 7 (0x80): Mobile Pass (Apple VAS / Google Smart Tap)
+    - Bit 6 (0x40): STUID
+    - Bit 5 (0x20): Card Emulation Write Mode
+    - Bit 2 (0x04): Scanners
+    - Bit 1 (0x02): Command Interface
+    - Bit 0 (0x01): Card/Tag UID
+
+    Reference: https://help.vtapnfc.com/en/Content/VTAP-Commands/Config-txt-KB-settings.htm
+    """
+
+    def test_kb_source_mobile_pass_only(self) -> None:
+        """Mobile pass only = 0x80 = '80'."""
         from vtap100.models.keyboard import KBSourceBuilder
 
-        source = KBSourceBuilder().apple_vas().build()
-        assert "A" in source
+        source = KBSourceBuilder().mobile_pass().build()
+        assert source == "80"
 
-    def test_kb_source_google_only(self) -> None:
-        """Can create source for Google Smart Tap only."""
+    def test_kb_source_card_tag_uid_only(self) -> None:
+        """Card/Tag UID only = 0x01 = '01'."""
         from vtap100.models.keyboard import KBSourceBuilder
 
-        source = KBSourceBuilder().google_smarttap().build()
-        assert "G" in source
+        source = KBSourceBuilder().card_tag_uid().build()
+        assert source == "01"
 
-    def test_kb_source_combined(self) -> None:
-        """Can create source for both Apple and Google."""
-        from vtap100.models.keyboard import KBSourceBuilder
-
-        source = KBSourceBuilder().apple_vas().google_smarttap().build()
-        assert "A" in source
-        assert "G" in source
-
-    def test_kb_source_with_nfc_type2(self) -> None:
-        """Can add NFC Type 2 to source."""
-        from vtap100.models.keyboard import KBSourceBuilder
-
-        source = KBSourceBuilder().nfc_type2().build()
-        assert "2" in source
-
-    def test_kb_source_with_nfc_type4(self) -> None:
-        """Can add NFC Type 4 to source."""
-        from vtap100.models.keyboard import KBSourceBuilder
-
-        source = KBSourceBuilder().nfc_type4().build()
-        assert "4" in source
-
-    def test_kb_source_empty_default(self) -> None:
-        """Empty builder should return default or raise."""
-        from vtap100.models.keyboard import KBSourceBuilder
-
-        # Building empty source might return "0" or raise
-        source = KBSourceBuilder().build()
-        assert source is not None
-
-    def test_kb_source_mifare(self) -> None:
-        """Can add MIFARE to source."""
-        from vtap100.models.keyboard import KBSourceBuilder
-
-        source = KBSourceBuilder().mifare().build()
-        assert "0" in source
-
-    def test_kb_source_nfc_type5(self) -> None:
-        """Can add NFC Type 5 to source."""
-        from vtap100.models.keyboard import KBSourceBuilder
-
-        source = KBSourceBuilder().nfc_type5().build()
-        assert "6" in source
-
-    def test_kb_source_card_emulation(self) -> None:
-        """Can add card emulation to source."""
+    def test_kb_source_card_emulation_only(self) -> None:
+        """Card emulation write mode = 0x20 = '20'."""
         from vtap100.models.keyboard import KBSourceBuilder
 
         source = KBSourceBuilder().card_emulation().build()
-        assert "E" in source
+        assert source == "20"
 
-    def test_kb_source_apple_wallet_iphone(self) -> None:
-        """Can add Apple Wallet iPhone to source."""
+    def test_kb_source_scanners_only(self) -> None:
+        """Scanners = 0x04 = '04'."""
         from vtap100.models.keyboard import KBSourceBuilder
 
-        source = KBSourceBuilder().apple_wallet_iphone().build()
-        assert "X" in source
+        source = KBSourceBuilder().scanners().build()
+        assert source == "04"
 
-    def test_kb_source_apple_wallet_watch(self) -> None:
-        """Can add Apple Wallet Watch to source."""
+    def test_kb_source_command_interface_only(self) -> None:
+        """Command interface = 0x02 = '02'."""
         from vtap100.models.keyboard import KBSourceBuilder
 
-        source = KBSourceBuilder().apple_wallet_watch().build()
-        assert "W" in source
+        source = KBSourceBuilder().command_interface().build()
+        assert source == "02"
 
-    def test_kb_source_all_types(self) -> None:
-        """Can combine all source types."""
+    def test_kb_source_stuid_only(self) -> None:
+        """STUID = 0x40 = '40'."""
         from vtap100.models.keyboard import KBSourceBuilder
 
-        source = (
-            KBSourceBuilder()
-            .apple_vas()
-            .google_smarttap()
-            .mifare()
-            .nfc_type2()
-            .nfc_type4()
-            .nfc_type5()
-            .card_emulation()
-            .apple_wallet_iphone()
-            .apple_wallet_watch()
-            .build()
-        )
-        assert "A" in source
-        assert "G" in source
-        assert "0" in source
-        assert "2" in source
-        assert "4" in source
-        assert "6" in source
-        assert "E" in source
-        assert "X" in source
-        assert "W" in source
+        source = KBSourceBuilder().stuid().build()
+        assert source == "40"
+
+    def test_kb_source_default_a5(self) -> None:
+        """Default A5 = mobile_pass + card_emulation + scanners + card_tag_uid."""
+        from vtap100.models.keyboard import KBSourceBuilder
+
+        # A5 = 0x80 + 0x20 + 0x04 + 0x01 = 165 = 0xA5
+        source = KBSourceBuilder().mobile_pass().card_emulation().scanners().card_tag_uid().build()
+        assert source == "A5"
+
+    def test_kb_source_common_a1(self) -> None:
+        """Common A1 = mobile_pass + card_emulation + card_tag_uid."""
+        from vtap100.models.keyboard import KBSourceBuilder
+
+        # A1 = 0x80 + 0x20 + 0x01 = 161 = 0xA1
+        source = KBSourceBuilder().mobile_pass().card_emulation().card_tag_uid().build()
+        assert source == "A1"
+
+    def test_kb_source_empty_returns_00(self) -> None:
+        """Empty builder returns '00'."""
+        from vtap100.models.keyboard import KBSourceBuilder
+
+        source = KBSourceBuilder().build()
+        assert source == "00"
 
     def test_kb_source_no_duplicates(self) -> None:
-        """Adding same source twice should not create duplicates."""
+        """Adding same bit twice doesn't change result (idempotent)."""
         from vtap100.models.keyboard import KBSourceBuilder
 
-        source = KBSourceBuilder().apple_vas().apple_vas().apple_vas().build()
-        assert source.count("A") == 1
+        source = KBSourceBuilder().mobile_pass().mobile_pass().mobile_pass().build()
+        assert source == "80"
+
+    def test_kb_source_all_bits(self) -> None:
+        """All bits set = 0xFF (assuming all defined bits)."""
+        from vtap100.models.keyboard import KBSourceBuilder
+
+        # 0x80 + 0x40 + 0x20 + 0x04 + 0x02 + 0x01 = 0xE7
+        source = (
+            KBSourceBuilder()
+            .mobile_pass()
+            .stuid()
+            .card_emulation()
+            .scanners()
+            .command_interface()
+            .card_tag_uid()
+            .build()
+        )
+        assert source == "E7"
+
+    def test_kb_source_fluent_api(self) -> None:
+        """Builder supports fluent chaining."""
+        from vtap100.models.keyboard import KBSourceBuilder
+
+        builder = KBSourceBuilder()
+        result = builder.mobile_pass().card_tag_uid()
+        assert result is builder  # Returns self for chaining
+
+    def test_kb_source_hex_uppercase(self) -> None:
+        """Output should be uppercase hex."""
+        from vtap100.models.keyboard import KBSourceBuilder
+
+        source = KBSourceBuilder().mobile_pass().card_tag_uid().build()
+        assert source == "81"
+        assert source == source.upper()
 
 
 class TestKeyboardConfigExtended:
@@ -511,7 +514,7 @@ class TestKeyboardConfigExtendedOutput:
 
         config = KeyboardConfig(
             log_mode=True,
-            source="AG",
+            source="A1",  # Valid hex: mobile pass + card emulation + UID
             prefix="$t:",
             postfix="%0D%0A",
             delay_ms=50,
@@ -524,7 +527,7 @@ class TestKeyboardConfigExtendedOutput:
         lines = config.to_config_lines()
 
         assert "KBLogMode=1" in lines
-        assert "KBSource=AG" in lines
+        assert "KBSource=A1" in lines
         assert "KBPrefix=$t:" in lines
         assert "KBPostfix=%0D%0A" in lines
         assert "KBDelayMS=50" in lines

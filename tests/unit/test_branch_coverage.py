@@ -610,54 +610,43 @@ class TestHelpLoaderMissingLangDir:
 
 
 class TestKBSourceBuilder:
-    """Tests for KBSourceBuilder builder pattern."""
+    """Tests for KBSourceBuilder builder pattern (hex bitmask API)."""
 
     def test_kb_source_builder_empty(self) -> None:
-        """Empty builder should return '0'."""
+        """Empty builder should return '00'."""
         from vtap100.models.keyboard import KBSourceBuilder
 
         builder = KBSourceBuilder()
         result = builder.build()
-        assert result == "0"
+        assert result == "00"
 
     def test_kb_source_builder_all_sources(self) -> None:
-        """Builder should combine all sources."""
+        """Builder should combine all sources via bitmask OR."""
         from vtap100.models.keyboard import KBSourceBuilder
 
         builder = (
             KBSourceBuilder()
-            .apple_vas()
-            .google_smarttap()
-            .mifare()
-            .nfc_type2()
-            .nfc_type4()
-            .nfc_type5()
-            .card_emulation()
-            .apple_wallet_iphone()
-            .apple_wallet_watch()
+            .mobile_pass()  # 0x80
+            .stuid()  # 0x40
+            .card_emulation()  # 0x20
+            .scanners()  # 0x04
+            .command_interface()  # 0x02
+            .card_tag_uid()  # 0x01
         )
         result = builder.build()
 
-        assert "A" in result
-        assert "G" in result
-        assert "0" in result
-        assert "2" in result
-        assert "4" in result
-        assert "6" in result
-        assert "E" in result
-        assert "X" in result
-        assert "W" in result
+        # All bits set: 0x80 + 0x40 + 0x20 + 0x04 + 0x02 + 0x01 = 0xE7
+        assert result == "E7"
 
     def test_kb_source_builder_no_duplicates(self) -> None:
-        """Builder should not add duplicate sources."""
+        """Builder should not add duplicate bits (OR is idempotent)."""
         from vtap100.models.keyboard import KBSourceBuilder
 
-        builder = KBSourceBuilder().apple_vas().apple_vas().google_smarttap().google_smarttap()
+        builder = KBSourceBuilder().mobile_pass().mobile_pass().card_tag_uid().card_tag_uid()
         result = builder.build()
 
-        # Should only have one A and one G
-        assert result.count("A") == 1
-        assert result.count("G") == 1
+        # 0x80 | 0x80 | 0x01 | 0x01 = 0x81
+        assert result == "81"
 
 
 class TestDESFireFormBranches:

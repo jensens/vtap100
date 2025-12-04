@@ -149,101 +149,81 @@ class KeyboardConfig(BaseModel):
 
 
 class KBSourceBuilder:
-    """Builder for constructing KBSource hex values.
+    """Builder for constructing KBSource hex bitmask values.
 
-    KBSource is a bitwise combination of pass type characters that
-    determines which data types trigger keyboard output.
+    KBSource uses hexadecimal bitmasks per official VTAP documentation:
+    - Bit 7 (0x80): Mobile Pass (Apple VAS / Google Smart Tap)
+    - Bit 6 (0x40): STUID
+    - Bit 5 (0x20): Card Emulation Write Mode
+    - Bit 2 (0x04): Scanners
+    - Bit 1 (0x02): Command Interface Messages
+    - Bit 0 (0x01): Card/Tag UID
 
-    Characters:
-        A = Apple VAS Pass
-        G = Google Smart Tap Pass
-        0 = MIFARE Card/Tag
-        2 = NFC Type 2
-        4 = NFC Type 4
-        6 = NFC Type 5
-        E = Card Emulation
-        X = Apple Wallet Access/ECP2 (iPhone)
-        W = Apple Wallet Access/ECP2 (Apple Watch)
+    Reference:
+        https://help.vtapnfc.com/en/Content/VTAP-Commands/Config-txt-KB-settings.htm
 
     Example:
-        >>> source = KBSourceBuilder().apple_vas().google_smarttap().build()
+        >>> source = KBSourceBuilder().mobile_pass().card_tag_uid().build()
         >>> source
-        'AG'
+        '81'
+
+        >>> # Default A5 configuration
+        >>> source = (KBSourceBuilder()
+        ...     .mobile_pass()
+        ...     .card_emulation()
+        ...     .scanners()
+        ...     .card_tag_uid()
+        ...     .build())
+        >>> source
+        'A5'
     """
 
-    # Mapping of method names to source codes
-    _SOURCE_CODES: dict[str, str] = {
-        "apple_vas": "A",
-        "google_smarttap": "G",
-        "mifare": "0",
-        "nfc_type2": "2",
-        "nfc_type4": "4",
-        "nfc_type5": "6",
-        "card_emulation": "E",
-        "apple_wallet_iphone": "X",
-        "apple_wallet_watch": "W",
-    }
+    # Bit masks for KBSource
+    MOBILE_PASS = 0x80  # Bit 7: Apple VAS / Google Smart Tap
+    STUID = 0x40  # Bit 6: STUID
+    CARD_EMULATION = 0x20  # Bit 5: Card Emulation Write Mode
+    SCANNERS = 0x04  # Bit 2: Scanners
+    COMMAND_INTERFACE = 0x02  # Bit 1: Command Interface Messages
+    CARD_TAG_UID = 0x01  # Bit 0: Card/Tag UID
 
     def __init__(self) -> None:
-        """Initialize an empty KBSource builder."""
-        self._sources: list[str] = []
+        """Initialize an empty KBSource builder with value 0."""
+        self._value: int = 0
 
-    def _add(self, code: str) -> "KBSourceBuilder":
-        """Add a source code if not already present.
-
-        Args:
-            code: The source code character to add.
-
-        Returns:
-            Self for method chaining.
-        """
-        if code not in self._sources:
-            self._sources.append(code)
+    def mobile_pass(self) -> "KBSourceBuilder":
+        """Enable mobile pass data (Apple VAS / Google Smart Tap)."""
+        self._value |= self.MOBILE_PASS
         return self
 
-    def apple_vas(self) -> "KBSourceBuilder":
-        """Add Apple VAS pass type to source."""
-        return self._add(self._SOURCE_CODES["apple_vas"])
-
-    def google_smarttap(self) -> "KBSourceBuilder":
-        """Add Google Smart Tap pass type to source."""
-        return self._add(self._SOURCE_CODES["google_smarttap"])
-
-    def mifare(self) -> "KBSourceBuilder":
-        """Add MIFARE card/tag type to source."""
-        return self._add(self._SOURCE_CODES["mifare"])
-
-    def nfc_type2(self) -> "KBSourceBuilder":
-        """Add NFC Type 2 tag type to source."""
-        return self._add(self._SOURCE_CODES["nfc_type2"])
-
-    def nfc_type4(self) -> "KBSourceBuilder":
-        """Add NFC Type 4 tag type to source."""
-        return self._add(self._SOURCE_CODES["nfc_type4"])
-
-    def nfc_type5(self) -> "KBSourceBuilder":
-        """Add NFC Type 5 tag type to source."""
-        return self._add(self._SOURCE_CODES["nfc_type5"])
+    def stuid(self) -> "KBSourceBuilder":
+        """Enable STUID data."""
+        self._value |= self.STUID
+        return self
 
     def card_emulation(self) -> "KBSourceBuilder":
-        """Add card emulation type to source."""
-        return self._add(self._SOURCE_CODES["card_emulation"])
+        """Enable card emulation write mode."""
+        self._value |= self.CARD_EMULATION
+        return self
 
-    def apple_wallet_iphone(self) -> "KBSourceBuilder":
-        """Add Apple Wallet Access/ECP2 iPhone type to source."""
-        return self._add(self._SOURCE_CODES["apple_wallet_iphone"])
+    def scanners(self) -> "KBSourceBuilder":
+        """Enable scanner input."""
+        self._value |= self.SCANNERS
+        return self
 
-    def apple_wallet_watch(self) -> "KBSourceBuilder":
-        """Add Apple Wallet Access/ECP2 Apple Watch type to source."""
-        return self._add(self._SOURCE_CODES["apple_wallet_watch"])
+    def command_interface(self) -> "KBSourceBuilder":
+        """Enable command interface messages."""
+        self._value |= self.COMMAND_INTERFACE
+        return self
+
+    def card_tag_uid(self) -> "KBSourceBuilder":
+        """Enable card/tag UID data."""
+        self._value |= self.CARD_TAG_UID
+        return self
 
     def build(self) -> str:
-        """Build the final KBSource string.
+        """Build the final KBSource hex string.
 
         Returns:
-            A string combining all selected source types.
-            Returns "0" if no sources were selected.
+            Uppercase hex string (e.g., "A5", "80", "01").
         """
-        if not self._sources:
-            return "0"
-        return "".join(self._sources)
+        return f"{self._value:02X}"
