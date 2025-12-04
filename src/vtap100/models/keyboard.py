@@ -171,99 +171,71 @@ class KBSourceBuilder:
         'AG'
     """
 
+    # Mapping of method names to source codes
+    _SOURCE_CODES: dict[str, str] = {
+        "apple_vas": "A",
+        "google_smarttap": "G",
+        "mifare": "0",
+        "nfc_type2": "2",
+        "nfc_type4": "4",
+        "nfc_type5": "6",
+        "card_emulation": "E",
+        "apple_wallet_iphone": "X",
+        "apple_wallet_watch": "W",
+    }
+
     def __init__(self) -> None:
         """Initialize an empty KBSource builder."""
         self._sources: list[str] = []
 
-    def apple_vas(self) -> "KBSourceBuilder":
-        """Add Apple VAS pass type to source.
+    def _add(self, code: str) -> "KBSourceBuilder":
+        """Add a source code if not already present.
+
+        Args:
+            code: The source code character to add.
 
         Returns:
             Self for method chaining.
         """
-        if "A" not in self._sources:
-            self._sources.append("A")
+        if code not in self._sources:
+            self._sources.append(code)
         return self
+
+    def apple_vas(self) -> "KBSourceBuilder":
+        """Add Apple VAS pass type to source."""
+        return self._add(self._SOURCE_CODES["apple_vas"])
 
     def google_smarttap(self) -> "KBSourceBuilder":
-        """Add Google Smart Tap pass type to source.
-
-        Returns:
-            Self for method chaining.
-        """
-        if "G" not in self._sources:
-            self._sources.append("G")
-        return self
+        """Add Google Smart Tap pass type to source."""
+        return self._add(self._SOURCE_CODES["google_smarttap"])
 
     def mifare(self) -> "KBSourceBuilder":
-        """Add MIFARE card/tag type to source.
-
-        Returns:
-            Self for method chaining.
-        """
-        if "0" not in self._sources:
-            self._sources.append("0")
-        return self
+        """Add MIFARE card/tag type to source."""
+        return self._add(self._SOURCE_CODES["mifare"])
 
     def nfc_type2(self) -> "KBSourceBuilder":
-        """Add NFC Type 2 tag type to source.
-
-        Returns:
-            Self for method chaining.
-        """
-        if "2" not in self._sources:
-            self._sources.append("2")
-        return self
+        """Add NFC Type 2 tag type to source."""
+        return self._add(self._SOURCE_CODES["nfc_type2"])
 
     def nfc_type4(self) -> "KBSourceBuilder":
-        """Add NFC Type 4 tag type to source.
-
-        Returns:
-            Self for method chaining.
-        """
-        if "4" not in self._sources:
-            self._sources.append("4")
-        return self
+        """Add NFC Type 4 tag type to source."""
+        return self._add(self._SOURCE_CODES["nfc_type4"])
 
     def nfc_type5(self) -> "KBSourceBuilder":
-        """Add NFC Type 5 tag type to source.
-
-        Returns:
-            Self for method chaining.
-        """
-        if "6" not in self._sources:
-            self._sources.append("6")
-        return self
+        """Add NFC Type 5 tag type to source."""
+        return self._add(self._SOURCE_CODES["nfc_type5"])
 
     def card_emulation(self) -> "KBSourceBuilder":
-        """Add card emulation type to source.
-
-        Returns:
-            Self for method chaining.
-        """
-        if "E" not in self._sources:
-            self._sources.append("E")
-        return self
+        """Add card emulation type to source."""
+        return self._add(self._SOURCE_CODES["card_emulation"])
 
     def apple_wallet_iphone(self) -> "KBSourceBuilder":
-        """Add Apple Wallet Access/ECP2 iPhone type to source.
-
-        Returns:
-            Self for method chaining.
-        """
-        if "X" not in self._sources:
-            self._sources.append("X")
-        return self
+        """Add Apple Wallet Access/ECP2 iPhone type to source."""
+        return self._add(self._SOURCE_CODES["apple_wallet_iphone"])
 
     def apple_wallet_watch(self) -> "KBSourceBuilder":
-        """Add Apple Wallet Access/ECP2 Apple Watch type to source.
-
-        Returns:
-            Self for method chaining.
-        """
-        if "W" not in self._sources:
-            self._sources.append("W")
-        return self
+        """Add Apple Wallet Access/ECP2 Apple Watch type to source."""
+        return self._add(self._SOURCE_CODES["apple_wallet_watch"])
 
     def build(self) -> str:
         """Build the final KBSource string.

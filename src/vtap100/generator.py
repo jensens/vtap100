@@ -67,6 +67,42 @@ class ConfigGenerator:
         """
         self.config = config
 
+    def _generate_static_config_lines(self) -> list[str]:
+        """Generate config lines for static sections (keyboard, NFC, DESFire, feedback).
+
+        Returns:
+            List of config lines for non-pass settings.
+        """
+        lines: list[str] = []
+
+        # Keyboard emulation
+        if self.config.keyboard:
+            lines.append("; Keyboard Emulation")
+            lines.extend(self.config.keyboard.to_config_lines())
+
+        # NFC tag settings
+        if self.config.nfc:
+            nfc_lines = self.config.nfc.to_config_lines()
+            if nfc_lines:
+                lines.append("; NFC Tag Settings")
+                lines.extend(nfc_lines)
+
+        # MIFARE DESFire settings
+        if self.config.desfire:
+            desfire_lines = self.config.desfire.to_config_lines()
+            if desfire_lines:
+                lines.append("; MIFARE DESFire Settings")
+                lines.extend(desfire_lines)
+
+        # LED/Beep feedback settings
+        if self.config.feedback:
+            feedback_lines = self.config.feedback.to_config_lines()
+            if feedback_lines:
+                lines.append("; LED/Beep Settings")
+                lines.extend(feedback_lines)
+
+        return lines
+
     def generate(self, comment: str | None = None) -> str:
         """Generate the config.txt content as a string.
 
@@ -105,31 +141,8 @@ class ConfigGenerator:
         if self.config.smarttap_default_passes:
             lines.append(self.config.smarttap_default_passes.to_config_line())
 
-        # Keyboard emulation
-        if self.config.keyboard:
-            lines.append("; Keyboard Emulation")
-            lines.extend(self.config.keyboard.to_config_lines())
-
-        # NFC tag settings
-        if self.config.nfc:
-            nfc_lines = self.config.nfc.to_config_lines()
-            if nfc_lines:
-                lines.append("; NFC Tag Settings")
-                lines.extend(nfc_lines)
-
-        # MIFARE DESFire settings
-        if self.config.desfire:
-            desfire_lines = self.config.desfire.to_config_lines()
-            if desfire_lines:
-                lines.append("; MIFARE DESFire Settings")
-                lines.extend(desfire_lines)
-
-        # LED/Beep feedback settings
-        if self.config.feedback:
-            feedback_lines = self.config.feedback.to_config_lines()
-            if feedback_lines:
-                lines.append("; LED/Beep Settings")
-                lines.extend(feedback_lines)
+        # Static configuration (keyboard, NFC, DESFire, feedback)
+        lines.extend(self._generate_static_config_lines())
 
         return "\n".join(lines)
 
@@ -191,30 +204,7 @@ class ConfigGenerator:
         # Static configuration section
         lines.append("; === STATIC CONFIGURATION ===")
 
-        # Keyboard emulation
-        if self.config.keyboard:
-            lines.append("; Keyboard Emulation")
-            lines.extend(self.config.keyboard.to_config_lines())
-
-        # NFC tag settings
-        if self.config.nfc:
-            nfc_lines = self.config.nfc.to_config_lines()
-            if nfc_lines:
-                lines.append("; NFC Tag Settings")
-                lines.extend(nfc_lines)
-
-        # MIFARE DESFire settings
-        if self.config.desfire:
-            desfire_lines = self.config.desfire.to_config_lines()
-            if desfire_lines:
-                lines.append("; MIFARE DESFire Settings")
-                lines.extend(desfire_lines)
-
-        # LED/Beep feedback settings
-        if self.config.feedback:
-            feedback_lines = self.config.feedback.to_config_lines()
-            if feedback_lines:
-                lines.append("; LED/Beep Settings")
-                lines.extend(feedback_lines)
+        # Static configuration (keyboard, NFC, DESFire, feedback)
+        lines.extend(self._generate_static_config_lines())
 
         return "\n".join(lines)
