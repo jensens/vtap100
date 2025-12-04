@@ -1,7 +1,7 @@
 [project]
 name = "vtap100"
 dynamic = ["version"]
-description = "Configuration generator for dotOrigin VTAP100 NFC reader"
+description = "Configuration generator for Dot Origin VTAP100 NFC reader"
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }

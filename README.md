@@ -1,6 +1,6 @@
 # VTAP100 Configuration Generator
 
-A Python tool for generating configuration files for the **dotOrigin VTAP100** NFC Reader.
+A Python tool for generating configuration files for the **Dot Origin VTAP100** NFC Reader.
 
 ## Features
 
@@ -85,6 +85,6 @@ MIT License - see [LICENSE](https://github.com/jensens/vtap100/blob/main/LICENSE
 
 ## Links
 
-- [dotOrigin Website](https://www.dotorigin.com/)
+- [Dot Origin Website](https://www.dotorigin.com/)
 - [VTAP NFC Website](https://www.vtapnfc.com/)
 - [VTAP Configuration Guide (PDF)](https://www.vtapnfc.com/downloads/VTAP_Configuration_Guide.pdf)

@@ -87,7 +87,7 @@ def print_section(title: str) -> None:
 @click.group()
 @click.version_option(version=__version__, prog_name="vtap100")
 def main() -> None:
-    """VTAP100 Configuration Generator - Create config files for dotOrigin VTAP100 NFC readers."""
+    """VTAP100 Configuration Generator - Create config files for Dot Origin VTAP100 NFC readers."""
     pass
 
 

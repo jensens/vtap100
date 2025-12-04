@@ -1,6 +1,6 @@
 """VTAP100 Configuration Generator.
 
-A tool for generating configuration files for the dotOrigin VTAP100 NFC reader.
+A tool for generating configuration files for the Dot Origin VTAP100 NFC reader.
 Supports Apple VAS, Google Smart Tap, NFC tags, and MIFARE DESFire configurations.
 
 Example:
