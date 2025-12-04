@@ -300,3 +300,558 @@ class TestConfigParserRoundTrip:
         assert len(parsed.smarttap_configs) == 1
         assert parsed.keyboard is not None
         assert parsed.keyboard.log_mode is True
+
+
+class TestConfigParserNFC:
+    """Test NFC tag configuration parsing."""
+
+    def test_parse_nfc_type2_uid(self) -> None:
+        """Parse NFC Type 2 in UID mode."""
+        from vtap100.parser import parse
+
+        content = """!VTAPconfig
+NFCType2=U
+"""
+        config = parse(content)
+        assert config.nfc is not None
+        assert config.nfc.type2 is not None
+        assert config.nfc.type2.value == "U"
+
+    def test_parse_nfc_type4_ndef(self) -> None:
+        """Parse NFC Type 4 in NDEF mode."""
+        from vtap100.parser import parse
+
+        content = """!VTAPconfig
+NFCType4=N
+"""
+        config = parse(content)
+        assert config.nfc is not None
+        assert config.nfc.type4 is not None
+        assert config.nfc.type4.value == "N"
+
+    def test_parse_nfc_type5_block(self) -> None:
+        """Parse NFC Type 5 in BLOCK mode."""
+        from vtap100.parser import parse
+
+        content = """!VTAPconfig
+NFCType5=B
+"""
+        config = parse(content)
+        assert config.nfc is not None
+        assert config.nfc.type5 is not None
+        assert config.nfc.type5.value == "B"
+
+    def test_parse_nfc_type4_desfire(self) -> None:
+        """Parse NFC Type 4 in DESFire mode."""
+        from vtap100.parser import parse
+
+        content = """!VTAPconfig
+NFCType4=D
+"""
+        config = parse(content)
+        assert config.nfc is not None
+        assert config.nfc.type4 is not None
+        assert config.nfc.type4.value == "D"
+
+    def test_parse_nfc_disabled(self) -> None:
+        """Parse NFC Type disabled."""
+        from vtap100.parser import parse
+
+        content = """!VTAPconfig
+NFCType2=0
+"""
+        config = parse(content)
+        assert config.nfc is not None
+        assert config.nfc.type2 is not None
+        assert config.nfc.type2.value == "0"
+
+    def test_parse_nfc_all_types(self) -> None:
+        """Parse all NFC types."""
+        from vtap100.parser import parse
+
+        content = """!VTAPconfig
+NFCType2=U
+NFCType4=N
+NFCType5=B
+"""
+        config = parse(content)
+        assert config.nfc is not None
+        assert config.nfc.type2.value == "U"
+        assert config.nfc.type4.value == "N"
+        assert config.nfc.type5.value == "B"
+
+    def test_parse_nfc_report_read_error(self) -> None:
+        """Parse NFCReportReadError setting."""
+        from vtap100.parser import parse
+
+        content = """!VTAPconfig
+NFCType2=U
+NFCReportReadError=1
+"""
+        config = parse(content)
+        assert config.nfc is not None
+        assert config.nfc.report_read_error is True
+
+    def test_parse_nfc_ignore_random_uid(self) -> None:
+        """Parse IgnoreRandomUID setting."""
+        from vtap100.parser import parse
+
+        content = """!VTAPconfig
+NFCType4=U
+IgnoreRandomUID=1
+"""
+        config = parse(content)
+        assert config.nfc is not None
+        assert config.nfc.ignore_random_uid is True
+
+    def test_parse_nfc_byte_order(self) -> None:
+        """Parse TagByteOrder setting."""
+        from vtap100.parser import parse
+
+        content = """!VTAPconfig
+NFCType2=U
+TagByteOrder=1
+"""
+        config = parse(content)
+        assert config.nfc is not None
+        assert config.nfc.byte_order_reversed is True
+
+    def test_parse_nfc_tag_read_config(self) -> None:
+        """Parse TagRead settings for block mode."""
+        from vtap100.parser import parse
+
+        content = """!VTAPconfig
+NFCType2=B
+TagReadBlockNum=4
+TagReadKeySlot=1
+TagReadKeyType=A
+TagReadOffset=0
+TagReadLength=16
+TagReadFormat=h
+"""
+        config = parse(content)
+        assert config.nfc is not None
+        assert config.nfc.tag_read is not None
+        assert config.nfc.tag_read.block_num == 4
+        assert config.nfc.tag_read.key_slot == 1
+        assert config.nfc.tag_read.key_type.value == "A"
+        assert config.nfc.tag_read.offset == 0
+        assert config.nfc.tag_read.length == 16
+        assert config.nfc.tag_read.format.value == "h"
+
+    def test_parse_nfc_tag_read_min_digits(self) -> None:
+        """Parse TagReadMinDigits setting."""
+        from vtap100.parser import parse
+
+        content = """!VTAPconfig
+NFCType2=U
+TagReadMinDigits=10
+"""
+        config = parse(content)
+        assert config.nfc is not None
+        assert config.nfc.tag_read is not None
+        assert config.nfc.tag_read.min_digits == 10
+
+    def test_parse_nfc_tag_read_min_digits_auto(self) -> None:
+        """Parse TagReadMinDigits with auto value."""
+        from vtap100.parser import parse
+
+        content = """!VTAPconfig
+NFCType2=U
+TagReadMinDigits=A
+"""
+        config = parse(content)
+        assert config.nfc is not None
+        assert config.nfc.tag_read is not None
+        assert config.nfc.tag_read.min_digits == "A"
+
+
+class TestConfigParserDESFire:
+    """Test DESFire configuration parsing."""
+
+    def test_parse_single_desfire_app(self) -> None:
+        """Parse single DESFire application."""
+        from vtap100.parser import parse
+
+        content = """!VTAPconfig
+DESFire1AppID=AABBCC
+DESFire1FileID=1
+DESFire1KeySlot=1
+"""
+        config = parse(content)
+        assert config.desfire is not None
+        assert len(config.desfire.apps) == 1
+        assert config.desfire.apps[0].app_id == "AABBCC"
+        assert config.desfire.apps[0].file_id == 1
+        assert config.desfire.apps[0].key_slot == 1
+
+    def test_parse_desfire_with_crypto(self) -> None:
+        """Parse DESFire with crypto mode."""
+        from vtap100.models.desfire import DESFireCryptoMode
+        from vtap100.parser import parse
+
+        content = """!VTAPconfig
+DESFire1AppID=112233
+DESFire1Crypto=3
+"""
+        config = parse(content)
+        assert config.desfire is not None
+        assert config.desfire.apps[0].crypto == DESFireCryptoMode.AES
+
+    def test_parse_desfire_with_format(self) -> None:
+        """Parse DESFire with data format."""
+        from vtap100.models.desfire import DESFireDataFormat
+        from vtap100.parser import parse
+
+        content = """!VTAPconfig
+DESFire1AppID=ABCDEF
+DESFire1Format=2
+"""
+        config = parse(content)
+        assert config.desfire is not None
+        assert config.desfire.apps[0].format == DESFireDataFormat.KEYID_V2
+
+    def test_parse_desfire_read_settings(self) -> None:
+        """Parse DESFire read length and offset."""
+        from vtap100.parser import parse
+
+        content = """!VTAPconfig
+DESFire1AppID=123456
+DESFire1ReadLength=16
+DESFire1ReadOffset=4
+"""
+        config = parse(content)
+        assert config.desfire is not None
+        assert config.desfire.apps[0].read_length == 16
+        assert config.desfire.apps[0].read_offset == 4
+
+    def test_parse_desfire_diversification(self) -> None:
+        """Parse DESFire with diversification enabled."""
+        from vtap100.parser import parse
+
+        content = """!VTAPconfig
+DESFire1AppID=AABBCC
+DESFire1Diversification=1
+"""
+        config = parse(content)
+        assert config.desfire is not None
+        assert config.desfire.apps[0].diversification is True
+
+    def test_parse_desfire_privacy_settings(self) -> None:
+        """Parse DESFire privacy key settings."""
+        from vtap100.parser import parse
+
+        content = """!VTAPconfig
+DESFire1AppID=112233
+DESFire1PrivacyKeyNum=2
+DESFire1PrivacyKeySlot=3
+"""
+        config = parse(content)
+        assert config.desfire is not None
+        assert config.desfire.apps[0].privacy_key_num == 2
+        assert config.desfire.apps[0].privacy_key_slot == 3
+
+    def test_parse_desfire_sysid_settings(self) -> None:
+        """Parse DESFire system ID settings."""
+        from vtap100.parser import parse
+
+        content = """!VTAPconfig
+DESFire1AppID=ABCDEF
+DESFire1SysIDKeySlot=4
+DESFire1SysIDLength=8
+"""
+        config = parse(content)
+        assert config.desfire is not None
+        assert config.desfire.apps[0].sysid_key_slot == 4
+        assert config.desfire.apps[0].sysid_length == 8
+
+    def test_parse_multiple_desfire_apps(self) -> None:
+        """Parse multiple DESFire applications."""
+        from vtap100.parser import parse
+
+        content = """!VTAPconfig
+DESFire1AppID=AAAAAA
+DESFire1KeySlot=1
+DESFire2AppID=BBBBBB
+DESFire2KeySlot=2
+DESFire3AppID=CCCCCC
+DESFire3KeySlot=3
+"""
+        config = parse(content)
+        assert config.desfire is not None
+        assert len(config.desfire.apps) == 3
+        assert config.desfire.apps[0].app_id == "AAAAAA"
+        assert config.desfire.apps[1].app_id == "BBBBBB"
+        assert config.desfire.apps[2].app_id == "CCCCCC"
+
+    def test_parse_desfire_separator(self) -> None:
+        """Parse DESFire separator setting."""
+        from vtap100.parser import parse
+
+        content = """!VTAPconfig
+DESFire1AppID=AABBCC
+DESFireSeparator=;
+"""
+        config = parse(content)
+        assert config.desfire is not None
+        assert config.desfire.separator == ";"
+
+    def test_parse_desfire_key_num(self) -> None:
+        """Parse DESFire key number."""
+        from vtap100.parser import parse
+
+        content = """!VTAPconfig
+DESFire1AppID=123456
+DESFire1KeyNum=5
+"""
+        config = parse(content)
+        assert config.desfire is not None
+        assert config.desfire.apps[0].key_num == 5
+
+
+class TestConfigParserFeedback:
+    """Test LED and Beep feedback configuration parsing."""
+
+    def test_parse_led_mode(self) -> None:
+        """Parse LED mode setting."""
+        from vtap100.models.feedback import LEDMode
+        from vtap100.parser import parse
+
+        content = """!VTAPconfig
+LEDMode=3
+"""
+        config = parse(content)
+        assert config.feedback is not None
+        assert config.feedback.led is not None
+        assert config.feedback.led.mode == LEDMode.CUSTOM
+
+    def test_parse_led_select(self) -> None:
+        """Parse LED select setting."""
+        from vtap100.models.feedback import LEDSelect
+        from vtap100.parser import parse
+
+        content = """!VTAPconfig
+LEDSelect=1
+"""
+        config = parse(content)
+        assert config.feedback is not None
+        assert config.feedback.led is not None
+        assert config.feedback.led.select == LEDSelect.ONBOARD_COMPACT
+
+    def test_parse_led_default_rgb(self) -> None:
+        """Parse LED default RGB color."""
+        from vtap100.parser import parse
+
+        content = """!VTAPconfig
+LEDDefaultRGB=00FF00
+"""
+        config = parse(content)
+        assert config.feedback is not None
+        assert config.feedback.led is not None
+        assert config.feedback.led.default_rgb == "00FF00"
+
+    def test_parse_pass_led_sequence(self) -> None:
+        """Parse PassLED sequence."""
+        from vtap100.parser import parse
+
+        content = """!VTAPconfig
+PassLED=00FF00,100,50,3
+"""
+        config = parse(content)
+        assert config.feedback is not None
+        assert config.feedback.led is not None
+        assert config.feedback.led.pass_led is not None
+        assert config.feedback.led.pass_led.color == "00FF00"
+        assert config.feedback.led.pass_led.on_ms == 100
+        assert config.feedback.led.pass_led.off_ms == 50
+        assert config.feedback.led.pass_led.repeats == 3
+
+    def test_parse_tag_led_sequence(self) -> None:
+        """Parse TagLED sequence."""
+        from vtap100.parser import parse
+
+        content = """!VTAPconfig
+TagLED=0000FF,200,100,2
+"""
+        config = parse(content)
+        assert config.feedback is not None
+        assert config.feedback.led is not None
+        assert config.feedback.led.tag_led is not None
+        assert config.feedback.led.tag_led.color == "0000FF"
+
+    def test_parse_pass_error_led(self) -> None:
+        """Parse PassErrorLED sequence."""
+        from vtap100.parser import parse
+
+        content = """!VTAPconfig
+PassErrorLED=FF0000,50,50,5
+"""
+        config = parse(content)
+        assert config.feedback is not None
+        assert config.feedback.led.pass_error_led is not None
+        assert config.feedback.led.pass_error_led.color == "FF0000"
+
+    def test_parse_start_led(self) -> None:
+        """Parse StartLED sequence."""
+        from vtap100.parser import parse
+
+        content = """!VTAPconfig
+StartLED=FFFFFF,500,0,1
+"""
+        config = parse(content)
+        assert config.feedback is not None
+        assert config.feedback.led.start_led is not None
+        assert config.feedback.led.start_led.color == "FFFFFF"
+
+    def test_parse_pass_beep(self) -> None:
+        """Parse PassBeep sequence."""
+        from vtap100.parser import parse
+
+        content = """!VTAPconfig
+PassBeep=100,50,2
+"""
+        config = parse(content)
+        assert config.feedback is not None
+        assert config.feedback.beep is not None
+        assert config.feedback.beep.pass_beep is not None
+        assert config.feedback.beep.pass_beep.on_ms == 100
+        assert config.feedback.beep.pass_beep.off_ms == 50
+        assert config.feedback.beep.pass_beep.repeats == 2
+
+    def test_parse_pass_beep_with_frequency(self) -> None:
+        """Parse PassBeep sequence with custom frequency."""
+        from vtap100.parser import parse
+
+        content = """!VTAPconfig
+PassBeep=100,50,2,2000
+"""
+        config = parse(content)
+        assert config.feedback is not None
+        assert config.feedback.beep.pass_beep is not None
+        assert config.feedback.beep.pass_beep.frequency == 2000
+
+    def test_parse_tag_beep(self) -> None:
+        """Parse TagBeep sequence."""
+        from vtap100.parser import parse
+
+        content = """!VTAPconfig
+TagBeep=150,75,1
+"""
+        config = parse(content)
+        assert config.feedback is not None
+        assert config.feedback.beep.tag_beep is not None
+        assert config.feedback.beep.tag_beep.on_ms == 150
+
+    def test_parse_pass_error_beep(self) -> None:
+        """Parse PassErrorBeep sequence."""
+        from vtap100.parser import parse
+
+        content = """!VTAPconfig
+PassErrorBeep=50,25,3,1000
+"""
+        config = parse(content)
+        assert config.feedback is not None
+        assert config.feedback.beep.pass_error_beep is not None
+        assert config.feedback.beep.pass_error_beep.frequency == 1000
+
+    def test_parse_start_beep(self) -> None:
+        """Parse StartBeep sequence."""
+        from vtap100.parser import parse
+
+        content = """!VTAPconfig
+StartBeep=200,0,1
+"""
+        config = parse(content)
+        assert config.feedback is not None
+        assert config.feedback.beep.start_beep is not None
+        assert config.feedback.beep.start_beep.on_ms == 200
+
+    def test_parse_combined_feedback(self) -> None:
+        """Parse combined LED and beep settings."""
+        from vtap100.parser import parse
+
+        content = """!VTAPconfig
+LEDMode=3
+PassLED=00FF00,100,50,2
+PassBeep=100,50,1
+"""
+        config = parse(content)
+        assert config.feedback is not None
+        assert config.feedback.led is not None
+        assert config.feedback.beep is not None
+
+
+class TestConfigParserNFCRoundTrip:
+    """Test NFC config generate -> parse roundtrip."""
+
+    def test_roundtrip_nfc_basic(self) -> None:
+        """Generate and parse NFC config."""
+        from vtap100.generator import ConfigGenerator
+        from vtap100.models.config import VTAPConfig
+        from vtap100.models.nfc import NFCTagConfig
+        from vtap100.models.nfc import NFCTagMode
+        from vtap100.parser import parse
+
+        original = VTAPConfig(nfc=NFCTagConfig(type2=NFCTagMode.UID, type4=NFCTagMode.NDEF))
+        generator = ConfigGenerator(original)
+        content = generator.generate()
+        parsed = parse(content)
+
+        assert parsed.nfc is not None
+        assert parsed.nfc.type2 == original.nfc.type2
+        assert parsed.nfc.type4 == original.nfc.type4
+
+
+class TestConfigParserDESFireRoundTrip:
+    """Test DESFire config generate -> parse roundtrip."""
+
+    def test_roundtrip_desfire_basic(self) -> None:
+        """Generate and parse DESFire config."""
+        from vtap100.generator import ConfigGenerator
+        from vtap100.models.config import VTAPConfig
+        from vtap100.models.desfire import DESFireAppConfig
+        from vtap100.models.desfire import DESFireConfig
+        from vtap100.parser import parse
+
+        original = VTAPConfig(
+            desfire=DESFireConfig(apps=[DESFireAppConfig(app_id="AABBCC", key_slot=1, file_id=1)])
+        )
+        generator = ConfigGenerator(original)
+        content = generator.generate()
+        parsed = parse(content)
+
+        assert parsed.desfire is not None
+        assert len(parsed.desfire.apps) == 1
+        assert parsed.desfire.apps[0].app_id == original.desfire.apps[0].app_id
+
+
+class TestConfigParserFeedbackRoundTrip:
+    """Test Feedback config generate -> parse roundtrip."""
+
+    def test_roundtrip_feedback_led(self) -> None:
+        """Generate and parse LED feedback config."""
+        from vtap100.generator import ConfigGenerator
+        from vtap100.models.config import VTAPConfig
+        from vtap100.models.feedback import FeedbackConfig
+        from vtap100.models.feedback import LEDConfig
+        from vtap100.models.feedback import LEDMode
+        from vtap100.models.feedback import LEDSequence
+        from vtap100.parser import parse
+
+        original = VTAPConfig(
+            feedback=FeedbackConfig(
+                led=LEDConfig(
+                    mode=LEDMode.CUSTOM,
+                    pass_led=LEDSequence(color="00FF00", on_ms=100, off_ms=50, repeats=2),
+                )
+            )
+        )
+        generator = ConfigGenerator(original)
+        content = generator.generate()
+        parsed = parse(content)
+
+        assert parsed.feedback is not None
+        assert parsed.feedback.led is not None
+        assert parsed.feedback.led.mode == LEDMode.CUSTOM
+        assert parsed.feedback.led.pass_led is not None
+        assert parsed.feedback.led.pass_led.color == "00FF00"
