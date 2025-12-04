@@ -20,7 +20,7 @@ References:
 
 from pydantic import BaseModel
 from pydantic import Field
-from pydantic import field_validator
+from vtap100.models.base import DefaultPassesEnabled
 
 
 class GoogleSmartTapConfig(BaseModel):
@@ -74,7 +74,7 @@ class GoogleSmartTapConfig(BaseModel):
         return lines
 
 
-class STDefaultPassesEnabled(BaseModel):
+class STDefaultPassesEnabled(DefaultPassesEnabled):
     """Configuration for which Smart Tap pass slots are enabled at startup.
 
     This setting restricts which Smart Tap passes are checked at startup,
@@ -87,36 +87,4 @@ class STDefaultPassesEnabled(BaseModel):
             Default is all passes enabled [1, 2, 3, 4, 5, 6].
     """
 
-    enabled_passes: list[int] = Field(
-        default=[1, 2, 3, 4, 5, 6],
-        min_length=1,
-        description="List of enabled Smart Tap pass numbers (1-6)",
-    )
-
-    @field_validator("enabled_passes")
-    @classmethod
-    def validate_pass_numbers(cls, v: list[int]) -> list[int]:
-        """Validate that all pass numbers are between 1 and 6.
-
-        Args:
-            v: The list of pass numbers to validate.
-
-        Returns:
-            The validated list of pass numbers.
-
-        Raises:
-            ValueError: If any pass number is outside the range 1-6.
-        """
-        for pass_num in v:
-            if pass_num < 1 or pass_num > 6:
-                raise ValueError(f"Pass number {pass_num} must be between 1 and 6")
-        return v
-
-    def to_config_line(self) -> str:
-        """Generate config.txt line for STDefaultPassesEnabled.
-
-        Returns:
-            A config.txt line (e.g., 'STDefaultPassesEnabled=1,3,5').
-        """
-        passes_str = ",".join(str(p) for p in self.enabled_passes)
-        return f"STDefaultPassesEnabled={passes_str}"
+    CONFIG_PREFIX = "ST"

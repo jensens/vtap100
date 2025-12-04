@@ -3,7 +3,6 @@
 Form for editing Google Smart Tap configurations.
 """
 
-from pydantic import ValidationError
 from textual.app import ComposeResult
 from textual.containers import Horizontal
 from textual.widgets import Button
@@ -13,12 +12,10 @@ from textual.widgets import Select
 from textual.widgets import Static
 from vtap100.models.smarttap import GoogleSmartTapConfig
 from vtap100.tui.i18n import t
-from vtap100.tui.widgets.forms.base import BaseConfigForm
-from vtap100.tui.widgets.forms.base import ConfigAdded
-from vtap100.tui.widgets.forms.base import ConfigRemoved
+from vtap100.tui.widgets.forms.base import SlotBasedConfigForm
 
 
-class SmartTapConfigForm(BaseConfigForm):
+class SmartTapConfigForm(SlotBasedConfigForm):
     """Form for editing Google Smart Tap configuration.
 
     Fields:
@@ -28,11 +25,11 @@ class SmartTapConfigForm(BaseConfigForm):
 
     Attributes:
         SECTION_NAME: Set to "smarttap".
-        MESSAGE_TIMEOUT: Seconds before success messages auto-disappear.
+        CONFIG_LIST_ATTR: Set to "smarttap_configs".
     """
 
     SECTION_NAME = "smarttap"
-    MESSAGE_TIMEOUT = 10.0  # Seconds before success message disappears
+    CONFIG_LIST_ATTR = "smarttap_configs"
 
     DEFAULT_CSS = """
     SmartTapConfigForm {
@@ -103,31 +100,6 @@ class SmartTapConfigForm(BaseConfigForm):
 
         return used_slots
 
-    def _get_slot_info_text(self) -> str:
-        """Get info text showing which slots are used/free.
-
-        Returns:
-            Info text like "Used: 1 (VAS #1), 3 (SmartTap #1) | Free: 2, 4, 5, 6".
-        """
-        used_slots = self._get_used_key_slots()
-
-        # Build used list (excluding slot 0 which is special)
-        used_parts = []
-        for slot in sorted(used_slots.keys()):
-            if slot > 0:  # Skip auto slot
-                used_parts.append(f"{slot} ({used_slots[slot]})")
-
-        # Build free list (slots 1-6 that are not used)
-        free_slots = [str(i) for i in range(1, 7) if i not in used_slots]
-
-        parts = []
-        if used_parts:
-            parts.append(f"{t('forms.vas.slot_info_used')}: {', '.join(used_parts)}")
-        if free_slots:
-            parts.append(f"{t('forms.vas.slot_info_free')}: {', '.join(free_slots)}")
-
-        return " | ".join(parts) if parts else t("forms.vas.slot_info_all_free")
-
     def compose(self) -> ComposeResult:
         """Compose the Smart Tap form layout."""
         if self.is_new:
@@ -181,84 +153,3 @@ class SmartTapConfigForm(BaseConfigForm):
             key_slot=key_slot,
             key_version=key_version,
         )
-
-    def _clear_messages(self) -> None:
-        """Clear previous validation errors and success messages from the form."""
-        for error_label in self.query(".error-message"):
-            error_label.remove()
-        for success_label in self.query(".success-message"):
-            success_label.remove()
-        for input_widget in self.query(Input):
-            input_widget.remove_class("invalid")
-
-    def _clear_errors(self) -> None:
-        """Clear previous validation errors from the form."""
-        self._clear_messages()
-
-    def _show_validation_error(self, error: ValidationError) -> None:
-        """Show validation error on the form.
-
-        Args:
-            error: The pydantic validation error.
-        """
-        for err in error.errors():
-            field = err["loc"][0] if err["loc"] else None
-            msg = err["msg"]
-            if field:
-                try:
-                    input_widget = self.query_one(f"#{field}", Input)
-                    input_widget.add_class("invalid")
-                except Exception:
-                    pass
-            self.mount(Label(t("common.messages.error", message=msg), classes="error-message"))
-
-    def _show_success_message(self, message: str) -> None:
-        """Show success message on the form.
-
-        The message auto-disappears after MESSAGE_TIMEOUT seconds.
-
-        Args:
-            message: The success message to display.
-        """
-        label = Label(message, classes="success-message")
-        self.mount(label)
-        self.set_timer(self.MESSAGE_TIMEOUT, label.remove)
-
-    def on_button_pressed(self, event: Button.Pressed) -> None:
-        """Handle button presses.
-
-        Args:
-            event: The button pressed event.
-        """
-        self._clear_errors()
-
-        if event.button.id == "add":
-            try:
-                config = self.get_config()
-                self.app.config.smarttap_configs.append(config)
-                self.post_message(ConfigAdded(section_id=self.SECTION_NAME, index=self.index))
-            except ValidationError as e:
-                self._show_validation_error(e)
-
-        elif event.button.id == "save":
-            try:
-                config = self.get_config()
-                self.app.config.smarttap_configs[self.index] = config
-                self._show_success_message(t("common.messages.config_saved"))
-            except ValidationError as e:
-                self._show_validation_error(e)
-
-        elif event.button.id == "remove":
-            del self.app.config.smarttap_configs[self.index]
-            self.post_message(ConfigRemoved(section_id=self.SECTION_NAME, index=self.index))
-
-        elif event.button.id == "duplicate":
-            try:
-                config = self.get_config()
-                self.app.config.smarttap_configs.append(config)
-                new_index = len(self.app.config.smarttap_configs) - 1
-                self.post_message(
-                    ConfigAdded(section_id=self.SECTION_NAME, index=new_index, is_duplicate=True)
-                )
-            except ValidationError as e:
-                self._show_validation_error(e)
