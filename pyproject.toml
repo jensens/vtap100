@@ -78,8 +78,8 @@ relative_files = true
 [tool.coverage.report]
 skip_covered = true
 skip_empty = true
-fail_under = 85
-# Coverage increased to 85% after adding comprehensive CLI and TUI tests.
+fail_under = 93
+# Coverage increased to 93%+ after adding comprehensive branch coverage tests.
 exclude_lines = [
     "pragma: no cover",
     "if TYPE_CHECKING:",
