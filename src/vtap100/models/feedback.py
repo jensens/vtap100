@@ -104,7 +104,7 @@ class LEDConfig(BaseModel):
     """
 
     mode: LEDMode | None = Field(default=None, description="LED mode")
-    select: LEDSelect | None = Field(default=None, description="LED type/position")
+    select: LEDSelect = Field(default=LEDSelect.ONBOARD_COMPACT, description="LED type/position")
     default_rgb: str | None = Field(default=None, description="Default RGB color")
     pass_led: LEDSequence | None = Field(default=None, description="Pass read LED")
     tag_led: LEDSequence | None = Field(default=None, description="Tag read LED")
@@ -138,8 +138,8 @@ class LEDConfig(BaseModel):
         if self.mode is not None:
             lines.append(f"LEDMode={self.mode.value}")
 
-        if self.select is not None:
-            lines.append(f"LEDSelect={self.select.value}")
+        # LEDSelect always has a default value
+        lines.append(f"LEDSelect={self.select.value}")
 
         if self.default_rgb is not None:
             lines.append(f"LEDDefaultRGB={self.default_rgb}")

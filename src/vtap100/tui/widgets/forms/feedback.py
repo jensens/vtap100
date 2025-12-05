@@ -130,10 +130,10 @@ class FeedbackConfigForm(BaseConfigForm):
         )
 
         yield Label(t("forms.feedback.led_select"))
-        led_select = self._config.led.select if self._config.led else None
+        led_select = self._config.led.select if self._config.led else LEDSelect.ONBOARD_COMPACT
         yield Select(
             self.led_select_options,
-            value=led_select or LEDSelect.EXTERNAL,
+            value=led_select,
             id="led_select",
         )
 

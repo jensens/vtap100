@@ -1260,15 +1260,15 @@ class TestKeySlotSelect:
             assert select is not None
 
     @pytest.mark.asyncio
-    async def test_vas_select_has_7_options(self) -> None:
-        """VAS key_slot Select should have 7 options (0-6)."""
+    async def test_vas_select_has_6_options(self) -> None:
+        """VAS key_slot Select should have 6 options (1-6, no Auto/0)."""
         from textual.widgets import Select
         from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
         app.config = VTAPConfig(
-            vas_configs=[AppleVASConfig(merchant_id="pass.com.test", key_slot=0)]
+            vas_configs=[AppleVASConfig(merchant_id="pass.com.test", key_slot=1)]
         )
 
         async with app.run_test() as pilot:
@@ -1283,11 +1283,11 @@ class TestKeySlotSelect:
             main_content = app.screen.query_one("#main-content")
             select = main_content.query_one("#key_slot", Select)
             # Count options by checking the _options property
-            # Select includes a blank option by default: 8 total (1 blank + 7 slots)
+            # Select includes a blank option by default: 7 total (1 blank + 6 slots)
             options = list(select._options)
             # Filter out blank option to count actual slot options
             slot_options = [opt for opt in options if opt[1] != Select.BLANK]
-            assert len(slot_options) == 7
+            assert len(slot_options) == 6
 
     @pytest.mark.asyncio
     async def test_correct_slot_is_selected(self) -> None:
@@ -1459,14 +1459,14 @@ class TestSidebarTreeLabels:
             assert "3" in label or "Slot 3" in label
 
     @pytest.mark.asyncio
-    async def test_vas_tree_shows_auto_for_slot_0(self) -> None:
-        """VAS tree entry should show 'Auto' when key_slot is 0."""
+    async def test_vas_tree_shows_slot_number(self) -> None:
+        """VAS tree entry should show slot number (1-6)."""
         from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
         app.config = VTAPConfig(
-            vas_configs=[AppleVASConfig(merchant_id="pass.com.test", key_slot=0)]
+            vas_configs=[AppleVASConfig(merchant_id="pass.com.test", key_slot=2)]
         )
 
         async with app.run_test() as pilot:
@@ -1478,5 +1478,5 @@ class TestSidebarTreeLabels:
 
             entry_node = vas_node.children[0]
             label = str(entry_node.label)
-            # Should show "Auto" for slot 0
-            assert "Auto" in label
+            # Should show slot number 2
+            assert "2" in label

@@ -30,7 +30,7 @@ class AppleVASConfig(BaseModel):
         merchant_id: The Apple Pass Type ID (e.g., 'pass.com.company.passname').
             Must start with 'pass.' prefix.
         key_slot: The private key slot (1-6) where the decryption key is stored.
-            Use 0 for auto-detection (default).
+            Required for the reader to work correctly.
         merchant_url: Optional URL to invoke when presenting a pass.
             Note: Currently unsupported by iOS for VAS-only transactions.
     """
@@ -41,10 +41,10 @@ class AppleVASConfig(BaseModel):
         min_length=1,
     )
     key_slot: int = Field(
-        default=0,
-        ge=0,
+        ...,
+        ge=1,
         le=6,
-        description="Private key slot (0=auto, 1-6=specific slot)",
+        description="Private key slot (1-6, required for reader to work)",
     )
     merchant_url: str | None = Field(
         default=None,
@@ -80,9 +80,8 @@ class AppleVASConfig(BaseModel):
         """
         lines = [f"VAS{slot_number}MerchantID={self.merchant_id}"]
 
-        # Only include key_slot if it's not 0 (auto-detect)
-        if self.key_slot > 0:
-            lines.append(f"VAS{slot_number}KeySlot={self.key_slot}")
+        # Always include key_slot (required for reader to work)
+        lines.append(f"VAS{slot_number}KeySlot={self.key_slot}")
 
         if self.merchant_url:
             lines.append(f"VAS{slot_number}MerchantURL={self.merchant_url}")

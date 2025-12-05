@@ -20,7 +20,7 @@ class VASConfigForm(SlotBasedConfigForm):
 
     Fields:
     - merchant_id: Pass Type ID (required, must start with 'pass.')
-    - key_slot: Private key slot (0-6)
+    - key_slot: Private key slot (1-6, required)
     - merchant_url: Optional URL
 
     Attributes:
@@ -76,7 +76,7 @@ class VASConfigForm(SlotBasedConfigForm):
         super().__init__(id=id)
         self.index = index
         self.is_new = is_new
-        self._config = config or AppleVASConfig(merchant_id="pass.")
+        self._config = config or AppleVASConfig(merchant_id="pass.", key_slot=1)
 
     def _get_used_key_slots(self) -> dict[int, str]:
         """Get key slots that are already in use by other configs.
@@ -115,8 +115,8 @@ class VASConfigForm(SlotBasedConfigForm):
         )
 
         yield Label(t("forms.vas.key_slot"))
-        # Generate options for Select: 0 (Auto) and 1-6
-        options = [(f"{i} ({t('common.labels.auto')})" if i == 0 else str(i), i) for i in range(7)]
+        # Generate options for Select: 1-6 (key_slot is now required, no more Auto/0)
+        options = [(str(i), i) for i in range(1, 7)]
         yield Select(options, value=self._config.key_slot, id="key_slot")
         yield Static(self._get_slot_info_text(), classes="slot-info")
 
@@ -143,7 +143,7 @@ class VASConfigForm(SlotBasedConfigForm):
         """
         merchant_id = self.query_one("#merchant_id", Input).value
         select = self.query_one("#key_slot", Select)
-        key_slot = select.value if select.value is not None else 0
+        key_slot = select.value if select.value is not None else 1
         merchant_url = self.query_one("#merchant_url", Input).value or None
 
         return AppleVASConfig(

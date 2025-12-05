@@ -716,7 +716,7 @@ class ConfigParser:
 
         return LEDConfig(
             mode=LEDMode(data.mode) if data.mode is not None else None,
-            select=LEDSelect(data.select) if data.select is not None else None,
+            select=LEDSelect(data.select) if data.select is not None else LEDSelect.ONBOARD_COMPACT,
             default_rgb=data.default_rgb,
             pass_led=self._parse_led_sequence(data.pass_led),
             tag_led=self._parse_led_sequence(data.tag_led),
