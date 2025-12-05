@@ -218,13 +218,10 @@ class BaseConfigForm(Widget):
         """Check if the form has unsaved changes.
 
         Returns:
-            True if form values differ from initial values or if it's a new form.
+            True if form values differ from initial values.
         """
-        # New forms are always dirty until saved
-        if self._is_new_form:
-            return True
-
         # Compare current values to initial values
+        # Both new and existing forms use the same check - only dirty if modified
         current_values = self.get_form_values()
         return current_values != self._initial_values
 
@@ -414,6 +411,31 @@ class SlotBasedConfigForm(BaseConfigForm):
         label = Label(message, classes="success-message")
         self.mount(label)
         self.set_timer(self.MESSAGE_TIMEOUT, label.remove)
+
+    def save(self) -> bool:
+        """Save the current form values to the config.
+
+        This method can be called directly to save without using the button.
+        Used by the editor when handling unsaved changes dialog.
+
+        Returns:
+            True if saved successfully, False if validation failed.
+        """
+        self._clear_errors()
+        config_list = self._get_config_list()
+
+        try:
+            config = self.get_config()
+            if self.is_new:
+                # Adding new config
+                config_list.append(config)
+            else:
+                # Updating existing config
+                config_list[self.index] = config
+            self.mark_saved()
+            return True
+        except ValidationError:
+            return False
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """Handle button presses for add/save/remove/duplicate.

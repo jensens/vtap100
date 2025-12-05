@@ -202,10 +202,12 @@ class TestNewFormDirtyState:
     """Tests for dirty state on new forms (is_new=True)."""
 
     @pytest.mark.asyncio
-    async def test_new_form_starts_dirty(self) -> None:
-        """A new form (is_new=True) should be considered dirty immediately.
+    async def test_new_form_starts_clean(self) -> None:
+        """A new form (is_new=True) should NOT be dirty if nothing was changed.
 
-        This is because new forms have unsaved data by definition.
+        New empty forms don't have meaningful data to save, so we don't
+        warn when navigating away. Forms only become dirty when user
+        actually modifies a field.
         """
         from textual.app import App
         from vtap100.tui.widgets.forms.vas import VASConfigForm
@@ -221,5 +223,34 @@ class TestNewFormDirtyState:
             await pilot.pause()
             form = pilot.app.query_one(VASConfigForm)
 
-            # New forms should be dirty (unsaved)
+            # New forms without modifications should be clean
+            assert form.is_dirty is False
+
+    @pytest.mark.asyncio
+    async def test_new_form_becomes_dirty_on_change(self) -> None:
+        """A new form should become dirty when user modifies a field."""
+        from textual.app import App
+        from textual.widgets import Input
+        from vtap100.tui.widgets.forms.vas import VASConfigForm
+
+        class TestApp(App[None]):
+            config = VTAPConfig()
+
+            def compose(self):
+                # New form without existing config
+                yield VASConfigForm(config=None, index=0, is_new=True)
+
+        async with TestApp().run_test() as pilot:
+            await pilot.pause()
+            form = pilot.app.query_one(VASConfigForm)
+
+            # Initially clean
+            assert form.is_dirty is False
+
+            # Make a change
+            merchant_input = form.query_one("#merchant_id", Input)
+            merchant_input.value = "pass.com.example.new"
+            await pilot.pause()
+
+            # Now should be dirty
             assert form.is_dirty is True

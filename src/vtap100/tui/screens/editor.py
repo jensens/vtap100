@@ -18,10 +18,14 @@ from textual.widgets import Header
 from textual.widgets import Label
 from textual.widgets import Static
 from vtap100.tui.i18n import t
+from vtap100.tui.screens.unsaved_changes_dialog import UnsavedChangesDialog
+from vtap100.tui.screens.unsaved_changes_dialog import UnsavedChangesResult
+from vtap100.tui.widgets.forms.base import BaseConfigForm
 from vtap100.tui.widgets.forms.base import ConfigAdded
 from vtap100.tui.widgets.forms.base import ConfigChanged
 from vtap100.tui.widgets.forms.base import ConfigRemoved
 from vtap100.tui.widgets.forms.base import HelpContextChanged
+from vtap100.tui.widgets.forms.base import SlotBasedConfigForm
 from vtap100.tui.widgets.forms.desfire import DESFireConfigForm
 from vtap100.tui.widgets.forms.feedback import FeedbackConfigForm
 from vtap100.tui.widgets.forms.keyboard import KeyboardConfigForm
@@ -53,6 +57,8 @@ class EditorScreen(Screen):
         super().__init__(*args, **kwargs)
         # Track currently displayed section to avoid unnecessary reloads
         self._current_section: tuple[str, int | None] | None = None
+        # Store pending navigation for after dialog result
+        self._pending_navigation: SectionSelected | None = None
 
     def compose(self) -> ComposeResult:
         """Compose the editor screen layout."""
@@ -84,18 +90,74 @@ class EditorScreen(Screen):
 
         yield Footer()
 
-    async def on_section_selected(self, event: SectionSelected) -> None:
-        """Handle section selection from sidebar.
+    def _get_current_form(self) -> BaseConfigForm | None:
+        """Get the currently displayed form, if any.
+
+        Returns:
+            The current form widget or None if no form is displayed.
+        """
+        main_content = self.query_one("#main-content")
+        forms = main_content.query(BaseConfigForm)
+        if forms:
+            return forms.first()
+        return None
+
+    def _save_current_form(self) -> bool:
+        """Save the current form.
+
+        For SlotBasedConfigForm, calls the save() method directly.
+        For other forms, simulates a save button click.
+
+        Returns:
+            True if save was successful, False otherwise.
+        """
+        form = self._get_current_form()
+        if form is None:
+            return False
+
+        # SlotBasedConfigForm has a save() method we can call directly
+        if isinstance(form, SlotBasedConfigForm):
+            return form.save()
+
+        # For other forms, press the save button
+        from textual.widgets import Button
+
+        try:
+            save_btn = form.query_one("#save-btn", Button)
+            save_btn.press()
+            return True
+        except Exception:
+            return False
+
+    def _handle_unsaved_changes_result(self, result: UnsavedChangesResult | None) -> None:
+        """Handle the result from the unsaved changes dialog.
+
+        Args:
+            result: The user's choice from the dialog.
+        """
+        if result is None or result == UnsavedChangesResult.CANCEL:
+            # User cancelled - stay on current form
+            self._pending_navigation = None
+            return
+
+        if result == UnsavedChangesResult.SAVE:
+            # Save changes first
+            self._save_current_form()
+
+        # For both SAVE and DISCARD, proceed with navigation
+        if self._pending_navigation:
+            event = self._pending_navigation
+            self._pending_navigation = None
+            # Navigate to the pending section
+            self.call_later(self._do_navigation, event)
+
+    async def _do_navigation(self, event: SectionSelected) -> None:
+        """Actually perform the navigation to a new section.
 
         Args:
             event: The section selection event.
         """
-        # Skip reload if same section is already displayed
-        new_section = (event.section_id, event.index)
-        if self._current_section == new_section:
-            return
-
-        self._current_section = new_section
+        self._current_section = (event.section_id, event.index)
         main_content = self.query_one("#main-content")
 
         # Clear existing content (await to ensure removal completes before mounting new)
@@ -132,6 +194,28 @@ class EditorScreen(Screen):
         else:
             # Show placeholder for unknown sections
             main_content.mount(Static(f"{event.section_id.upper()}", classes="hint"))
+
+    async def on_section_selected(self, event: SectionSelected) -> None:
+        """Handle section selection from sidebar.
+
+        Args:
+            event: The section selection event.
+        """
+        # Skip reload if same section is already displayed
+        new_section = (event.section_id, event.index)
+        if self._current_section == new_section:
+            return
+
+        # Check if current form has unsaved changes
+        current_form = self._get_current_form()
+        if current_form is not None and current_form.is_dirty:
+            # Store pending navigation and show dialog
+            self._pending_navigation = event
+            self.app.push_screen(UnsavedChangesDialog(), self._handle_unsaved_changes_result)
+            return
+
+        # No unsaved changes - proceed directly
+        await self._do_navigation(event)
 
     async def on_config_added(self, event: ConfigAdded) -> None:
         """Handle new configuration added.
