@@ -271,10 +271,11 @@ class TestLEDConfig:
     def test_led_config_defaults(self) -> None:
         """LED config should have sensible defaults."""
         from vtap100.models.feedback import LEDConfig
+        from vtap100.models.feedback import LEDSelect
 
         config = LEDConfig()
         assert config.mode is None
-        assert config.select is None
+        assert config.select == LEDSelect.ONBOARD_COMPACT  # Default: on-board LED (compact case)
         assert config.default_rgb is None
         assert config.pass_led is None
         assert config.tag_led is None
@@ -440,13 +441,14 @@ class TestFeedbackConfig:
 class TestLEDConfigOutput:
     """Tests for LEDConfig config.txt output generation."""
 
-    def test_to_config_lines_empty(self) -> None:
-        """Empty LED config should generate no lines."""
+    def test_to_config_lines_default(self) -> None:
+        """Default LED config should generate LEDSelect line."""
         from vtap100.models.feedback import LEDConfig
 
         config = LEDConfig()
         lines = config.to_config_lines()
-        assert lines == []
+        # Default LEDSelect=1 (ONBOARD_COMPACT) is always set
+        assert lines == ["LEDSelect=1"]
 
     def test_to_config_lines_mode(self) -> None:
         """Mode should generate LEDMode line."""
