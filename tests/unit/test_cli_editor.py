@@ -12,7 +12,7 @@ class TestCLIEditorCommand:
         runner = CliRunner()
         result = runner.invoke(main, ["editor", "--help"])
         assert result.exit_code == 0
-        assert "Öffnet den interaktiven TUI-Editor" in result.output
+        assert "Open the interactive TUI editor" in result.output
 
     def test_editor_command_help_shows_examples(self) -> None:
         """The editor command help should show usage examples."""
