@@ -11,7 +11,9 @@
       "Bash(timeout 2 uv run vtap100 wizard --help:*)",
       "Bash(timeout 2 uv run vtap100 validate --help:*)",
       "Bash(timeout 2 uv run vtap100 docs --help:*)",
-      "Bash(gh run list:*)"
+      "Bash(gh run list:*)",
+      "Bash(uv pip show:*)",
+      "Bash(python3:*)"
     ],
     "deny": [],
     "ask": []
