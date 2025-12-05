@@ -45,9 +45,9 @@ class EditorScreen(Screen):
     ```
     +------------------+----------------------------------+-------------------+
     |   SIDEBAR        |          MAIN CONTENT            |   HELP PANEL      |
-    |   (Navigation)   |          (Forms/Edit)            |   (Kontext F1)    |
+    |   (Navigation)   |          (Forms/Edit)            |   (Ctrl+D toggle) |
     +------------------+----------------------------------+-------------------+
-    |                       PREVIEW PANEL (toggle F2)                         |
+    |                       PREVIEW PANEL (Ctrl+O toggle)                     |
     +------------------------------------------------------------------------+
     ```
     """

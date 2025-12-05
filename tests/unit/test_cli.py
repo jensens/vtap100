@@ -467,7 +467,7 @@ class TestEditorCommand:
         runner = CliRunner()
         result = runner.invoke(main, ["editor", "--help"])
         assert result.exit_code == 0
-        assert "TUI-Editor" in result.output
+        assert "TUI editor" in result.output
 
     def test_editor_accepts_filename(self) -> None:
         """Editor command should accept filename argument."""

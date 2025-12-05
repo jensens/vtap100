@@ -648,22 +648,22 @@ def docs() -> None:
     beep_table.add_row("StartBeep", "on,off,rep[,freq]", "Beep on startup")
     console.print(beep_table)
 
-    console.print("\n[dim]Vollständige Dokumentation: docs/[/dim]")
+    console.print("\n[dim]Full documentation: docs/[/dim]")
 
 
 @main.command()
 @click.argument("filename", required=False, type=click.Path())
-@click.option("--output", "-o", type=click.Path(), help="Ausgabedatei")
+@click.option("--output", "-o", type=click.Path(), help="Output file")
 def editor(filename: str | None, output: str | None) -> None:
-    """Öffnet den interaktiven TUI-Editor.
+    """Open the interactive TUI editor.
 
-    Ermöglicht das visuelle Bearbeiten von VTAP100-Konfigurationen
-    mit kontextbezogener Hilfe und Live-Vorschau.
+    Provides visual editing of VTAP100 configurations
+    with context-sensitive help and live preview.
 
     Examples:
-        vtap100 editor                  # Neue Konfiguration
-        vtap100 editor config.txt       # Datei öffnen
-        vtap100 editor -o output.txt    # Mit Ausgabedatei
+        vtap100 editor                  # New configuration
+        vtap100 editor config.txt       # Open file
+        vtap100 editor -o output.txt    # With output file
     """
     from vtap100.tui import run
 
