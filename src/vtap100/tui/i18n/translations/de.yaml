@@ -496,6 +496,15 @@ export:
   no_output_path: "Kein Ausgabepfad angegeben"
   clipboard_error: "Clipboard-Fehler: {message}"
 
+# Unsaved changes dialog
+unsaved:
+  title: "Ungespeicherte Änderungen"
+  message: "Es gibt ungespeicherte Änderungen. Was möchten Sie tun?"
+  buttons:
+    save: "Speichern"
+    discard: "Verwerfen"
+    cancel: "Abbrechen"
+
 # Save dialog
 save:
   title: "Speichern"

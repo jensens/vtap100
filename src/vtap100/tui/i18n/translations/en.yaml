@@ -492,6 +492,15 @@ export:
   no_output_path: "No output path specified"
   clipboard_error: "Clipboard error: {message}"
 
+# Unsaved changes dialog
+unsaved:
+  title: "Unsaved Changes"
+  message: "You have unsaved changes. What would you like to do?"
+  buttons:
+    save: "Save"
+    discard: "Discard"
+    cancel: "Cancel"
+
 # Save dialog
 save:
   title: "Save"
