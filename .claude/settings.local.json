@@ -3,7 +3,15 @@
     "allow": [
       "Bash(uv pip install:*)",
       "Bash(timeout 2 uv run vtap100 editor --help:*)",
-      "Bash(gh run view:*)"
+      "Bash(gh run view:*)",
+      "Bash(sort:*)",
+      "Bash(find:*)",
+      "Bash(timeout 2 uv run vtap100 generate --help:*)",
+      "Bash(timeout 2 uv run vtap100 --help:*)",
+      "Bash(timeout 2 uv run vtap100 wizard --help:*)",
+      "Bash(timeout 2 uv run vtap100 validate --help:*)",
+      "Bash(timeout 2 uv run vtap100 docs --help:*)",
+      "Bash(gh run list:*)"
     ],
     "deny": [],
     "ask": []
