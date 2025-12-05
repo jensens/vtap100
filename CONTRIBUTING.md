@@ -51,3 +51,13 @@ On of the core contributors will review, comment and - if all is fine - merge it
 We love improvements to the documentation.
 
 Follow the pull request path also for documentation changes.
+
+## Coding Agents/ AI
+
+It is OK to use coding agents.
+The project was developed with assistence of Claude Code (Opus 4.5).
+CLAUDE.md defines the base criteria an agent should use as initial seed prompt.
+Just do not believe in code or documentation created by agents, as a human control it.
+State in commits which coding agent was used.
+Do not create PRs without prior review.
+We will reject any rubbish PRs created by agents.
