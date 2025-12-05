@@ -19,21 +19,21 @@ fields:
     title: Datenquellen (KBSource)
     description: |
       Legt fest, welche Datentypen Keyboard-Ausgabe auslösen.
-      Hex-String aus Zeichen für verschiedene Pass-Typen.
+      Hexadezimale Bitmaske zur Kombination mehrerer Quellen.
     format: |
-      A = Apple VAS Pass
-      G = Google Smart Tap Pass
-      0 = MIFARE Card/Tag
-      2 = NFC Type 2
-      4 = NFC Type 4
-      6 = NFC Type 5
-      E = Card Emulation
-      X = Apple Wallet iPhone
-      W = Apple Wallet Watch
-    example: "AG (VAS und SmartTap)"
+      0x80 = Mobile Pass (Apple VAS / Google Smart Tap)
+      0x40 = STUID
+      0x20 = Card Emulation Write Mode
+      0x04 = Scanner
+      0x02 = Command Interface
+      0x01 = Card/Tag UID
+    example: "A5 (Mobile + Emulation + Scanner + UID)"
     tip: |
-      Kombiniere Buchstaben für mehrere Quellen.
-      Standard ist "A5" (VAS + Type 2 + Type 4 + Type 5).
+      Gängige Werte:
+      A5 = Standard (Mobile + Emulation + Scanner + UID)
+      81 = Mobile Pass + Card/Tag UID
+      80 = Nur Mobile Pass
+      01 = Nur Card/Tag UID
 
   prefix:
     title: Präfix (KBPrefix)

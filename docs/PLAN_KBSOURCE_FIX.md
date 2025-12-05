@@ -86,19 +86,22 @@ Tests für KBSourceBuilder müssen die neuen Hex-Werte prüfen.
 ## Implementierungsreihenfolge
 
 1. ✅ Plan schreiben
-2. [ ] Tests für neuen KBSourceBuilder schreiben (TDD)
-3. [ ] KBSourceBuilder in keyboard.py neu implementieren
-4. [ ] Tests laufen lassen
-5. [ ] Dokumentation korrigieren
-6. [ ] Commit
+2. ✅ Tests für neuen KBSourceBuilder schreiben (TDD)
+3. ✅ KBSourceBuilder in keyboard.py neu implementieren
+4. ✅ Tests laufen lassen
+5. ✅ Dokumentation korrigieren
+6. ✅ TUI Help-Texte korrigieren
+7. ✅ Commit
 
 ## Betroffene Dateien
 
-| Datei | Änderung |
-|-------|----------|
-| `src/vtap100/models/keyboard.py` | KBSourceBuilder neu schreiben |
-| `tests/test_keyboard.py` | Tests anpassen |
-| `docs/configuration/keyboard.md` | Komplett überarbeiten |
-| `docs/configuration/overview.md` | KBSource Sektion korrigieren |
-| `docs/configuration/settings_reference.md` | KBSource Tabelle korrigieren |
-| `docs/api.md` | KBSourceBuilder Beispiel korrigieren |
+| Datei | Änderung | Status |
+|-------|----------|--------|
+| `src/vtap100/models/keyboard.py` | KBSourceBuilder neu schreiben | ✅ |
+| `tests/test_keyboard.py` | Tests anpassen | ✅ |
+| `docs/configuration/keyboard.md` | Komplett überarbeiten | ✅ |
+| `docs/configuration/overview.md` | KBSource Sektion korrigieren | ✅ |
+| `docs/configuration/settings_reference.md` | KBSource Tabelle korrigieren | ✅ |
+| `docs/api.md` | KBSourceBuilder Beispiel korrigieren | ✅ |
+| `src/vtap100/tui/help/en/keyboard.yaml` | TUI Help korrigieren | ✅ |
+| `src/vtap100/tui/help/de/keyboard.yaml` | TUI Help korrigieren | ✅ |
