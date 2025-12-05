@@ -301,21 +301,6 @@ class DESFireConfigForm(BaseConfigForm):
         self.mount(label)
         self.set_timer(self.MESSAGE_TIMEOUT, label.remove)
 
-    def on_switch_changed(self, event: Switch.Changed) -> None:
-        """Handle switch changes to update preview.
-
-        Args:
-            event: The switch changed event.
-        """
-        if event.switch.id:
-            self.post_message(
-                ConfigChanged(
-                    section_id=self.SECTION_NAME,
-                    field_name=event.switch.id,
-                    value=str(event.value),
-                )
-            )
-
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """Handle button presses.
 

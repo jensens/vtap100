@@ -13,6 +13,7 @@ from textual.widgets import Button
 from textual.widgets import Input
 from textual.widgets import Label
 from textual.widgets import Select
+from textual.widgets import Switch
 from typing import Any
 from typing import ClassVar
 from vtap100.tui.i18n import t
@@ -174,6 +175,23 @@ class BaseConfigForm(Widget):
                     section_id=self.SECTION_NAME,
                     field_name=event.input.id,
                     value=event.value,
+                )
+            )
+
+    def on_switch_changed(self, event: Switch.Changed) -> None:
+        """Handle switch changes.
+
+        Posts ConfigChanged to update preview.
+
+        Args:
+            event: The switch changed event.
+        """
+        if event.switch.id:
+            self.post_message(
+                ConfigChanged(
+                    section_id=self.SECTION_NAME,
+                    field_name=event.switch.id,
+                    value=str(event.value),
                 )
             )
 
