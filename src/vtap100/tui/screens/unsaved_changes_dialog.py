@@ -26,10 +26,22 @@ class UnsavedChangesDialog(ModalScreen[UnsavedChangesResult]):
     """Modal dialog for unsaved changes confirmation.
 
     Returns UnsavedChangesResult indicating the user's choice:
-    - SAVE: Save changes before leaving
+    - SAVE: Save/Add changes before leaving
     - DISCARD: Leave without saving
     - CANCEL: Stay on current form
+
+    Args:
+        is_new: If True, shows "Add" instead of "Save" button.
     """
+
+    def __init__(self, is_new: bool = False) -> None:
+        """Initialize the dialog.
+
+        Args:
+            is_new: If True, shows "Add" instead of "Save" button.
+        """
+        super().__init__()
+        self._is_new = is_new
 
     CSS = """
     UnsavedChangesDialog {
@@ -75,10 +87,13 @@ class UnsavedChangesDialog(ModalScreen[UnsavedChangesResult]):
             yield Label(t("unsaved.title"), classes="dialog-title")
             yield Label(t("unsaved.message"), classes="dialog-message")
 
+            # Use "Add" button for new forms, "Save" for existing
+            save_btn_label = t("unsaved.buttons.add") if self._is_new else t("unsaved.buttons.save")
+
             with Horizontal(id="unsaved-buttons"):
                 yield Button(t("unsaved.buttons.cancel"), id="cancel-btn", variant="default")
                 yield Button(t("unsaved.buttons.discard"), id="discard-btn", variant="warning")
-                yield Button(t("unsaved.buttons.save"), id="save-btn", variant="success")
+                yield Button(save_btn_label, id="save-btn", variant="success")
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """Handle button presses."""

@@ -498,6 +498,7 @@ unsaved:
   message: "You have unsaved changes. What would you like to do?"
   buttons:
     save: "Save"
+    add: "Add"
     discard: "Discard"
     cancel: "Cancel"
 

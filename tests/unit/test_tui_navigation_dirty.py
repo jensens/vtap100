@@ -9,6 +9,94 @@ from vtap100.models.config import VTAPConfig
 from vtap100.models.vas import AppleVASConfig
 
 
+class TestNavigationWithNewForm:
+    """Tests for navigation behavior with new (unsaved) forms."""
+
+    @pytest.mark.asyncio
+    async def test_new_form_save_adds_entry(self) -> None:
+        """Clicking Save on dialog for a new form should add the entry."""
+        from textual.widgets import Input
+        from vtap100.tui.app import VTAPEditorApp
+        from vtap100.tui.screens.editor import EditorScreen
+        from vtap100.tui.screens.unsaved_changes_dialog import UnsavedChangesDialog
+        from vtap100.tui.widgets.forms.vas import VASConfigForm
+        from vtap100.tui.widgets.sidebar import SectionSelected
+
+        app = VTAPEditorApp()
+        # Start with empty config
+        app.config = VTAPConfig(vas_configs=[])
+
+        async with app.run_test() as pilot:
+            await pilot.pause()
+
+            # Navigate to add new VAS (index=None means new)
+            app.screen.post_message(SectionSelected(section_id="vas", index=None))
+            await pilot.pause()
+
+            # Fill in data to make form dirty
+            form = app.screen.query_one(VASConfigForm)
+            merchant_input = form.query_one("#merchant_id", Input)
+            merchant_input.value = "pass.com.example.newentry"
+            await pilot.pause()
+
+            # Verify form is dirty
+            assert form.is_dirty is True
+
+            # Try to navigate away
+            app.screen.post_message(SectionSelected(section_id="keyboard", index=None))
+            await pilot.pause()
+
+            # Dialog should show
+            assert isinstance(app.screen, UnsavedChangesDialog)
+
+            # Click Save (should add the new entry)
+            await pilot.click("#save-btn")
+            await pilot.pause()
+
+            # Should be back to editor
+            assert isinstance(app.screen, EditorScreen)
+
+            # New entry should have been added to config
+            assert len(app.config.vas_configs) == 1
+            assert app.config.vas_configs[0].merchant_id == "pass.com.example.newentry"
+
+    @pytest.mark.asyncio
+    async def test_dialog_shows_add_button_for_new_forms(self) -> None:
+        """Dialog should show 'Add' instead of 'Save' for new forms."""
+        from textual.widgets import Button
+        from textual.widgets import Input
+        from vtap100.tui.app import VTAPEditorApp
+        from vtap100.tui.screens.unsaved_changes_dialog import UnsavedChangesDialog
+        from vtap100.tui.widgets.forms.vas import VASConfigForm
+        from vtap100.tui.widgets.sidebar import SectionSelected
+
+        app = VTAPEditorApp()
+        app.config = VTAPConfig(vas_configs=[])
+
+        async with app.run_test() as pilot:
+            await pilot.pause()
+
+            # Navigate to add new VAS
+            app.screen.post_message(SectionSelected(section_id="vas", index=None))
+            await pilot.pause()
+
+            # Fill in data
+            form = app.screen.query_one(VASConfigForm)
+            merchant_input = form.query_one("#merchant_id", Input)
+            merchant_input.value = "pass.com.example.test"
+            await pilot.pause()
+
+            # Try to navigate away
+            app.screen.post_message(SectionSelected(section_id="keyboard", index=None))
+            await pilot.pause()
+
+            # Dialog should show with "Add" button
+            assert isinstance(app.screen, UnsavedChangesDialog)
+            save_btn = app.screen.query_one("#save-btn", Button)
+            # Button label should be "Add" (or German "Hinzufügen")
+            assert save_btn.label in ("Add", "Hinzufügen")
+
+
 class TestNavigationWithDirtyForm:
     """Tests for navigation behavior when form has unsaved changes."""
 

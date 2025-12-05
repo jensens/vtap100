@@ -142,7 +142,13 @@ class EditorScreen(Screen):
 
         if result == UnsavedChangesResult.SAVE:
             # Save changes first
-            self._save_current_form()
+            saved = self._save_current_form()
+            if saved:
+                # Refresh sidebar to show new/updated entry
+                sidebar = self.query_one("#config-sidebar", ConfigSidebar)
+                sidebar.refresh_tree()
+                # Refresh preview
+                self._refresh_preview()
 
         # For both SAVE and DISCARD, proceed with navigation
         if self._pending_navigation:
@@ -211,7 +217,14 @@ class EditorScreen(Screen):
         if current_form is not None and current_form.is_dirty:
             # Store pending navigation and show dialog
             self._pending_navigation = event
-            self.app.push_screen(UnsavedChangesDialog(), self._handle_unsaved_changes_result)
+            # Check if form is for a new entry (show "Add" instead of "Save")
+            is_new_form = isinstance(current_form, SlotBasedConfigForm) and getattr(
+                current_form, "is_new", False
+            )
+            self.app.push_screen(
+                UnsavedChangesDialog(is_new=is_new_form),
+                self._handle_unsaved_changes_result,
+            )
             return
 
         # No unsaved changes - proceed directly

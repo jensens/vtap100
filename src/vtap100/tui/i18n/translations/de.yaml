@@ -502,6 +502,7 @@ unsaved:
   message: "Es gibt ungespeicherte Änderungen. Was möchten Sie tun?"
   buttons:
     save: "Speichern"
+    add: "Hinzufügen"
     discard: "Verwerfen"
     cancel: "Abbrechen"
 
