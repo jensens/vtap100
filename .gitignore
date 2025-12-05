@@ -83,3 +83,6 @@ src/vtap100/_version.py
 # OS
 .DS_Store
 Thumbs.db
+
+# worktrees
+worktrees/

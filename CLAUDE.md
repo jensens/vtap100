@@ -6,7 +6,9 @@ Erste Directive:
 - verwende früh WebSearch, z.B wenn Du zu wenig oder alte Info hast oder bei einem Problem nicht weiterkommst
 
 SCM:
+- arbeite immer auf einem Git Worktree unter ./worktrees (git-ignored, Ordner anlegen falls es fehlt), so koennen Agents parallel arbeiten.
 - committe nach jedem erfolgreichen Task
+- worktree aufraeumen, wenn task komplett.
 - push erfolgt durch den User, es sei denn er fragt explizit danach
 
 Sprache:
