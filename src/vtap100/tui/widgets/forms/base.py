@@ -333,6 +333,14 @@ class SlotBasedConfigForm(BaseConfigForm):
                 config = self.get_config()
                 config_list[self.index] = config
                 self._show_success_message(t("common.messages.config_saved"))
+                # Refresh preview
+                self.post_message(
+                    ConfigChanged(
+                        section_id=self.SECTION_NAME,
+                        field_name="saved",
+                        value="",
+                    )
+                )
             except ValidationError as e:
                 self._show_validation_error(e)
 

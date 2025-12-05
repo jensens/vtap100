@@ -18,6 +18,7 @@ from vtap100.models.desfire import DESFireDataFormat
 from vtap100.tui.i18n import t
 from vtap100.tui.widgets.forms.base import BaseConfigForm
 from vtap100.tui.widgets.forms.base import ConfigAdded
+from vtap100.tui.widgets.forms.base import ConfigChanged
 from vtap100.tui.widgets.forms.base import ConfigRemoved
 
 
@@ -300,6 +301,21 @@ class DESFireConfigForm(BaseConfigForm):
         self.mount(label)
         self.set_timer(self.MESSAGE_TIMEOUT, label.remove)
 
+    def on_switch_changed(self, event: Switch.Changed) -> None:
+        """Handle switch changes to update preview.
+
+        Args:
+            event: The switch changed event.
+        """
+        if event.switch.id:
+            self.post_message(
+                ConfigChanged(
+                    section_id=self.SECTION_NAME,
+                    field_name=event.switch.id,
+                    value=str(event.value),
+                )
+            )
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """Handle button presses.
 
@@ -328,6 +344,14 @@ class DESFireConfigForm(BaseConfigForm):
                 self._ensure_desfire_config()
                 self.app.config.desfire.apps[self.index] = config
                 self._show_success_message(t("common.messages.config_saved"))
+                # Refresh preview
+                self.post_message(
+                    ConfigChanged(
+                        section_id=self.SECTION_NAME,
+                        field_name="saved",
+                        value="",
+                    )
+                )
             except (ValidationError, ValueError) as e:
                 if isinstance(e, ValidationError):
                     self._show_validation_error(e)

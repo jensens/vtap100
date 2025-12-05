@@ -13,6 +13,7 @@ from vtap100.models.nfc import NFCTagConfig
 from vtap100.models.nfc import NFCTagMode
 from vtap100.tui.i18n import t
 from vtap100.tui.widgets.forms.base import BaseConfigForm
+from vtap100.tui.widgets.forms.base import ConfigChanged
 
 
 class NFCConfigForm(BaseConfigForm):
@@ -180,6 +181,21 @@ class NFCConfigForm(BaseConfigForm):
         self.mount(label)
         self.set_timer(self.MESSAGE_TIMEOUT, label.remove)
 
+    def on_switch_changed(self, event: Switch.Changed) -> None:
+        """Handle switch changes to update preview.
+
+        Args:
+            event: The switch changed event.
+        """
+        if event.switch.id:
+            self.post_message(
+                ConfigChanged(
+                    section_id=self.SECTION_NAME,
+                    field_name=event.switch.id,
+                    value=str(event.value),
+                )
+            )
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """Handle button presses."""
         self._clear_messages()
@@ -189,6 +205,14 @@ class NFCConfigForm(BaseConfigForm):
                 config = self.get_config()
                 self.app.config.nfc = config
                 self._show_success_message(t("common.messages.config_saved"))
+                # Refresh preview
+                self.post_message(
+                    ConfigChanged(
+                        section_id=self.SECTION_NAME,
+                        field_name="saved",
+                        value="",
+                    )
+                )
             except Exception as e:
                 self.mount(
                     Label(t("common.messages.error", message=str(e)), classes="error-message")

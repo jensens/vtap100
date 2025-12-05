@@ -16,6 +16,7 @@ from vtap100.models.feedback import LEDMode
 from vtap100.models.feedback import LEDSelect
 from vtap100.tui.i18n import t
 from vtap100.tui.widgets.forms.base import BaseConfigForm
+from vtap100.tui.widgets.forms.base import ConfigChanged
 
 
 class FeedbackConfigForm(BaseConfigForm):
@@ -190,6 +191,14 @@ class FeedbackConfigForm(BaseConfigForm):
                 config = self.get_config()
                 self.app.config.feedback = config
                 self._show_success_message(t("common.messages.config_saved"))
+                # Refresh preview
+                self.post_message(
+                    ConfigChanged(
+                        section_id=self.SECTION_NAME,
+                        field_name="saved",
+                        value="",
+                    )
+                )
             except Exception as e:
                 self.mount(
                     Label(t("common.messages.error", message=str(e)), classes="error-message")

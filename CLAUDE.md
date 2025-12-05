@@ -2,6 +2,7 @@ Erste Directive:
 
 - IMMER TDD! Erst tests schreiben oder updaten, dann den Applikationscode.
 - gute UX und Doku sind Pflicht
+- folge dem DRY Prinzip
 - verwende WebSearch, wenn Du bei einem Problem nicht weiterkommst
 
 Sprache:

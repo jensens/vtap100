@@ -12,6 +12,7 @@ from textual.widgets import Switch
 from vtap100.models.keyboard import KeyboardConfig
 from vtap100.tui.i18n import t
 from vtap100.tui.widgets.forms.base import BaseConfigForm
+from vtap100.tui.widgets.forms.base import ConfigChanged
 
 
 class KeyboardConfigForm(BaseConfigForm):
@@ -175,6 +176,21 @@ class KeyboardConfigForm(BaseConfigForm):
         self.mount(label)
         self.set_timer(self.MESSAGE_TIMEOUT, label.remove)
 
+    def on_switch_changed(self, event: Switch.Changed) -> None:
+        """Handle switch changes to update preview.
+
+        Args:
+            event: The switch changed event.
+        """
+        if event.switch.id:
+            self.post_message(
+                ConfigChanged(
+                    section_id=self.SECTION_NAME,
+                    field_name=event.switch.id,
+                    value=str(event.value),
+                )
+            )
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """Handle button presses.
 
@@ -188,6 +204,14 @@ class KeyboardConfigForm(BaseConfigForm):
                 config = self.get_config()
                 self.app.config.keyboard = config
                 self._show_success_message(t("common.messages.config_saved"))
+                # Refresh preview
+                self.post_message(
+                    ConfigChanged(
+                        section_id=self.SECTION_NAME,
+                        field_name="saved",
+                        value="",
+                    )
+                )
             except Exception as e:
                 self.mount(
                     Label(t("common.messages.error", message=str(e)), classes="error-message")
