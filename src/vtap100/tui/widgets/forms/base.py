@@ -109,13 +109,19 @@ class BaseConfigForm(Widget):
     - Help context updates on field focus
     - Validation feedback
     - Config changed notifications
+    - Dirty state tracking (is_dirty, mark_saved)
 
     Subclasses should override:
     - SECTION_NAME: The section identifier
     - compose(): The form layout
+    - get_form_values(): Return current form field values as dict
     """
 
     SECTION_NAME: str = ""
+
+    # Dirty state tracking
+    _initial_values: dict[str, Any]
+    _is_new_form: bool
 
     DEFAULT_CSS = """
     BaseConfigForm {
@@ -155,11 +161,80 @@ class BaseConfigForm(Widget):
     }
     """
 
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        """Initialize the form with empty initial values."""
+        super().__init__(*args, **kwargs)
+        self._initial_values = {}
+        self._is_new_form = False
+
     def on_mount(self) -> None:
         """Focus the first input field when the form is mounted."""
         inputs = self.query(Input)
         if inputs:
             inputs[0].focus()
+        # Capture initial values after form is composed
+        self._capture_initial_values()
+
+    def _capture_initial_values(self) -> None:
+        """Capture the current form values as the initial state.
+
+        This is called after mount to store the initial values
+        for dirty state comparison.
+        """
+        self._initial_values = self.get_form_values()
+
+    def get_form_values(self) -> dict[str, Any]:
+        """Get current form field values as a dictionary.
+
+        This default implementation collects values from all
+        Input, Switch, and Select widgets with IDs.
+
+        Subclasses can override for custom behavior.
+
+        Returns:
+            Dict mapping field ID to current value.
+        """
+        values: dict[str, Any] = {}
+
+        # Collect Input values
+        for input_widget in self.query(Input):
+            if input_widget.id:
+                values[input_widget.id] = input_widget.value
+
+        # Collect Switch values
+        for switch_widget in self.query(Switch):
+            if switch_widget.id:
+                values[switch_widget.id] = switch_widget.value
+
+        # Collect Select values
+        for select_widget in self.query(Select):
+            if select_widget.id:
+                values[select_widget.id] = select_widget.value
+
+        return values
+
+    @property
+    def is_dirty(self) -> bool:
+        """Check if the form has unsaved changes.
+
+        Returns:
+            True if form values differ from initial values or if it's a new form.
+        """
+        # New forms are always dirty until saved
+        if self._is_new_form:
+            return True
+
+        # Compare current values to initial values
+        current_values = self.get_form_values()
+        return current_values != self._initial_values
+
+    def mark_saved(self) -> None:
+        """Mark the form as saved (clear dirty state).
+
+        Updates initial values to current values so form is no longer dirty.
+        """
+        self._is_new_form = False
+        self._initial_values = self.get_form_values()
 
     def on_input_changed(self, event: Input.Changed) -> None:
         """Handle input field changes.
@@ -236,6 +311,16 @@ class SlotBasedConfigForm(BaseConfigForm):
     index: int
     is_new: bool
     _config: BaseModel
+
+    def on_mount(self) -> None:
+        """Mount handler for slot-based forms.
+
+        Sets up dirty state tracking and focuses first input.
+        """
+        # Set _is_new_form based on is_new attribute
+        self._is_new_form = getattr(self, "is_new", False)
+        # Call parent mount which focuses input and captures initial values
+        super().on_mount()
 
     def _get_config_list(self) -> list[Any]:
         """Get the config list from app.config.
@@ -352,6 +437,8 @@ class SlotBasedConfigForm(BaseConfigForm):
                 config = self.get_config()
                 config_list[self.index] = config
                 self._show_success_message(t("common.messages.config_saved"))
+                # Mark form as saved (clear dirty state)
+                self.mark_saved()
                 # Refresh preview
                 self.post_message(
                     ConfigChanged(
