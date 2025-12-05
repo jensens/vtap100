@@ -4,7 +4,8 @@ name: Build & upload PyPI package
 on:
   push:
     branches: [main]
-    tags: ["v[0-9]+.[0-9]+.[0-9]+*"]
+    # Note: Don't trigger on tags - releases trigger via 'release: published'
+    # and would race with tag push due to concurrency settings
   release:
     types:
       - published
