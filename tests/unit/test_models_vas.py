@@ -19,12 +19,30 @@ class TestAppleVASConfig:
             AppleVASConfig(key_slot=1)  # type: ignore[call-arg]
 
     def test_vas_config_valid_minimal(self) -> None:
-        """Valid VAS config with only merchant_id should be created."""
+        """Valid VAS config with merchant_id and key_slot should be created."""
         from vtap100.models.vas import AppleVASConfig
 
-        config = AppleVASConfig(merchant_id="pass.com.example.test")
+        # key_slot is now required (1-6), no longer has default
+        config = AppleVASConfig(merchant_id="pass.com.example.test", key_slot=1)
         assert config.merchant_id == "pass.com.example.test"
-        assert config.key_slot == 0  # Default value
+        assert config.key_slot == 1
+
+    def test_vas_config_requires_key_slot(self) -> None:
+        """VAS config must have a key_slot - it's a required field."""
+        from vtap100.models.vas import AppleVASConfig
+
+        with pytest.raises(ValidationError):
+            AppleVASConfig(merchant_id="pass.com.example.test")  # Missing key_slot
+
+    def test_vas_config_key_slot_zero_invalid(self) -> None:
+        """Key slot 0 (auto-detect) is no longer valid - must be 1-6."""
+        from vtap100.models.vas import AppleVASConfig
+
+        with pytest.raises(ValidationError):
+            AppleVASConfig(
+                merchant_id="pass.com.example.test",
+                key_slot=0,
+            )
 
     def test_vas_config_valid_with_key_slot(self) -> None:
         """Valid VAS config with merchant_id and key_slot."""
@@ -67,11 +85,11 @@ class TestAppleVASConfig:
             AppleVASConfig(merchant_id="")
 
     def test_vas_config_key_slot_valid_range(self) -> None:
-        """Key slot must be between 0 and 6."""
+        """Key slot must be between 1 and 6 (0 is no longer valid)."""
         from vtap100.models.vas import AppleVASConfig
 
-        # Valid slots
-        for slot in range(7):  # 0-6
+        # Valid slots are now 1-6 only
+        for slot in range(1, 7):  # 1-6
             config = AppleVASConfig(
                 merchant_id="pass.com.example.test",
                 key_slot=slot,
@@ -102,23 +120,23 @@ class TestAppleVASConfig:
         """Merchant URL should be optional and default to None."""
         from vtap100.models.vas import AppleVASConfig
 
-        config = AppleVASConfig(merchant_id="pass.com.example.test")
+        config = AppleVASConfig(merchant_id="pass.com.example.test", key_slot=1)
         assert config.merchant_url is None
 
 
 class TestAppleVASConfigOutput:
     """Tests for AppleVASConfig config.txt output generation."""
 
-    def test_to_config_lines_minimal(self) -> None:
-        """Minimal config should generate only MerchantID line."""
+    def test_to_config_lines_always_includes_key_slot(self) -> None:
+        """Config should always generate both MerchantID and KeySlot lines."""
         from vtap100.models.vas import AppleVASConfig
 
-        config = AppleVASConfig(merchant_id="pass.com.example.test")
+        config = AppleVASConfig(merchant_id="pass.com.example.test", key_slot=1)
         lines = config.to_config_lines(slot_number=1)
 
         assert "VAS1MerchantID=pass.com.example.test" in lines
-        # key_slot=0 means auto-detect, should not be in output
-        assert not any("KeySlot" in line for line in lines)
+        # KeySlot is now always output (required for reader to work)
+        assert "VAS1KeySlot=1" in lines
 
     def test_to_config_lines_with_key_slot(self) -> None:
         """Config with key_slot should include KeySlot line."""
@@ -167,7 +185,7 @@ class TestAppleVASConfigOutput:
         """to_config_lines should return a list of strings."""
         from vtap100.models.vas import AppleVASConfig
 
-        config = AppleVASConfig(merchant_id="pass.com.example.test")
+        config = AppleVASConfig(merchant_id="pass.com.example.test", key_slot=1)
         lines = config.to_config_lines(slot_number=1)
 
         assert isinstance(lines, list)

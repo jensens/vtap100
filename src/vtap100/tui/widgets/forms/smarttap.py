@@ -20,7 +20,7 @@ class SmartTapConfigForm(SlotBasedConfigForm):
 
     Fields:
     - collector_id: Google Collector ID (required)
-    - key_slot: Private key slot (0-6)
+    - key_slot: Private key slot (1-6, required)
     - key_version: Key version number
 
     Attributes:
@@ -76,8 +76,8 @@ class SmartTapConfigForm(SlotBasedConfigForm):
         super().__init__(id=id)
         self.index = index
         self.is_new = is_new
-        # Use placeholder collector_id for new configs (model requires non-empty string)
-        self._config = config or GoogleSmartTapConfig(collector_id="00000000")
+        # Use placeholder collector_id and key_slot=1 for new configs
+        self._config = config or GoogleSmartTapConfig(collector_id="00000000", key_slot=1)
 
     def _get_used_key_slots(self) -> dict[int, str]:
         """Get key slots that are already in use by other configs.
@@ -116,8 +116,8 @@ class SmartTapConfigForm(SlotBasedConfigForm):
         )
 
         yield Label(t("forms.smarttap.key_slot"))
-        # Generate options for Select: 0 (Auto) and 1-6
-        options = [(f"{i} ({t('common.labels.auto')})" if i == 0 else str(i), i) for i in range(7)]
+        # Generate options for Select: 1-6 (key_slot is now required, no more Auto/0)
+        options = [(str(i), i) for i in range(1, 7)]
         yield Select(options, value=self._config.key_slot, id="key_slot")
         yield Static(self._get_slot_info_text(), classes="slot-info")
 
@@ -144,7 +144,7 @@ class SmartTapConfigForm(SlotBasedConfigForm):
         """
         collector_id = self.query_one("#collector_id", Input).value
         select = self.query_one("#key_slot", Select)
-        key_slot = select.value if select.value is not None else 0
+        key_slot = select.value if select.value is not None else 1
         key_version_str = self.query_one("#key_version", Input).value
         key_version = int(key_version_str) if key_version_str else 0
 

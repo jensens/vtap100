@@ -19,13 +19,31 @@ class TestGoogleSmartTapConfig:
             GoogleSmartTapConfig(key_slot=1)  # type: ignore[call-arg]
 
     def test_smarttap_config_valid_minimal(self) -> None:
-        """Valid Smart Tap config with only collector_id should be created."""
+        """Valid Smart Tap config with collector_id and key_slot should be created."""
         from vtap100.models.smarttap import GoogleSmartTapConfig
 
-        config = GoogleSmartTapConfig(collector_id="96972794")
+        # key_slot is now required (1-6), no longer has default
+        config = GoogleSmartTapConfig(collector_id="96972794", key_slot=1)
         assert config.collector_id == "96972794"
-        assert config.key_slot == 0  # Default value
+        assert config.key_slot == 1
         assert config.key_version == 0  # Default value
+
+    def test_smarttap_config_requires_key_slot(self) -> None:
+        """Smart Tap config must have a key_slot - it's a required field."""
+        from vtap100.models.smarttap import GoogleSmartTapConfig
+
+        with pytest.raises(ValidationError):
+            GoogleSmartTapConfig(collector_id="96972794")  # Missing key_slot
+
+    def test_smarttap_config_key_slot_zero_invalid(self) -> None:
+        """Key slot 0 (auto-detect) is no longer valid - must be 1-6."""
+        from vtap100.models.smarttap import GoogleSmartTapConfig
+
+        with pytest.raises(ValidationError):
+            GoogleSmartTapConfig(
+                collector_id="96972794",
+                key_slot=0,
+            )
 
     def test_smarttap_config_valid_with_key_slot(self) -> None:
         """Valid Smart Tap config with collector_id and key_slot."""
@@ -56,7 +74,7 @@ class TestGoogleSmartTapConfig:
         from vtap100.models.smarttap import GoogleSmartTapConfig
 
         # Valid numeric strings
-        config = GoogleSmartTapConfig(collector_id="12345678")
+        config = GoogleSmartTapConfig(collector_id="12345678", key_slot=1)
         assert config.collector_id == "12345678"
 
     def test_smarttap_config_collector_id_empty_invalid(self) -> None:
@@ -67,11 +85,11 @@ class TestGoogleSmartTapConfig:
             GoogleSmartTapConfig(collector_id="")
 
     def test_smarttap_config_key_slot_valid_range(self) -> None:
-        """Key slot must be between 0 and 6."""
+        """Key slot must be between 1 and 6 (0 is no longer valid)."""
         from vtap100.models.smarttap import GoogleSmartTapConfig
 
-        # Valid slots
-        for slot in range(7):  # 0-6
+        # Valid slots are now 1-6 only
+        for slot in range(1, 7):  # 1-6
             config = GoogleSmartTapConfig(
                 collector_id="96972794",
                 key_slot=slot,
@@ -102,7 +120,7 @@ class TestGoogleSmartTapConfig:
         """Key version should default to 0."""
         from vtap100.models.smarttap import GoogleSmartTapConfig
 
-        config = GoogleSmartTapConfig(collector_id="96972794")
+        config = GoogleSmartTapConfig(collector_id="96972794", key_slot=1)
         assert config.key_version == 0
 
     def test_smarttap_config_key_version_positive(self) -> None:
@@ -111,6 +129,7 @@ class TestGoogleSmartTapConfig:
 
         config = GoogleSmartTapConfig(
             collector_id="96972794",
+            key_slot=1,
             key_version=10,
         )
         assert config.key_version == 10
@@ -129,18 +148,18 @@ class TestGoogleSmartTapConfig:
 class TestGoogleSmartTapConfigOutput:
     """Tests for GoogleSmartTapConfig config.txt output generation."""
 
-    def test_to_config_lines_minimal(self) -> None:
-        """Minimal config should generate only CollectorID line."""
+    def test_to_config_lines_always_includes_key_slot_and_version(self) -> None:
+        """Config should always generate CollectorID, KeySlot and KeyVersion lines."""
         from vtap100.models.smarttap import GoogleSmartTapConfig
 
-        config = GoogleSmartTapConfig(collector_id="96972794")
+        config = GoogleSmartTapConfig(collector_id="96972794", key_slot=1)
         lines = config.to_config_lines(slot_number=1)
 
         assert "ST1CollectorID=96972794" in lines
-        # key_slot=0 means auto-detect, should not be in output
-        assert not any("KeySlot" in line for line in lines)
-        # key_version=0 is default, should not be in output
-        assert not any("KeyVersion" in line for line in lines)
+        # KeySlot is now always output (required for reader to work)
+        assert "ST1KeySlot=1" in lines
+        # KeyVersion is now always output (required for Google Smart Tap)
+        assert "ST1KeyVersion=0" in lines
 
     def test_to_config_lines_with_key_slot(self) -> None:
         """Config with key_slot should include KeySlot line."""
@@ -191,7 +210,7 @@ class TestGoogleSmartTapConfigOutput:
         """to_config_lines should return a list of strings."""
         from vtap100.models.smarttap import GoogleSmartTapConfig
 
-        config = GoogleSmartTapConfig(collector_id="96972794")
+        config = GoogleSmartTapConfig(collector_id="96972794", key_slot=1)
         lines = config.to_config_lines(slot_number=1)
 
         assert isinstance(lines, list)

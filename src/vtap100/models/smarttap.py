@@ -30,9 +30,9 @@ class GoogleSmartTapConfig(BaseModel):
         collector_id: The Google Collector ID (numeric string).
             Provided by Google to uniquely identify your passes.
         key_slot: The private key slot (1-6) where the decryption key is stored.
-            Use 0 for auto-detection (default).
+            Required for the reader to work correctly.
         key_version: The key version number that must match the Google dashboard.
-            Use 0 for default (no specific version).
+            Defaults to 0 if not specified.
     """
 
     collector_id: str = Field(
@@ -41,10 +41,10 @@ class GoogleSmartTapConfig(BaseModel):
         min_length=1,
     )
     key_slot: int = Field(
-        default=0,
-        ge=0,
+        ...,
+        ge=1,
         le=6,
-        description="Private key slot (0=auto, 1-6=specific slot)",
+        description="Private key slot (1-6, required for reader to work)",
     )
     key_version: int = Field(
         default=0,
@@ -63,13 +63,11 @@ class GoogleSmartTapConfig(BaseModel):
         """
         lines = [f"ST{slot_number}CollectorID={self.collector_id}"]
 
-        # Only include key_slot if it's not 0 (auto-detect)
-        if self.key_slot > 0:
-            lines.append(f"ST{slot_number}KeySlot={self.key_slot}")
+        # Always include key_slot (required for reader to work)
+        lines.append(f"ST{slot_number}KeySlot={self.key_slot}")
 
-        # Only include key_version if it's not 0 (default)
-        if self.key_version > 0:
-            lines.append(f"ST{slot_number}KeyVersion={self.key_version}")
+        # Always include key_version (required for Google Smart Tap)
+        lines.append(f"ST{slot_number}KeyVersion={self.key_version}")
 
         return lines
 

@@ -1048,7 +1048,9 @@ class TestFormClearMessages:
         from vtap100.tui.widgets.sidebar import SectionSelected
 
         app = VTAPEditorApp()
-        app.config = VTAPConfig(smarttap_configs=[GoogleSmartTapConfig(collector_id="12345678")])
+        app.config = VTAPConfig(
+            smarttap_configs=[GoogleSmartTapConfig(collector_id="12345678", key_slot=1)]
+        )
 
         async with app.run_test() as pilot:
             await pilot.pause()

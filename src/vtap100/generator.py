@@ -38,9 +38,7 @@ VAS{{ passinfo.slot }}MerchantURL={{ passinfo.apple.merchant_url }}
 {% if passinfo.google %}
 ST{{ passinfo.slot }}CollectorID={{ passinfo.google.collector_id }}
 ST{{ passinfo.slot }}KeySlot={{ passinfo.slot }}
-{% if passinfo.google.key_version is defined -%}
-ST{{ passinfo.slot }}KeyVersion={{ passinfo.google.key_version }}
-{% endif -%}
+ST{{ passinfo.slot }}KeyVersion={{ passinfo.google.key_version | default(0) }}
 {% endif %}
 {% endfor %}
 """
