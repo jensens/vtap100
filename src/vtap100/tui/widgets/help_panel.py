@@ -26,7 +26,7 @@ class HelpPanel(Widget):
     DEFAULT_CSS = """
     HelpPanel {
         width: 100%;
-        height: 100%;
+        height: auto;
         padding: 1;
     }
 

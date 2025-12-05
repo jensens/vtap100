@@ -23,12 +23,12 @@ class ConfigPreview(Widget):
     DEFAULT_CSS = """
     ConfigPreview {
         width: 100%;
-        height: 100%;
+        height: auto;
     }
 
     ConfigPreview > Static {
         width: 100%;
-        height: 1fr;
+        height: auto;
     }
 
     ConfigPreview .preview-line {

@@ -11,6 +11,7 @@ from textual.app import ComposeResult
 from textual.containers import Container
 from textual.containers import Horizontal
 from textual.containers import Vertical
+from textual.containers import VerticalScroll
 from textual.screen import Screen
 from textual.widgets import Footer
 from textual.widgets import Header
@@ -60,23 +61,23 @@ class EditorScreen(Screen):
         with Vertical(id="editor-main"):
             # Top row: Sidebar | Main Content | Help Panel
             with Horizontal(id="top-row"):
-                yield Container(
+                yield VerticalScroll(
                     ConfigSidebar(config=self.app.config, id="config-sidebar"),
                     id="sidebar",
                 )
 
-                yield Container(
+                yield VerticalScroll(
                     Static(t("common.messages.select_section"), classes="hint"),
                     id="main-content",
                 )
 
-                yield Container(
+                yield VerticalScroll(
                     HelpPanel(id="help-panel-widget"),
                     id="help-panel",
                 )
 
             # Bottom: Preview Panel
-            yield Container(
+            yield VerticalScroll(
                 ConfigPreview(config=self.app.config, id="preview-widget"),
                 id="preview-panel",
             )

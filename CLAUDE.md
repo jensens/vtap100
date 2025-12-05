@@ -3,7 +3,7 @@ Erste Directive:
 - IMMER TDD! Erst tests schreiben oder updaten, dann den Applikationscode.
 - gute UX und Doku sind Pflicht
 - folge dem DRY Prinzip
-- verwende WebSearch, wenn Du bei einem Problem nicht weiterkommst
+- verwende früh WebSearch, z.B wenn Du zu wenig oder alte Info hast oder bei einem Problem nicht weiterkommst
 
 Sprache:
 - Sprache der Software ist Englisch und Deutsch, alle TUI Texte und Hilfen werden übersetzt.
