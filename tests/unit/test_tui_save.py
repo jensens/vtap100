@@ -38,9 +38,10 @@ class TestSaveFunction:
             assert "VAS1MerchantID=pass.com.example.save" in content
 
     @pytest.mark.asyncio
-    async def test_save_without_output_path_shows_error(self) -> None:
-        """Save without output path should show error notification."""
+    async def test_save_without_output_path_shows_dialog(self) -> None:
+        """Save without output path should show save dialog."""
         from vtap100.tui.app import VTAPEditorApp
+        from vtap100.tui.screens.save_dialog import SaveDialog
 
         app = VTAPEditorApp()
 
@@ -49,9 +50,73 @@ class TestSaveFunction:
 
             # Press Ctrl+S to save (no output path set)
             await pilot.press("ctrl+s")
+            await pilot.pause()
 
-            # Should not crash, error notification is shown
-            # (We can't easily check notifications in tests, but no exception = pass)
+            # SaveDialog should be shown
+            assert isinstance(app.screen, SaveDialog)
+
+            # Dialog should have default filename "config.txt"
+            from textual.widgets import Input
+
+            filename_input = app.screen.query_one("#filename-input", Input)
+            assert filename_input.value == "config.txt"
+
+            # Press Escape to cancel
+            await pilot.press("escape")
+            await pilot.pause()
+
+            # Should be back to main screen
+            assert not isinstance(app.screen, SaveDialog)
+
+    @pytest.mark.asyncio
+    async def test_save_dialog_saves_file(self, tmp_path) -> None:
+        """Save dialog should save file when confirmed."""
+        import os
+        from vtap100.models.vas import AppleVASConfig
+        from vtap100.tui.app import VTAPEditorApp
+        from vtap100.tui.screens.save_dialog import SaveDialog
+
+        # Change to tmp_path so relative filename works
+        original_cwd = os.getcwd()
+        os.chdir(tmp_path)
+
+        try:
+            app = VTAPEditorApp()
+
+            async with app.run_test() as pilot:
+                await pilot.pause()
+
+                # Add a VAS config
+                vas = AppleVASConfig(merchant_id="pass.com.dialog.test", key_slot=1)
+                app.config.vas_configs.append(vas)
+
+                # Press Ctrl+S to save (no output path set)
+                await pilot.press("ctrl+s")
+                await pilot.pause()
+
+                # SaveDialog should be shown
+                assert isinstance(app.screen, SaveDialog)
+
+                # Clear input and type new filename
+                from textual.widgets import Input
+
+                filename_input = app.screen.query_one("#filename-input", Input)
+                filename_input.value = "my_config.txt"
+
+                # Click save button
+                await pilot.click("#save-btn")
+                await pilot.pause()
+
+                # File should exist
+                output_file = tmp_path / "my_config.txt"
+                assert output_file.exists()
+                content = output_file.read_text()
+                assert "VAS1MerchantID=pass.com.dialog.test" in content
+
+                # output_path should be set for future saves
+                assert app.output_path is not None
+        finally:
+            os.chdir(original_cwd)
 
     @pytest.mark.asyncio
     async def test_save_empty_config(self, tmp_path) -> None:

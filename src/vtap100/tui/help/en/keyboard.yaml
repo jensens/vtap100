@@ -15,25 +15,62 @@ fields:
       Useful for simple integrations without software development.
       Works with any program that accepts keyboard input.
 
-  source:
-    title: Data Sources (KBSource)
+  source_mobile_pass:
+    title: Mobile Pass (VAS/SmartTap)
     description: |
-      Defines which data types trigger keyboard output.
-      Hexadecimal bitmask combining multiple sources.
-    format: |
-      0x80 = Mobile Pass (Apple VAS / Google Smart Tap)
-      0x40 = STUID
-      0x20 = Card Emulation Write Mode
-      0x04 = Scanners
-      0x02 = Command Interface
-      0x01 = Card/Tag UID
-    example: "A5 (Mobile + Emulation + Scanners + UID)"
+      Enables keyboard output for Mobile Wallet passes.
+      Includes Apple VAS and Google Smart Tap.
+    format: "Bit 7 (0x80)"
     tip: |
-      Common values:
-      A5 = Default (Mobile + Emulation + Scanners + UID)
-      81 = Mobile Pass + Card/Tag UID
-      80 = Mobile Pass only
-      01 = Card/Tag UID only
+      This is the primary source for wallet integrations.
+      Enable to receive pass data from smartphones.
+
+  source_stuid:
+    title: STUID
+    description: |
+      Enables keyboard output for STUID data.
+      STUID is a specialized identification format.
+    format: "Bit 6 (0x40)"
+    tip: Only enable if STUID support is required.
+
+  source_card_emulation:
+    title: Card Emulation Write Mode
+    description: |
+      Enables keyboard output for data from
+      Card Emulation write mode.
+    format: "Bit 5 (0x20)"
+    tip: |
+      Used when the reader receives data from another
+      device in card emulation mode.
+
+  source_scanners:
+    title: Scanners
+    description: |
+      Enables keyboard output for scanner inputs.
+      Forwards data from connected scanners.
+    format: "Bit 2 (0x04)"
+    tip: Enable if an external scanner is connected.
+
+  source_command_interface:
+    title: Command Interface
+    description: |
+      Enables keyboard output for messages
+      from the Command Interface.
+    format: "Bit 1 (0x02)"
+    tip: |
+      Rarely needed. Only enable if special
+      command interface messages should be output.
+
+  source_card_tag_uid:
+    title: Card/Tag UID
+    description: |
+      Enables keyboard output for the UID of
+      NFC cards and tags.
+    format: "Bit 0 (0x01)"
+    tip: |
+      Enable to send the unique ID of NFC cards
+      as keyboard input.
+      Useful for simple access control systems.
 
   prefix:
     title: Prefix (KBPrefix)

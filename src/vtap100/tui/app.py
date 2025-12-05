@@ -233,21 +233,37 @@ class VTAPEditorApp(App):
         self.notify(f"Language: {lang_name}")
 
     def action_save(self) -> None:
-        """Save the current configuration to output file."""
+        """Save the current configuration to output file.
+
+        If no output path is set, opens a dialog to enter a filename.
+        """
         if self.output_path:
-            try:
-                generator = ConfigGenerator(self.config)
-                generator.write_to_file(self.output_path)
-                self.has_unsaved_changes = False
-                self.notify(t("common.messages.config_saved"))
-            except OSError as e:
-                self.notify(
-                    t("common.messages.error", message=str(e)),
-                    severity="error",
-                )
+            self._do_save(self.output_path)
         else:
+            # No output path - open save dialog
+            from vtap100.tui.screens.save_dialog import SaveDialog
+
+            def handle_save_result(result: Path | None) -> None:
+                if result:
+                    self.output_path = result
+                    self._do_save(result)
+
+            self.push_screen(SaveDialog(default_filename="config.txt"), handle_save_result)
+
+    def _do_save(self, path: Path) -> None:
+        """Actually save the configuration to the given path.
+
+        Args:
+            path: The file path to save to.
+        """
+        try:
+            generator = ConfigGenerator(self.config)
+            generator.write_to_file(path)
+            self.has_unsaved_changes = False
+            self.notify(t("common.messages.config_saved"))
+        except OSError as e:
             self.notify(
-                t("common.messages.error", message="No output file"),
+                t("common.messages.error", message=str(e)),
                 severity="error",
             )
 

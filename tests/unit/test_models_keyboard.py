@@ -535,3 +535,133 @@ class TestKeyboardConfigExtendedOutput:
         assert "KBPassSection=1" in lines
         assert "KBPassSeparator=;" in lines
         assert "KBPassLength=32" in lines
+
+
+class TestKBSourceParsing:
+    """Tests for parsing KBSource hex strings to bit flags."""
+
+    def test_parse_kbsource_hex_default_a5(self) -> None:
+        """Default A5 should parse to mobile_pass + card_emulation + scanners + card_tag_uid."""
+        from vtap100.models.keyboard import parse_kbsource_hex
+
+        flags = parse_kbsource_hex("A5")
+        assert flags["mobile_pass"] is True
+        assert flags["stuid"] is False
+        assert flags["card_emulation"] is True
+        assert flags["scanners"] is True
+        assert flags["command_interface"] is False
+        assert flags["card_tag_uid"] is True
+
+    def test_parse_kbsource_hex_mobile_only(self) -> None:
+        """80 should parse to mobile_pass only."""
+        from vtap100.models.keyboard import parse_kbsource_hex
+
+        flags = parse_kbsource_hex("80")
+        assert flags["mobile_pass"] is True
+        assert flags["stuid"] is False
+        assert flags["card_emulation"] is False
+        assert flags["scanners"] is False
+        assert flags["command_interface"] is False
+        assert flags["card_tag_uid"] is False
+
+    def test_parse_kbsource_hex_all_bits(self) -> None:
+        """E7 should parse to all defined bits set."""
+        from vtap100.models.keyboard import parse_kbsource_hex
+
+        flags = parse_kbsource_hex("E7")
+        assert flags["mobile_pass"] is True
+        assert flags["stuid"] is True
+        assert flags["card_emulation"] is True
+        assert flags["scanners"] is True
+        assert flags["command_interface"] is True
+        assert flags["card_tag_uid"] is True
+
+    def test_parse_kbsource_hex_zero(self) -> None:
+        """00 should parse to all bits off."""
+        from vtap100.models.keyboard import parse_kbsource_hex
+
+        flags = parse_kbsource_hex("00")
+        assert all(not v for v in flags.values())
+
+    def test_parse_kbsource_hex_lowercase(self) -> None:
+        """Should handle lowercase hex input."""
+        from vtap100.models.keyboard import parse_kbsource_hex
+
+        flags = parse_kbsource_hex("a5")
+        assert flags["mobile_pass"] is True
+        assert flags["card_tag_uid"] is True
+
+    def test_parse_kbsource_hex_invalid(self) -> None:
+        """Invalid hex should raise ValueError."""
+        from vtap100.models.keyboard import parse_kbsource_hex
+
+        with pytest.raises(ValueError):
+            parse_kbsource_hex("GG")
+
+
+class TestKBSourceBuilding:
+    """Tests for building KBSource hex from flags."""
+
+    def test_build_kbsource_from_flags_default(self) -> None:
+        """A5 configuration from individual flags."""
+        from vtap100.models.keyboard import build_kbsource_from_flags
+
+        result = build_kbsource_from_flags(
+            mobile_pass=True,
+            card_emulation=True,
+            scanners=True,
+            card_tag_uid=True,
+        )
+        assert result == "A5"
+
+    def test_build_kbsource_from_flags_empty(self) -> None:
+        """No flags should return 00."""
+        from vtap100.models.keyboard import build_kbsource_from_flags
+
+        result = build_kbsource_from_flags()
+        assert result == "00"
+
+    def test_build_kbsource_from_flags_all(self) -> None:
+        """All flags should return E7."""
+        from vtap100.models.keyboard import build_kbsource_from_flags
+
+        result = build_kbsource_from_flags(
+            mobile_pass=True,
+            stuid=True,
+            card_emulation=True,
+            scanners=True,
+            command_interface=True,
+            card_tag_uid=True,
+        )
+        assert result == "E7"
+
+    def test_build_kbsource_from_flags_single_bits(self) -> None:
+        """Each single bit should produce correct hex."""
+        from vtap100.models.keyboard import build_kbsource_from_flags
+
+        assert build_kbsource_from_flags(mobile_pass=True) == "80"
+        assert build_kbsource_from_flags(stuid=True) == "40"
+        assert build_kbsource_from_flags(card_emulation=True) == "20"
+        assert build_kbsource_from_flags(scanners=True) == "04"
+        assert build_kbsource_from_flags(command_interface=True) == "02"
+        assert build_kbsource_from_flags(card_tag_uid=True) == "01"
+
+    def test_build_kbsource_roundtrip(self) -> None:
+        """Parse and rebuild should give same result."""
+        from vtap100.models.keyboard import build_kbsource_from_flags
+        from vtap100.models.keyboard import parse_kbsource_hex
+
+        original = "A5"
+        flags = parse_kbsource_hex(original)
+        rebuilt = build_kbsource_from_flags(**flags)
+        assert rebuilt == original
+
+    def test_build_kbsource_roundtrip_all_values(self) -> None:
+        """Roundtrip should work for various hex values."""
+        from vtap100.models.keyboard import build_kbsource_from_flags
+        from vtap100.models.keyboard import parse_kbsource_hex
+
+        for hex_val in ["00", "01", "80", "A1", "A5", "E7"]:
+            flags = parse_kbsource_hex(hex_val)
+            rebuilt = build_kbsource_from_flags(**flags)
+            assert rebuilt == hex_val, f"Roundtrip failed for {hex_val}"

@@ -101,8 +101,14 @@ forms:
   # Keyboard form
   keyboard:
     enable: "Enable Keyboard (KBLogMode)"
-    source: "Data Sources (KBSource)"
-    source_placeholder: "A5 (A=VAS, G=SmartTap, 0=MIFARE, etc.)"
+    source_title: "Data Sources (KBSource)"
+    source_mobile_pass: "Mobile Pass (VAS/SmartTap)"
+    source_stuid: "STUID"
+    source_card_emulation: "Card Emulation Write Mode"
+    source_scanners: "Scanners"
+    source_command_interface: "Command Interface"
+    source_card_tag_uid: "Card/Tag UID"
+    source_hex_value: "KBSource = {value}"
     prefix: "Prefix (KBPrefix)"
     prefix_placeholder: "e.g. $t for timestamp"
     postfix: "Suffix (KBPostfix)"
@@ -485,3 +491,9 @@ export:
   saved_to_file: "Saved: {path}"
   no_output_path: "No output path specified"
   clipboard_error: "Clipboard error: {message}"
+
+# Save dialog
+save:
+  title: "Save"
+  filename_label: "Filename:"
+  filename_placeholder: "config.txt"

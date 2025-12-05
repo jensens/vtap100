@@ -6,8 +6,9 @@ Erste Directive:
 - verwende früh WebSearch, z.B wenn Du zu wenig oder alte Info hast oder bei einem Problem nicht weiterkommst
 
 Sprache:
-- Sprache der Software ist Englisch und Deutsch, alle TUI Texte und Hilfen werden übersetzt.
-- Sprache der Prompts und Pläne kann gerne Deutsch sein.
+- der Software ist Englisch und Deutsch, alle TUI Texte und Hilfen werden übersetzt.
+- die Doku ist english
+- Prompts und Pläne können gerne Deutsch sein.
 
 Pläne:
 - immer auch unter ./docs ablegen, immer PLAN_[THEMA].md

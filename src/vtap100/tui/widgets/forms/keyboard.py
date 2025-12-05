@@ -5,11 +5,14 @@ Form for editing keyboard emulation settings.
 
 from textual.app import ComposeResult
 from textual.containers import Horizontal
+from textual.containers import Vertical
 from textual.widgets import Button
 from textual.widgets import Input
 from textual.widgets import Label
 from textual.widgets import Switch
 from vtap100.models.keyboard import KeyboardConfig
+from vtap100.models.keyboard import build_kbsource_from_flags
+from vtap100.models.keyboard import parse_kbsource_hex
 from vtap100.tui.i18n import t
 from vtap100.tui.widgets.forms.base import BaseConfigForm
 from vtap100.tui.widgets.forms.base import ConfigChanged
@@ -74,6 +77,36 @@ class KeyboardConfigForm(BaseConfigForm):
     KeyboardConfigForm .field-label {
         width: 20;
     }
+
+    KeyboardConfigForm .field-section {
+        text-style: bold;
+        margin-top: 1;
+        margin-bottom: 0;
+    }
+
+    KeyboardConfigForm .bit-switches {
+        margin-left: 2;
+        padding: 1;
+        border: solid $primary-darken-2;
+        height: auto;
+    }
+
+    KeyboardConfigForm .bit-switches Label {
+        margin-bottom: 0;
+    }
+
+    KeyboardConfigForm .bit-switches Switch {
+        margin-bottom: 1;
+    }
+
+    KeyboardConfigForm .hex-display {
+        color: $success;
+        text-style: bold;
+        margin-top: 1;
+        padding: 0 1;
+        background: $surface-darken-1;
+        width: auto;
+    }
     """
 
     def __init__(
@@ -98,12 +131,36 @@ class KeyboardConfigForm(BaseConfigForm):
         yield Label(t("forms.keyboard.enable"))
         yield Switch(value=self._config.log_mode, id="log_mode")
 
-        # Source
-        yield Label(t("forms.keyboard.source"))
-        yield Input(
-            value=self._config.source,
-            placeholder=t("forms.keyboard.source_placeholder"),
-            id="source",
+        # Source - Bitmask Switches
+        yield Label(t("forms.keyboard.source_title"), classes="field-section")
+
+        # Parse existing hex value into individual bits
+        source_bits = parse_kbsource_hex(self._config.source)
+
+        with Vertical(id="source-bits", classes="bit-switches"):
+            yield Label(t("forms.keyboard.source_mobile_pass"))
+            yield Switch(value=source_bits["mobile_pass"], id="source_mobile_pass")
+
+            yield Label(t("forms.keyboard.source_stuid"))
+            yield Switch(value=source_bits["stuid"], id="source_stuid")
+
+            yield Label(t("forms.keyboard.source_card_emulation"))
+            yield Switch(value=source_bits["card_emulation"], id="source_card_emulation")
+
+            yield Label(t("forms.keyboard.source_scanners"))
+            yield Switch(value=source_bits["scanners"], id="source_scanners")
+
+            yield Label(t("forms.keyboard.source_command_interface"))
+            yield Switch(value=source_bits["command_interface"], id="source_command_interface")
+
+            yield Label(t("forms.keyboard.source_card_tag_uid"))
+            yield Switch(value=source_bits["card_tag_uid"], id="source_card_tag_uid")
+
+        # Live hex value display
+        yield Label(
+            t("forms.keyboard.source_hex_value", value=self._config.source),
+            id="source_hex_display",
+            classes="hex-display",
         )
 
         # Prefix
@@ -133,6 +190,21 @@ class KeyboardConfigForm(BaseConfigForm):
         with Horizontal(classes="buttons"):
             yield Button(t("common.buttons.save"), variant="success", id="save")
 
+    def _get_source_value(self) -> str:
+        """Calculate KBSource hex value from switch states.
+
+        Returns:
+            Hex string like "A5"
+        """
+        return build_kbsource_from_flags(
+            mobile_pass=self.query_one("#source_mobile_pass", Switch).value,
+            stuid=self.query_one("#source_stuid", Switch).value,
+            card_emulation=self.query_one("#source_card_emulation", Switch).value,
+            scanners=self.query_one("#source_scanners", Switch).value,
+            command_interface=self.query_one("#source_command_interface", Switch).value,
+            card_tag_uid=self.query_one("#source_card_tag_uid", Switch).value,
+        )
+
     def get_config(self) -> KeyboardConfig:
         """Get the current configuration from form values.
 
@@ -140,7 +212,7 @@ class KeyboardConfigForm(BaseConfigForm):
             KeyboardConfig with current form values.
         """
         log_mode = self.query_one("#log_mode", Switch).value
-        source = self.query_one("#source", Input).value
+        source = self._get_source_value()
         prefix_val = self.query_one("#prefix", Input).value
         prefix = prefix_val if prefix_val else None
         postfix = self.query_one("#postfix", Input).value
@@ -154,6 +226,21 @@ class KeyboardConfigForm(BaseConfigForm):
             postfix=postfix,
             delay_ms=delay_ms,
         )
+
+    def on_switch_changed(self, event: Switch.Changed) -> None:
+        """Handle switch changes - update hex display if source bit changed.
+
+        Args:
+            event: The switch changed event.
+        """
+        # Call parent handler for ConfigChanged message
+        super().on_switch_changed(event)
+
+        # Update hex display if a source bit switch changed
+        if event.switch.id and event.switch.id.startswith("source_"):
+            hex_value = self._get_source_value()
+            hex_label = self.query_one("#source_hex_display", Label)
+            hex_label.update(t("forms.keyboard.source_hex_value", value=hex_value))
 
     def _clear_messages(self) -> None:
         """Clear previous validation errors and success messages from the form."""

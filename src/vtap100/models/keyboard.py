@@ -227,3 +227,80 @@ class KBSourceBuilder:
             Uppercase hex string (e.g., "A5", "80", "01").
         """
         return f"{self._value:02X}"
+
+
+def parse_kbsource_hex(hex_str: str) -> dict[str, bool]:
+    """Parse a KBSource hex string into individual bit flags.
+
+    Args:
+        hex_str: Hex string like "A5", "80", "01"
+
+    Returns:
+        Dict with bit names as keys and bool values:
+        {
+            "mobile_pass": True/False,
+            "stuid": True/False,
+            "card_emulation": True/False,
+            "scanners": True/False,
+            "command_interface": True/False,
+            "card_tag_uid": True/False,
+        }
+
+    Raises:
+        ValueError: If hex_str is not a valid hex number
+
+    Example:
+        >>> parse_kbsource_hex("A5")
+        {'mobile_pass': True, 'stuid': False, 'card_emulation': True,
+         'scanners': True, 'command_interface': False, 'card_tag_uid': True}
+    """
+    value = int(hex_str, 16)
+    return {
+        "mobile_pass": bool(value & KBSourceBuilder.MOBILE_PASS),
+        "stuid": bool(value & KBSourceBuilder.STUID),
+        "card_emulation": bool(value & KBSourceBuilder.CARD_EMULATION),
+        "scanners": bool(value & KBSourceBuilder.SCANNERS),
+        "command_interface": bool(value & KBSourceBuilder.COMMAND_INTERFACE),
+        "card_tag_uid": bool(value & KBSourceBuilder.CARD_TAG_UID),
+    }
+
+
+def build_kbsource_from_flags(
+    mobile_pass: bool = False,
+    stuid: bool = False,
+    card_emulation: bool = False,
+    scanners: bool = False,
+    command_interface: bool = False,
+    card_tag_uid: bool = False,
+) -> str:
+    """Build KBSource hex string from individual flags.
+
+    Args:
+        mobile_pass: Enable Mobile Pass (Apple VAS / Google Smart Tap)
+        stuid: Enable STUID
+        card_emulation: Enable Card Emulation Write Mode
+        scanners: Enable Scanners
+        command_interface: Enable Command Interface Messages
+        card_tag_uid: Enable Card/Tag UID
+
+    Returns:
+        Uppercase hex string like "A5", "80", "01"
+
+    Example:
+        >>> build_kbsource_from_flags(mobile_pass=True, card_tag_uid=True)
+        '81'
+    """
+    builder = KBSourceBuilder()
+    if mobile_pass:
+        builder.mobile_pass()
+    if stuid:
+        builder.stuid()
+    if card_emulation:
+        builder.card_emulation()
+    if scanners:
+        builder.scanners()
+    if command_interface:
+        builder.command_interface()
+    if card_tag_uid:
+        builder.card_tag_uid()
+    return builder.build()

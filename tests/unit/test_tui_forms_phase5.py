@@ -70,14 +70,15 @@ class TestKeyboardConfigFormAsync:
             assert switch.value is True
 
     @pytest.mark.asyncio
-    async def test_keyboard_form_has_source_input(self) -> None:
-        """KeyboardConfigForm should have source input."""
-        from textual.widgets import Input
+    async def test_keyboard_form_has_source_switches(self) -> None:
+        """KeyboardConfigForm should have source bit switches."""
+        from textual.widgets import Switch
         from textual.widgets import Tree
         from vtap100.tui.app import VTAPEditorApp
 
         app = VTAPEditorApp()
-        app.config = VTAPConfig(keyboard=KeyboardConfig(source="AG"))
+        # A5 = mobile_pass + card_emulation + scanners + card_tag_uid
+        app.config = VTAPConfig(keyboard=KeyboardConfig(source="A5"))
 
         async with app.run_test() as pilot:
             await pilot.pause()
@@ -90,8 +91,18 @@ class TestKeyboardConfigFormAsync:
             await pilot.pause()
 
             main_content = app.screen.query_one("#main-content")
-            source_input = main_content.query_one("#source", Input)
-            assert source_input.value == "AG"
+            # Check that source bit switches exist and have correct values for A5
+            mobile_pass = main_content.query_one("#source_mobile_pass", Switch)
+            assert mobile_pass.value is True
+            card_emulation = main_content.query_one("#source_card_emulation", Switch)
+            assert card_emulation.value is True
+            scanners = main_content.query_one("#source_scanners", Switch)
+            assert scanners.value is True
+            card_tag_uid = main_content.query_one("#source_card_tag_uid", Switch)
+            assert card_tag_uid.value is True
+            # STUID and command_interface should be False for A5
+            stuid = main_content.query_one("#source_stuid", Switch)
+            assert stuid.value is False
 
     @pytest.mark.asyncio
     async def test_keyboard_form_saves_config(self) -> None:

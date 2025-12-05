@@ -15,25 +15,62 @@ fields:
       Nützlich für einfache Integrationen ohne Software-Entwicklung.
       Funktioniert mit jedem Programm, das Tastatureingaben akzeptiert.
 
-  source:
-    title: Datenquellen (KBSource)
+  source_mobile_pass:
+    title: Mobile Pass (VAS/SmartTap)
     description: |
-      Legt fest, welche Datentypen Keyboard-Ausgabe auslösen.
-      Hexadezimale Bitmaske zur Kombination mehrerer Quellen.
-    format: |
-      0x80 = Mobile Pass (Apple VAS / Google Smart Tap)
-      0x40 = STUID
-      0x20 = Card Emulation Write Mode
-      0x04 = Scanner
-      0x02 = Command Interface
-      0x01 = Card/Tag UID
-    example: "A5 (Mobile + Emulation + Scanner + UID)"
+      Aktiviert Keyboard-Ausgabe für Mobile Wallet Passes.
+      Beinhaltet Apple VAS und Google Smart Tap.
+    format: "Bit 7 (0x80)"
     tip: |
-      Gängige Werte:
-      A5 = Standard (Mobile + Emulation + Scanner + UID)
-      81 = Mobile Pass + Card/Tag UID
-      80 = Nur Mobile Pass
-      01 = Nur Card/Tag UID
+      Dies ist die wichtigste Quelle für Wallet-Integrationen.
+      Aktivieren Sie diese Option, um Pass-Daten von Smartphones zu empfangen.
+
+  source_stuid:
+    title: STUID
+    description: |
+      Aktiviert Keyboard-Ausgabe für STUID-Daten.
+      STUID ist ein spezielles Identifikationsformat.
+    format: "Bit 6 (0x40)"
+    tip: Nur aktivieren wenn STUID-Unterstützung benötigt wird.
+
+  source_card_emulation:
+    title: Card Emulation Write Mode
+    description: |
+      Aktiviert Keyboard-Ausgabe für Daten aus dem
+      Card Emulation Schreibmodus.
+    format: "Bit 5 (0x20)"
+    tip: |
+      Wird verwendet wenn der Reader im Card-Emulation-Modus
+      Daten von einem anderen Gerät empfängt.
+
+  source_scanners:
+    title: Scanner
+    description: |
+      Aktiviert Keyboard-Ausgabe für Scanner-Eingaben.
+      Leitet Daten von angeschlossenen Scannern weiter.
+    format: "Bit 2 (0x04)"
+    tip: Aktivieren wenn ein externer Scanner angeschlossen ist.
+
+  source_command_interface:
+    title: Command Interface
+    description: |
+      Aktiviert Keyboard-Ausgabe für Nachrichten
+      vom Command Interface.
+    format: "Bit 1 (0x02)"
+    tip: |
+      Selten benötigt. Nur aktivieren wenn spezielle
+      Command-Interface-Nachrichten ausgegeben werden sollen.
+
+  source_card_tag_uid:
+    title: Card/Tag UID
+    description: |
+      Aktiviert Keyboard-Ausgabe für die UID von
+      NFC-Karten und Tags.
+    format: "Bit 0 (0x01)"
+    tip: |
+      Aktivieren um die eindeutige ID von NFC-Karten
+      als Tastatureingabe zu senden.
+      Nützlich für einfache Zugangskontrollen.
 
   prefix:
     title: Präfix (KBPrefix)

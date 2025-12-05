@@ -182,7 +182,7 @@ class TestFormFields:
 
         set_language(Language.DE)
         assert "Keyboard aktivieren" in t("forms.keyboard.enable")
-        assert "Datenquellen" in t("forms.keyboard.source")
+        assert "Datenquellen" in t("forms.keyboard.source_title")
 
     def test_english_keyboard_fields(self) -> None:
         """English keyboard form fields should be correct."""
@@ -192,7 +192,7 @@ class TestFormFields:
 
         set_language(Language.EN)
         enable = t("forms.keyboard.enable")
-        source = t("forms.keyboard.source")
+        source = t("forms.keyboard.source_title")
         set_language(Language.DE)
 
         assert "Enable Keyboard" in enable

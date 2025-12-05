@@ -198,14 +198,15 @@ class BaseConfigForm(Widget):
     def on_descendant_focus(self, event: DescendantFocus) -> None:
         """Handle descendant focus events.
 
-        Updates the help context when an Input or Select widget within the form gains focus.
+        Updates the help context when an Input, Select, or Switch widget
+        within the form gains focus.
 
         Args:
             event: The descendant focus event.
         """
-        # Check if the focused widget is an Input or Select with an id
+        # Check if the focused widget is an Input, Select, or Switch with an id
         widget = event.widget
-        if isinstance(widget, Input | Select) and widget.id:
+        if isinstance(widget, Input | Select | Switch) and widget.id:
             self.post_message(HelpContextChanged(f"{self.SECTION_NAME}.{widget.id}"))
 
 
