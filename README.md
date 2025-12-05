@@ -68,12 +68,27 @@ See [TUI Editor Documentation](https://github.com/jensens/vtap100/blob/main/docs
 
 Detailed documentation can be found in the [docs/](https://github.com/jensens/vtap100/tree/main/docs) directory:
 
+### Getting Started
 - [Quickstart](https://github.com/jensens/vtap100/blob/main/docs/quickstart.md)
-- [Apple VAS Configuration](https://github.com/jensens/vtap100/blob/main/docs/configuration/apple_vas.md)
-- [Google Smart Tap Configuration](https://github.com/jensens/vtap100/blob/main/docs/configuration/google_smarttap.md)
+- [Interactive Wizard](https://github.com/jensens/vtap100/blob/main/docs/wizard.md)
+- [TUI Editor](https://github.com/jensens/vtap100/blob/main/docs/tui.md)
+
+### Configuration
+- [Configuration Overview](https://github.com/jensens/vtap100/blob/main/docs/configuration/overview.md)
+- [Apple VAS](https://github.com/jensens/vtap100/blob/main/docs/configuration/apple_vas.md)
+- [Google Smart Tap](https://github.com/jensens/vtap100/blob/main/docs/configuration/google_smarttap.md)
 - [Keyboard Emulation](https://github.com/jensens/vtap100/blob/main/docs/configuration/keyboard.md)
+- [NFC Tags](https://github.com/jensens/vtap100/blob/main/docs/configuration/nfc_tags.md)
+- [MIFARE DESFire](https://github.com/jensens/vtap100/blob/main/docs/configuration/desfire.md)
+- [LED & Buzzer](https://github.com/jensens/vtap100/blob/main/docs/configuration/led_beep.md)
+- [Settings Reference](https://github.com/jensens/vtap100/blob/main/docs/configuration/settings_reference.md)
+
+### Deployment & Reference
 - [Deployment to Reader](https://github.com/jensens/vtap100/blob/main/docs/deployment/upload_to_reader.md)
+- [CLI Reference](https://github.com/jensens/vtap100/blob/main/docs/references/cli.md)
+- [API Reference](https://github.com/jensens/vtap100/blob/main/docs/api.md)
 - [Reference Sources](https://github.com/jensens/vtap100/blob/main/docs/references/sources.md)
+- [Troubleshooting](https://github.com/jensens/vtap100/blob/main/docs/troubleshooting.md)
 
 ## Development
 
