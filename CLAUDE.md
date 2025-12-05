@@ -5,6 +5,10 @@ Erste Directive:
 - folge dem DRY Prinzip
 - verwende früh WebSearch, z.B wenn Du zu wenig oder alte Info hast oder bei einem Problem nicht weiterkommst
 
+SCM:
+- committe nach jedem erfolgreichen Task
+- push erfolgt durch den User, es sei denn er fragt explizit danach
+
 Sprache:
 - der Software ist Englisch und Deutsch, alle TUI Texte und Hilfen werden übersetzt.
 - die Doku ist english
