@@ -130,9 +130,10 @@ class ConfigGenerator:
             lines.append(self.config.vas_default_passes.to_config_line())
 
         # Google Smart Tap configurations
+        # Note: ST1 does not work, so we start at ST2
         if self.config.smarttap_configs:
             lines.append("; Google Smart Tap Configuration")
-            for i, st in enumerate(self.config.smarttap_configs, start=1):
+            for i, st in enumerate(self.config.smarttap_configs, start=2):
                 lines.extend(st.to_config_lines(slot_number=i))
 
         # Smart Tap default passes enabled

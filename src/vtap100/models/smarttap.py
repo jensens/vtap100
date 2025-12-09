@@ -7,11 +7,15 @@ by NFC readers for loyalty, membership, and identity applications.
 Example:
     >>> config = GoogleSmartTapConfig(
     ...     collector_id="96972794",
-    ...     key_slot=2,
+    ...     key_slot=1,
     ...     key_version=1,
     ... )
-    >>> config.to_config_lines(slot_number=1)
-    ['ST1CollectorID=96972794', 'ST1KeySlot=2', 'ST1KeyVersion=1']
+    >>> config.to_config_lines(slot_number=2)
+    ['ST2CollectorID=96972794', 'ST2KeySlot=1', 'ST2KeyVersion=1']
+
+Note:
+    ST1 configuration does not work for Google Smart Tap. The generator
+    automatically starts at ST2.
 
 References:
     - https://help.vtapnfc.com/en/Content/VTAP-Commands/Config-txt-ST-settings.htm
@@ -56,10 +60,11 @@ class GoogleSmartTapConfig(BaseModel):
         """Generate config.txt lines for this Smart Tap configuration.
 
         Args:
-            slot_number: The ST slot number (1-6) to use in parameter names.
+            slot_number: The ST slot number (2-6) to use in parameter names.
+                Note: ST1 does not work, so the generator uses 2-6.
 
         Returns:
-            List of config.txt lines (e.g., ['ST1CollectorID=...', 'ST1KeySlot=...']).
+            List of config.txt lines (e.g., ['ST2CollectorID=...', 'ST2KeySlot=...']).
         """
         lines = [f"ST{slot_number}CollectorID={self.collector_id}"]
 

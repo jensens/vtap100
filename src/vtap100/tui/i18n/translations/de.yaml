@@ -209,9 +209,9 @@ _help_content:
       key_slot:
         title: "Key Slot"
         description: |
-          Slot (0-6) in dem der Authentifizierungsschlüssel gespeichert ist.
+          Slot (1-6) in dem der Authentifizierungsschlüssel gespeichert ist.
         tip: |
-          Slot 0 für automatische Erkennung.
+          Muss zur Private-Key-Datei passen (private1.pem = Slot 1).
 
       key_version:
         title: "Key Version"

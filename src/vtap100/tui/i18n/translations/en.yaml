@@ -208,9 +208,9 @@ _help_content:
       key_slot:
         title: "Key Slot"
         description: |
-          Slot (0-6) where the authentication key is stored.
+          Slot (1-6) where the authentication key is stored.
         tip: |
-          Slot 0 for automatic detection.
+          Must match the private key file number (private1.pem = slot 1).
 
       key_version:
         title: "Key Version"

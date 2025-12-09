@@ -187,4 +187,5 @@ class TestSaveFunction:
             # File should contain both configs
             content = output_file.read_text()
             assert "VAS1MerchantID=pass.com.test" in content
-            assert "ST1CollectorID=12345678" in content
+            # ST1 does not work, generator starts at ST2
+            assert "ST2CollectorID=12345678" in content

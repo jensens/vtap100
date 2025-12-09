@@ -84,6 +84,7 @@ Place key files in the VTAP100 root directory:
 
 ### Google Smart Tap pass not detected
 
+- **ST1 configuration does not work** - use ST2 and higher (ST2CollectorID, ST2KeySlot, etc.)
 - Verify Collector ID is correct (numeric)
 - Key version must match Google dashboard
 - Android: only one Collector ID active at a time

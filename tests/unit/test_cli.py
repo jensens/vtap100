@@ -162,7 +162,8 @@ class TestGenerateCommand:
             assert output_file.exists()
             content = output_file.read_text()
             assert "!VTAPconfig" in content
-            assert "ST1CollectorID=96972794" in content
+            # ST1 does not work, generator starts at ST2
+            assert "ST2CollectorID=96972794" in content
 
     def test_generate_with_both_vas_and_st(self) -> None:
         """Generate should work with both VAS and Smart Tap."""
@@ -186,7 +187,8 @@ class TestGenerateCommand:
             assert result.exit_code == 0
             content = output_file.read_text()
             assert "VAS1MerchantID" in content
-            assert "ST1CollectorID" in content
+            # ST1 does not work, generator starts at ST2
+            assert "ST2CollectorID" in content
 
     def test_generate_with_keyboard_disabled(self) -> None:
         """Generate should work with keyboard disabled."""
@@ -563,7 +565,8 @@ class TestWizardCommand:
             assert result.exit_code == 0
             assert Path("wizard_st.txt").exists()
             content = Path("wizard_st.txt").read_text()
-            assert "ST1CollectorID=96972794" in content
+            # ST1 does not work, generator starts at ST2
+            assert "ST2CollectorID=96972794" in content
 
     def test_wizard_with_nfc_tags(self) -> None:
         """Wizard should configure NFC tags."""

@@ -125,9 +125,10 @@ class TestConfigGenerator:
         generator = ConfigGenerator(config)
         output = generator.generate()
 
-        assert "ST1CollectorID=96972794" in output
-        assert "ST1KeySlot=2" in output
-        assert "ST1KeyVersion=1" in output
+        # ST1 does not work, generator starts at ST2
+        assert "ST2CollectorID=96972794" in output
+        assert "ST2KeySlot=2" in output
+        assert "ST2KeyVersion=1" in output
 
     def test_generate_keyboard_settings(self) -> None:
         """Generate config with keyboard settings."""
@@ -166,7 +167,8 @@ class TestConfigGenerator:
         # Check all components present
         assert "!VTAPconfig" in output
         assert "VAS1MerchantID=pass.com.example.test" in output
-        assert "ST1CollectorID=96972794" in output
+        # ST1 does not work, generator starts at ST2
+        assert "ST2CollectorID=96972794" in output
         assert "KBLogMode=1" in output
 
     def test_generate_multiple_vas(self) -> None:

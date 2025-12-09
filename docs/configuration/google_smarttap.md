@@ -11,12 +11,14 @@ Google Smart Tap enables reading Google Wallet passes via NFC.
 
 ## Parameters
 
+> **Warning:** The first Smart Tap configuration slot (ST1) does not work. Always use ST2 and higher.
+
 ### ST#CollectorID
 
 The Collector ID assigned by Google.
 
 ```ini
-ST1CollectorID=96972794
+ST2CollectorID=96972794
 ```
 
 ### ST#KeySlot
@@ -24,7 +26,7 @@ ST1CollectorID=96972794
 The slot (1-6) where the private key is stored.
 
 ```ini
-ST1KeySlot=2
+ST2KeySlot=1
 ```
 
 The value 0 means automatic selection.
@@ -34,7 +36,7 @@ The value 0 means automatic selection.
 The version number of the key being used.
 
 ```ini
-ST1KeyVersion=1
+ST2KeyVersion=1
 ```
 
 ## Complete Example
@@ -42,13 +44,14 @@ ST1KeyVersion=1
 ```ini
 !VTAPconfig
 ; Google Smart Tap Configuration
-ST1CollectorID=96972794
-ST1KeySlot=2
-ST1KeyVersion=1
+; Note: ST1 does not work, always start with ST2
+ST2CollectorID=96972794
+ST2KeySlot=1
+ST2KeyVersion=1
 
 ; Keyboard Emulation for Smart Tap data
 KBLogMode=1
-KBSource=G1
+KBSource=G2
 ```
 
 ## CLI Usage
@@ -98,17 +101,17 @@ print(generator.generate())
 
 ## Multiple Collector IDs
 
-Up to 6 different Collector IDs can be configured:
+Up to 5 different Collector IDs can be configured (ST2-ST6, since ST1 does not work):
 
 ```ini
 !VTAPconfig
-ST1CollectorID=96972794
-ST1KeySlot=1
-ST1KeyVersion=1
-
-ST2CollectorID=12345678
-ST2KeySlot=2
+ST2CollectorID=96972794
+ST2KeySlot=1
 ST2KeyVersion=1
+
+ST3CollectorID=12345678
+ST3KeySlot=2
+ST3KeyVersion=1
 ```
 
 ## Reading Smart Tap Data
@@ -139,6 +142,11 @@ defaults = SmartTapDefaultPassesConfig(
 ```
 
 ## Troubleshooting
+
+### Smart Tap not working at all
+
+- **ST1 configuration does not work** - always use ST2 and higher
+- Ensure your config uses ST2CollectorID, ST2KeySlot, ST2KeyVersion (not ST1*)
 
 ### "No Smart Tap data received"
 
