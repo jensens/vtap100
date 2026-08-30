@@ -7,14 +7,15 @@ from pydantic import ValidationError
 from textual.app import ComposeResult
 from textual.containers import Horizontal
 from textual.widgets import Button
+from textual.widgets import Checkbox
 from textual.widgets import Input
 from textual.widgets import Label
 from textual.widgets import Select
-from textual.widgets import Switch
 from vtap100.models.desfire import DESFireAppConfig
 from vtap100.models.desfire import DESFireConfig
 from vtap100.models.desfire import DESFireCryptoMode
 from vtap100.models.desfire import DESFireDataFormat
+from vtap100.models.desfire import DiversificationBuilder
 from vtap100.tui.i18n import t
 from vtap100.tui.widgets.forms.base import BaseConfigForm
 from vtap100.tui.widgets.forms.base import ConfigAdded
@@ -74,7 +75,7 @@ class DESFireConfigForm(BaseConfigForm):
         width: 1fr;
     }
 
-    DESFireConfigForm .form-row Switch {
+    DESFireConfigForm .form-row Checkbox {
         margin-left: 0;
     }
 
@@ -163,8 +164,12 @@ class DESFireConfigForm(BaseConfigForm):
         # Crypto Mode
         with Horizontal(classes="form-row"):
             yield Label(t("forms.desfire.crypto"))
+            # "Not set" and "no encryption" are different states: DESFireCryptoMode
+            # .NONE is 0, a value the file can state, and must not share an option
+            # with absence or the widget rejects a config carrying Crypto=0.
             crypto_options: list[tuple[str, DESFireCryptoMode | None]] = [
-                (t("forms.desfire.crypto_none"), None),
+                (t("common.labels.not_set"), None),
+                (t("forms.desfire.crypto_none"), DESFireCryptoMode.NONE),
                 (t("forms.desfire.crypto_3des"), DESFireCryptoMode.DES3),
                 (t("forms.desfire.crypto_aes"), DESFireCryptoMode.AES),
             ]
@@ -173,8 +178,10 @@ class DESFireConfigForm(BaseConfigForm):
         # Data Format
         with Horizontal(classes="form-row"):
             yield Label(t("forms.desfire.format"))
+            # Same as crypto: DESFireDataFormat.RAW is 0 and needs its own option.
             format_options: list[tuple[str, DESFireDataFormat | None]] = [
-                (t("forms.desfire.format_raw"), None),
+                (t("common.labels.not_set"), None),
+                (t("forms.desfire.format_raw"), DESFireDataFormat.RAW),
                 (t("forms.desfire.format_keyid_v1"), DESFireDataFormat.KEYID_V1),
                 (t("forms.desfire.format_keyid_v2"), DESFireDataFormat.KEYID_V2),
             ]
@@ -184,7 +191,7 @@ class DESFireConfigForm(BaseConfigForm):
         with Horizontal(classes="form-row"):
             yield Label(t("forms.desfire.read_length"))
             yield Input(
-                value=str(self._config.read_length),
+                value="" if self._config.read_length is None else str(self._config.read_length),
                 placeholder=t("forms.desfire.read_length_placeholder"),
                 id="read_length",
             )
@@ -193,7 +200,7 @@ class DESFireConfigForm(BaseConfigForm):
         with Horizontal(classes="form-row"):
             yield Label(t("forms.desfire.read_offset"))
             yield Input(
-                value=str(self._config.read_offset),
+                value="" if self._config.read_offset is None else str(self._config.read_offset),
                 placeholder=t("forms.desfire.read_offset_placeholder"),
                 id="read_offset",
             )
@@ -201,7 +208,25 @@ class DESFireConfigForm(BaseConfigForm):
         # Diversification
         with Horizontal(classes="form-row"):
             yield Label(t("forms.desfire.diversification"))
-            yield Switch(value=self._config.diversification or False, id="diversification")
+        current = self._config.diversification or 0
+        with Horizontal(classes="form-row"):
+            yield Checkbox(
+                t("forms.desfire.diversification_active"),
+                value=bool(current & DiversificationBuilder.ACTIVE),
+                id="div_active",
+            )
+        with Horizontal(classes="form-row"):
+            yield Checkbox(
+                t("forms.desfire.diversification_omit_aid"),
+                value=bool(current & DiversificationBuilder.OMIT_AID),
+                id="div_omit_aid",
+            )
+        with Horizontal(classes="form-row"):
+            yield Checkbox(
+                t("forms.desfire.diversification_reverse_uid"),
+                value=bool(current & DiversificationBuilder.REVERSE_UID),
+                id="div_reverse_uid",
+            )
 
         # Buttons
         with Horizontal(classes="buttons"):
@@ -242,12 +267,19 @@ class DESFireConfigForm(BaseConfigForm):
         data_format = format_select.value
 
         read_length_str = self.query_one("#read_length", Input).value.strip()
-        read_length = int(read_length_str) if read_length_str else 3
+        read_length = int(read_length_str) if read_length_str else None
 
         read_offset_str = self.query_one("#read_offset", Input).value.strip()
-        read_offset = int(read_offset_str) if read_offset_str else 0
+        read_offset = int(read_offset_str) if read_offset_str else None
 
-        diversification = self.query_one("#diversification", Switch).value
+        builder = DiversificationBuilder()
+        if self.query_one("#div_active", Checkbox).value:
+            builder.active()
+            if self.query_one("#div_omit_aid", Checkbox).value:
+                builder.omit_aid()
+            if self.query_one("#div_reverse_uid", Checkbox).value:
+                builder.reverse_uid()
+        diversification = builder.build() or None
 
         return DESFireAppConfig(
             app_id=app_id,
@@ -258,7 +290,7 @@ class DESFireConfigForm(BaseConfigForm):
             format=data_format,
             read_length=read_length,
             read_offset=read_offset,
-            diversification=diversification if diversification else None,
+            diversification=diversification,
         )
 
     def _clear_messages(self) -> None:

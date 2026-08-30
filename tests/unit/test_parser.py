@@ -266,7 +266,7 @@ class TestConfigParserRoundTrip:
         from vtap100.parser import parse
 
         original = VTAPConfig(
-            vas_configs=[AppleVASConfig(merchant_id="pass.com.example.test", key_slot=1)]
+            vas_configs=[AppleVASConfig(slot=1, merchant_id="pass.com.example.test", key_slot=1)]
         )
         generator = ConfigGenerator(original)
         content = generator.generate()
@@ -286,9 +286,9 @@ class TestConfigParserRoundTrip:
         from vtap100.parser import parse
 
         original = VTAPConfig(
-            vas_configs=[AppleVASConfig(merchant_id="pass.com.example.test", key_slot=1)],
+            vas_configs=[AppleVASConfig(slot=1, merchant_id="pass.com.example.test", key_slot=1)],
             smarttap_configs=[
-                GoogleSmartTapConfig(collector_id="96972794", key_slot=2, key_version=1)
+                GoogleSmartTapConfig(slot=2, collector_id="96972794", key_slot=2, key_version=1)
             ],
             keyboard=KeyboardConfig(log_mode=True, source="AG"),
         )
@@ -535,7 +535,7 @@ DESFire1Diversification=1
 """
         config = parse(content)
         assert config.desfire is not None
-        assert config.desfire.apps[0].diversification is True
+        assert config.desfire.apps[0].diversification == 1
 
     def test_parse_desfire_privacy_settings(self) -> None:
         """Parse DESFire privacy key settings."""
@@ -855,3 +855,180 @@ class TestConfigParserFeedbackRoundTrip:
         assert parsed.feedback.led.mode == LEDMode.CUSTOM
         assert parsed.feedback.led.pass_led is not None
         assert parsed.feedback.led.pass_led.color == "00FF00"
+
+
+class TestSlotPreservation:
+    """Pass slot numbers must survive parse and regenerate."""
+
+    def test_vas_slot_is_captured(self) -> None:
+        """VAS2 stays slot 2 in the model."""
+        from vtap100.parser import parse
+
+        config = parse("!VTAPconfig\nVAS2MerchantID=pass.com.example.x\nVAS2KeySlot=2\n")
+        assert config.vas_configs[0].slot == 2
+
+    def test_smarttap_slot_is_captured(self) -> None:
+        """ST3 stays slot 3 in the model."""
+        from vtap100.parser import parse
+
+        config = parse("!VTAPconfig\nST3CollectorID=12345678\nST3KeySlot=3\n")
+        assert config.smarttap_configs[0].slot == 3
+
+    def test_slots_are_not_renumbered(self) -> None:
+        """Regenerating writes back the original slot numbers."""
+        from vtap100.generator import ConfigGenerator
+        from vtap100.parser import parse
+
+        text = "!VTAPconfig\nVAS2MerchantID=pass.com.example.x\nST3CollectorID=12345678\n"
+        out = ConfigGenerator(parse(text)).generate()
+        assert "VAS2MerchantID" in out
+        assert "ST3CollectorID" in out
+        assert "VAS1MerchantID" not in out
+        assert "ST2CollectorID" not in out
+
+    def test_smarttap_slot_one_is_preserved(self) -> None:
+        """ST1 is written back as ST1, not silently moved to ST2.
+
+        ST1 does not work on real readers (see d18c8c4) and config creation
+        still avoids it, but rewriting a file the user asked us to load is a
+        silent change to their configuration.
+        """
+        from vtap100.generator import ConfigGenerator
+        from vtap100.parser import parse
+
+        out = ConfigGenerator(parse("!VTAPconfig\nST1CollectorID=80644855\n")).generate()
+        assert "ST1CollectorID=80644855" in out
+
+
+class TestDiversificationRoundTrip:
+    """Every diversification mode must survive a cycle."""
+
+    @pytest.mark.parametrize("value", [1, 3, 5, 7])
+    def test_mode_is_preserved(self, value: int) -> None:
+        """Modes 3, 5 and 7 were silently coerced to False and dropped."""
+        from vtap100.generator import ConfigGenerator
+        from vtap100.parser import parse
+
+        text = f"!VTAPconfig\nDESFire1AppID=AABBCC\nDESFire1Diversification={value}\n"
+        out = ConfigGenerator(parse(text)).generate()
+        assert f"DESFire1Diversification={value}" in out
+
+
+class TestKeyboardCompleteness:
+    """All eleven KB settings must be parsed and preserved."""
+
+    KB_CONFIG = (
+        "!VTAPconfig\n"
+        "KBLogMode=1\n"
+        "KBEnable=1\n"
+        "KBSource=81\n"
+        "KBPrefix=%09\n"
+        "KBPostfix=%0D\n"
+        "KBDelayMS=2\n"
+        "KBPassMode=1\n"
+        "KBPassSection=2\n"
+        "KBPassSeparator=;\n"
+        "KBPassStart=3\n"
+        "KBPassLength=14\n"
+    )
+
+    def test_postfix_is_parsed(self) -> None:
+        """KBPostfix=%0D must not be read as the %0A default."""
+        from vtap100.parser import parse
+
+        assert parse(self.KB_CONFIG).keyboard.postfix == "%0D"
+
+    def test_delay_below_documented_minimum_is_preserved(self) -> None:
+        """Parsing is tolerant: the manufacturer's own sample uses 2."""
+        from vtap100.parser import parse
+
+        assert parse(self.KB_CONFIG).keyboard.delay_ms == 2
+
+    def test_all_settings_survive_a_roundtrip(self) -> None:
+        """No keyboard setting is lost."""
+        from vtap100.roundtrip import compare
+
+        report = compare(self.KB_CONFIG)
+        assert report.lost == []
+        assert report.changed == []
+
+    def test_explicitly_set_default_is_preserved(self) -> None:
+        """An explicit KBPostfix=%0A must keep its line."""
+        from vtap100.roundtrip import compare
+
+        report = compare("!VTAPconfig\nKBLogMode=1\nKBPostfix=%0A\n")
+        assert report.lost == []
+
+
+class TestFeedbackShortForms:
+    """The manufacturer documents omitting trailing sequence parameters."""
+
+    def test_single_value_beep_is_parsed(self) -> None:
+        """'TagBeep=100' is a single 100ms beep, not a parse failure."""
+        from vtap100.parser import parse
+
+        config = parse("!VTAPconfig\nTagBeep=100\n")
+        assert config.feedback.beep.tag_beep is not None
+        assert config.feedback.beep.tag_beep.on_ms == 100
+        assert config.feedback.beep.tag_beep.off_ms is None
+
+    def test_two_value_led_is_parsed(self) -> None:
+        """'TagLED=00FF00,200' is the manufacturer's own example form."""
+        from vtap100.parser import parse
+
+        config = parse("!VTAPconfig\nTagLED=00FF00,200\n")
+        assert config.feedback.led.tag_led is not None
+        assert config.feedback.led.tag_led.color == "00FF00"
+        assert config.feedback.led.tag_led.on_ms == 200
+
+    def test_short_forms_roundtrip_as_short_forms(self) -> None:
+        """A short form must not be expanded or dropped."""
+        from vtap100.roundtrip import compare
+
+        report = compare("!VTAPconfig\nTagBeep=100\nTagLED=00FF00,200\n")
+        assert report.lost == []
+        assert report.changed == []
+
+
+class TestNFCTypeAliases:
+    """The manufacturer documents '=U or =1', '=N or =2', '=B or =3'."""
+
+    @pytest.mark.parametrize(("numeric", "letter"), [("1", "U"), ("2", "N"), ("3", "B")])
+    def test_numeric_alias_parses_as_letter(self, numeric: str, letter: str) -> None:
+        """Numeric spellings are accepted and normalise to the letter form."""
+        from vtap100.parser import parse
+
+        numeric_config = parse(f"!VTAPconfig\nNFCType4={numeric}\n")
+        letter_config = parse(f"!VTAPconfig\nNFCType4={letter}\n")
+        assert numeric_config.nfc.type4 == letter_config.nfc.type4
+
+    def test_numeric_alias_roundtrips(self) -> None:
+        """The alias counts as preserved even though the letter is emitted."""
+        from vtap100.roundtrip import compare
+
+        assert compare("!VTAPconfig\nNFCType2=1\n").is_lossless
+
+
+class TestDESFireUnnumbered:
+    """Single-read configs omit the index: DESFireAppID, not DESFire1AppID."""
+
+    def test_unnumbered_maps_to_slot_one(self) -> None:
+        """An un-numbered setting is the first DESFire read."""
+        from vtap100.parser import parse
+
+        config = parse("!VTAPconfig\nDESFireAppID=AABBCC\nDESFireFileID=0\n")
+        assert config.desfire.apps[0].app_id == "AABBCC"
+        assert config.desfire.apps[0].file_id == 0
+
+    def test_unnumbered_diversification_is_parsed(self) -> None:
+        """DESFireKeyDiversification is the un-numbered spelling."""
+        from vtap100.parser import parse
+
+        config = parse("!VTAPconfig\nDESFireAppID=AABBCC\nDESFireKeyDiversification=5\n")
+        assert config.desfire.apps[0].diversification == 5
+
+    def test_unnumbered_roundtrips_as_numbered(self) -> None:
+        """The generator writes the numbered form; the alias table equates them."""
+        from vtap100.roundtrip import compare
+
+        assert compare("!VTAPconfig\nDESFireAppID=AABBCC\nDESFireFileID=0\n").is_lossless

@@ -18,6 +18,8 @@ Example:
 from dataclasses import dataclass
 from dataclasses import field
 import re
+from vtap100.models.access import AccessConfig
+from vtap100.models.comport import ComPortConfig
 from vtap100.models.config import VTAPConfig
 from vtap100.models.desfire import DESFireAppConfig
 from vtap100.models.desfire import DESFireConfig
@@ -45,7 +47,7 @@ class _VASParseData:
     """Temporary data structure for parsing VAS configs."""
 
     merchant_id: str | None = None
-    key_slot: int = 0
+    key_slot: int | None = None
     merchant_url: str | None = None
 
 
@@ -54,8 +56,8 @@ class _SmartTapParseData:
     """Temporary data structure for parsing Smart Tap configs."""
 
     collector_id: str | None = None
-    key_slot: int = 0
-    key_version: int = 0
+    key_slot: int | None = None
+    key_version: int | None = None
 
 
 @dataclass
@@ -64,6 +66,15 @@ class _KeyboardParseData:
 
     log_mode: bool | None = None
     source: str | None = None
+    enable: bool | None = None
+    prefix: str | None = None
+    postfix: str | None = None
+    delay_ms: int | None = None
+    pass_mode: bool | None = None
+    pass_section: int | None = None
+    pass_separator: str | None = None
+    pass_start: int | None = None
+    pass_length: int | None = None
 
 
 @dataclass
@@ -98,7 +109,7 @@ class _DESFireAppParseData:
     format: int | None = None
     read_length: int = 3
     read_offset: int = 0
-    diversification: bool | None = None
+    diversification: int | None = None
     privacy_key_num: int | None = None
     privacy_key_slot: int | None = None
     sysid_key_slot: int | None = None
@@ -111,6 +122,24 @@ class _DESFireParseData:
 
     apps: dict[int, _DESFireAppParseData] = field(default_factory=dict)
     separator: str = ","
+
+
+@dataclass
+class _ComPortParseData:
+    """Temporary data structure for parsing serial port config."""
+
+    enable: bool | None = None
+    mode: int | None = None
+    source: str | None = None
+
+
+@dataclass
+class _AccessParseData:
+    """Temporary data structure for parsing Apple Access config."""
+
+    tci: str | None = None
+    auth_required: bool | None = None
+    ecp2_mode: str | None = None
 
 
 @dataclass
@@ -161,11 +190,25 @@ class ConfigParser:
     # Keyboard patterns
     KB_LOG_MODE = re.compile(r"^KBLogMode=(\d+)$")
     KB_SOURCE = re.compile(r"^KBSource=(.+)$")
+    KB_ENABLE = re.compile(r"^KBEnable=(\d+)$")
+    # (.*) rather than (.+): an empty prefix/postfix is a value, not an absence.
+    KB_PREFIX = re.compile(r"^KBPrefix=(.*)$")
+    KB_POSTFIX = re.compile(r"^KBPostfix=(.*)$")
+    KB_DELAY_MS = re.compile(r"^KBDelayMS=(\d+)$")
+    KB_PASS_MODE = re.compile(r"^KBPassMode=(\d+)$")
+    KB_PASS_SECTION = re.compile(r"^KBPassSection=(\d+)$")
+    KB_PASS_SEPARATOR = re.compile(r"^KBPassSeparator=(.)$")
+    KB_PASS_START = re.compile(r"^KBPassStart=(\d+)$")
+    KB_PASS_LENGTH = re.compile(r"^KBPassLength=(\d+)$")
 
     # NFC patterns
-    NFC_TYPE2 = re.compile(r"^NFCType2=([0UNBDP])$")
-    NFC_TYPE4 = re.compile(r"^NFCType4=([0UNBDP])$")
-    NFC_TYPE5 = re.compile(r"^NFCType5=([0UNBDP])$")
+    NFC_TYPE2 = re.compile(r"^NFCType2=([0123UNBDP])$")
+    NFC_TYPE4 = re.compile(r"^NFCType4=([0123UNBDP])$")
+    NFC_TYPE5 = re.compile(r"^NFCType5=([0123UNBDP])$")
+
+    # Documented equivalent spellings: "=U or =1", "=N or =2", "=B or =3".
+    # The manufacturer's own sample config.txt uses the numeric form.
+    NFC_TYPE_ALIASES = {"1": "U", "2": "N", "3": "B"}
     NFC_REPORT_READ_ERROR = re.compile(r"^NFCReportReadError=(\d+)$")
     IGNORE_RANDOM_UID = re.compile(r"^IgnoreRandomUID=(\d+)$")
     TAG_BYTE_ORDER = re.compile(r"^TagByteOrder=(\d+)$")
@@ -178,20 +221,30 @@ class ConfigParser:
     TAG_READ_MIN_DIGITS = re.compile(r"^TagReadMinDigits=(\d+|A)$")
 
     # DESFire patterns
-    DESFIRE_APP_ID = re.compile(r"^DESFire(\d+)AppID=([A-Fa-f0-9]{6})$")
-    DESFIRE_FILE_ID = re.compile(r"^DESFire(\d+)FileID=(\d+)$")
-    DESFIRE_KEY_NUM = re.compile(r"^DESFire(\d+)KeyNum=(\d+)$")
-    DESFIRE_KEY_SLOT = re.compile(r"^DESFire(\d+)KeySlot=(\d+)$")
-    DESFIRE_CRYPTO = re.compile(r"^DESFire(\d+)Crypto=(\d+)$")
-    DESFIRE_FORMAT = re.compile(r"^DESFire(\d+)Format=(\d+)$")
-    DESFIRE_READ_LENGTH = re.compile(r"^DESFire(\d+)ReadLength=(\d+)$")
-    DESFIRE_READ_OFFSET = re.compile(r"^DESFire(\d+)ReadOffset=(\d+)$")
-    DESFIRE_DIVERSIFICATION = re.compile(r"^DESFire(\d+)Diversification=(\d+)$")
-    DESFIRE_PRIVACY_KEY_NUM = re.compile(r"^DESFire(\d+)PrivacyKeyNum=(\d+)$")
-    DESFIRE_PRIVACY_KEY_SLOT = re.compile(r"^DESFire(\d+)PrivacyKeySlot=(\d+)$")
-    DESFIRE_SYSID_KEY_SLOT = re.compile(r"^DESFire(\d+)SysIDKeySlot=(\d+)$")
-    DESFIRE_SYSID_LENGTH = re.compile(r"^DESFire(\d+)SysIDLength=(\d+)$")
+    DESFIRE_APP_ID = re.compile(r"^DESFire(\d*)AppID=([A-Fa-f0-9]{6})$")
+    DESFIRE_FILE_ID = re.compile(r"^DESFire(\d*)FileID=(\d+)$")
+    DESFIRE_KEY_NUM = re.compile(r"^DESFire(\d*)KeyNum=(\d+)$")
+    DESFIRE_KEY_SLOT = re.compile(r"^DESFire(\d*)KeySlot=(\d+)$")
+    DESFIRE_CRYPTO = re.compile(r"^DESFire(\d*)Crypto=(\d+)$")
+    DESFIRE_FORMAT = re.compile(r"^DESFire(\d*)Format=(\d+)$")
+    DESFIRE_READ_LENGTH = re.compile(r"^DESFire(\d*)ReadLength=(\d+)$")
+    DESFIRE_READ_OFFSET = re.compile(r"^DESFire(\d*)ReadOffset=(\d+)$")
+    DESFIRE_DIVERSIFICATION = re.compile(r"^DESFire(\d*)(?:Key)?Diversification=(\d+)$")
+    DESFIRE_PRIVACY_KEY_NUM = re.compile(r"^DESFire(\d*)PrivacyKeyNum=(\d+)$")
+    DESFIRE_PRIVACY_KEY_SLOT = re.compile(r"^DESFire(\d*)PrivacyKeySlot=(\d+)$")
+    DESFIRE_SYSID_KEY_SLOT = re.compile(r"^DESFire(\d*)SysIDKeySlot=(\d+)$")
+    DESFIRE_SYSID_LENGTH = re.compile(r"^DESFire(\d*)SysIDLength=(\d+)$")
     DESFIRE_SEPARATOR = re.compile(r"^DESFireSeparator=(.+)$")
+
+    # Apple Access (ECP2)
+    ACCESS_TCI = re.compile(r"^AccessTCI=([0-9A-Fa-f]+)$")
+    ACCESS_AUTH_REQUIRED = re.compile(r"^AccessAuthRequired=(\d+)$")
+    ECP2_MODE = re.compile(r"^ECP2Mode=([ta])$")
+
+    # Serial port
+    COM_PORT_ENABLE = re.compile(r"^ComPortEnable=(\d+)$")
+    COM_PORT_MODE = re.compile(r"^ComPortMode=(\d+)$")
+    COM_PORT_SOURCE = re.compile(r"^ComPortSource=(.+)$")
 
     # LED patterns
     LED_MODE = re.compile(r"^LEDMode=(\d+)$")
@@ -220,6 +273,8 @@ class ConfigParser:
         self._keyboard_data: _KeyboardParseData = _KeyboardParseData()
         self._nfc_data: _NFCParseData = _NFCParseData()
         self._desfire_data: _DESFireParseData = _DESFireParseData()
+        self._access_data: _AccessParseData = _AccessParseData()
+        self._comport_data: _ComPortParseData = _ComPortParseData()
         self._led_data: _LEDParseData = _LEDParseData()
         self._beep_data: _BeepParseData = _BeepParseData()
 
@@ -275,6 +330,14 @@ class ConfigParser:
         if self._parse_desfire_line(line):
             return
 
+        # Serial port configuration
+        if self._parse_comport_line(line):
+            return
+
+        # Apple Access configuration
+        if self._parse_access_line(line):
+            return
+
         # LED configuration
         if self._parse_led_line(line):
             return
@@ -286,17 +349,17 @@ class ConfigParser:
     def _parse_vas_line(self, line: str) -> bool:
         """Parse VAS-related config line."""
         if match := self.VAS_MERCHANT_ID.match(line):
-            slot = int(match.group(1))
+            slot = int(match.group(1)) if match.group(1) else 1
             self._get_vas_data(slot).merchant_id = match.group(2)
             return True
 
         if match := self.VAS_KEY_SLOT.match(line):
-            slot = int(match.group(1))
+            slot = int(match.group(1)) if match.group(1) else 1
             self._get_vas_data(slot).key_slot = int(match.group(2))
             return True
 
         if match := self.VAS_MERCHANT_URL.match(line):
-            slot = int(match.group(1))
+            slot = int(match.group(1)) if match.group(1) else 1
             self._get_vas_data(slot).merchant_url = match.group(2)
             return True
 
@@ -305,17 +368,17 @@ class ConfigParser:
     def _parse_smarttap_line(self, line: str) -> bool:
         """Parse SmartTap-related config line."""
         if match := self.ST_COLLECTOR_ID.match(line):
-            slot = int(match.group(1))
+            slot = int(match.group(1)) if match.group(1) else 1
             self._get_smarttap_data(slot).collector_id = match.group(2)
             return True
 
         if match := self.ST_KEY_SLOT.match(line):
-            slot = int(match.group(1))
+            slot = int(match.group(1)) if match.group(1) else 1
             self._get_smarttap_data(slot).key_slot = int(match.group(2))
             return True
 
         if match := self.ST_KEY_VERSION.match(line):
-            slot = int(match.group(1))
+            slot = int(match.group(1)) if match.group(1) else 1
             self._get_smarttap_data(slot).key_version = int(match.group(2))
             return True
 
@@ -327,6 +390,42 @@ class ConfigParser:
             self._keyboard_data.log_mode = match.group(1) == "1"
             return True
 
+        if match := self.KB_ENABLE.match(line):
+            self._keyboard_data.enable = match.group(1) == "1"
+            return True
+
+        if match := self.KB_DELAY_MS.match(line):
+            self._keyboard_data.delay_ms = int(match.group(1))
+            return True
+
+        if match := self.KB_PASS_MODE.match(line):
+            self._keyboard_data.pass_mode = match.group(1) == "1"
+            return True
+
+        if match := self.KB_PASS_SECTION.match(line):
+            self._keyboard_data.pass_section = int(match.group(1))
+            return True
+
+        if match := self.KB_PASS_SEPARATOR.match(line):
+            self._keyboard_data.pass_separator = match.group(1)
+            return True
+
+        if match := self.KB_PASS_START.match(line):
+            self._keyboard_data.pass_start = int(match.group(1))
+            return True
+
+        if match := self.KB_PASS_LENGTH.match(line):
+            self._keyboard_data.pass_length = int(match.group(1))
+            return True
+
+        if match := self.KB_PREFIX.match(line):
+            self._keyboard_data.prefix = match.group(1)
+            return True
+
+        if match := self.KB_POSTFIX.match(line):
+            self._keyboard_data.postfix = match.group(1)
+            return True
+
         if match := self.KB_SOURCE.match(line):
             self._keyboard_data.source = match.group(1)
             return True
@@ -336,15 +435,18 @@ class ConfigParser:
     def _parse_nfc_line(self, line: str) -> bool:
         """Parse NFC-related config line."""
         if match := self.NFC_TYPE2.match(line):
-            self._nfc_data.type2 = match.group(1)
+            raw = match.group(1)
+            self._nfc_data.type2 = self.NFC_TYPE_ALIASES.get(raw, raw)
             return True
 
         if match := self.NFC_TYPE4.match(line):
-            self._nfc_data.type4 = match.group(1)
+            raw = match.group(1)
+            self._nfc_data.type4 = self.NFC_TYPE_ALIASES.get(raw, raw)
             return True
 
         if match := self.NFC_TYPE5.match(line):
-            self._nfc_data.type5 = match.group(1)
+            raw = match.group(1)
+            self._nfc_data.type5 = self.NFC_TYPE_ALIASES.get(raw, raw)
             return True
 
         if match := self.NFC_REPORT_READ_ERROR.match(line):
@@ -393,72 +495,104 @@ class ConfigParser:
     def _parse_desfire_line(self, line: str) -> bool:
         """Parse DESFire-related config line."""
         if match := self.DESFIRE_APP_ID.match(line):
-            slot = int(match.group(1))
+            slot = int(match.group(1)) if match.group(1) else 1
             self._get_desfire_app_data(slot).app_id = match.group(2).upper()
             return True
 
         if match := self.DESFIRE_FILE_ID.match(line):
-            slot = int(match.group(1))
+            slot = int(match.group(1)) if match.group(1) else 1
             self._get_desfire_app_data(slot).file_id = int(match.group(2))
             return True
 
         if match := self.DESFIRE_KEY_NUM.match(line):
-            slot = int(match.group(1))
+            slot = int(match.group(1)) if match.group(1) else 1
             self._get_desfire_app_data(slot).key_num = int(match.group(2))
             return True
 
         if match := self.DESFIRE_KEY_SLOT.match(line):
-            slot = int(match.group(1))
+            slot = int(match.group(1)) if match.group(1) else 1
             self._get_desfire_app_data(slot).key_slot = int(match.group(2))
             return True
 
         if match := self.DESFIRE_CRYPTO.match(line):
-            slot = int(match.group(1))
+            slot = int(match.group(1)) if match.group(1) else 1
             self._get_desfire_app_data(slot).crypto = int(match.group(2))
             return True
 
         if match := self.DESFIRE_FORMAT.match(line):
-            slot = int(match.group(1))
+            slot = int(match.group(1)) if match.group(1) else 1
             self._get_desfire_app_data(slot).format = int(match.group(2))
             return True
 
         if match := self.DESFIRE_READ_LENGTH.match(line):
-            slot = int(match.group(1))
+            slot = int(match.group(1)) if match.group(1) else 1
             self._get_desfire_app_data(slot).read_length = int(match.group(2))
             return True
 
         if match := self.DESFIRE_READ_OFFSET.match(line):
-            slot = int(match.group(1))
+            slot = int(match.group(1)) if match.group(1) else 1
             self._get_desfire_app_data(slot).read_offset = int(match.group(2))
             return True
 
         if match := self.DESFIRE_DIVERSIFICATION.match(line):
-            slot = int(match.group(1))
-            self._get_desfire_app_data(slot).diversification = match.group(2) == "1"
+            slot = int(match.group(1)) if match.group(1) else 1
+            self._get_desfire_app_data(slot).diversification = int(match.group(2))
             return True
 
         if match := self.DESFIRE_PRIVACY_KEY_NUM.match(line):
-            slot = int(match.group(1))
+            slot = int(match.group(1)) if match.group(1) else 1
             self._get_desfire_app_data(slot).privacy_key_num = int(match.group(2))
             return True
 
         if match := self.DESFIRE_PRIVACY_KEY_SLOT.match(line):
-            slot = int(match.group(1))
+            slot = int(match.group(1)) if match.group(1) else 1
             self._get_desfire_app_data(slot).privacy_key_slot = int(match.group(2))
             return True
 
         if match := self.DESFIRE_SYSID_KEY_SLOT.match(line):
-            slot = int(match.group(1))
+            slot = int(match.group(1)) if match.group(1) else 1
             self._get_desfire_app_data(slot).sysid_key_slot = int(match.group(2))
             return True
 
         if match := self.DESFIRE_SYSID_LENGTH.match(line):
-            slot = int(match.group(1))
+            slot = int(match.group(1)) if match.group(1) else 1
             self._get_desfire_app_data(slot).sysid_length = int(match.group(2))
             return True
 
         if match := self.DESFIRE_SEPARATOR.match(line):
             self._desfire_data.separator = match.group(1)
+            return True
+
+        return False
+
+    def _parse_comport_line(self, line: str) -> bool:
+        """Parse a serial port config line."""
+        if match := self.COM_PORT_ENABLE.match(line):
+            self._comport_data.enable = match.group(1) == "1"
+            return True
+
+        if match := self.COM_PORT_MODE.match(line):
+            self._comport_data.mode = int(match.group(1))
+            return True
+
+        if match := self.COM_PORT_SOURCE.match(line):
+            self._comport_data.source = match.group(1)
+            return True
+
+        return False
+
+    def _parse_access_line(self, line: str) -> bool:
+        """Parse an Apple Access config line."""
+        if match := self.ACCESS_TCI.match(line):
+            self._access_data.tci = match.group(1)
+            return True
+
+        if match := self.ACCESS_AUTH_REQUIRED.match(line):
+            self._access_data.auth_required = match.group(1) == "1"
+            return True
+
+        if match := self.ECP2_MODE.match(line):
+            self._access_data.ecp2_mode = match.group(1)
             return True
 
         return False
@@ -548,6 +682,7 @@ class ConfigParser:
             if data.merchant_id:
                 vas_configs.append(
                     AppleVASConfig(
+                        slot=slot,
                         merchant_id=data.merchant_id,
                         key_slot=data.key_slot,
                         merchant_url=data.merchant_url,
@@ -560,6 +695,7 @@ class ConfigParser:
             if data.collector_id:
                 smarttap_configs.append(
                     GoogleSmartTapConfig(
+                        slot=slot,
                         collector_id=data.collector_id,
                         key_slot=data.key_slot,
                         key_version=data.key_version,
@@ -567,11 +703,52 @@ class ConfigParser:
                 )
 
         # Build Keyboard config
-        if self._keyboard_data.log_mode is not None or self._keyboard_data.source is not None:
-            keyboard = KeyboardConfig(
-                log_mode=self._keyboard_data.log_mode or False,
-                source=self._keyboard_data.source or "A5",
+        kb = self._keyboard_data
+        if any(
+            value is not None
+            for value in (
+                kb.log_mode,
+                kb.enable,
+                kb.source,
+                kb.prefix,
+                kb.postfix,
+                kb.delay_ms,
+                kb.pass_mode,
+                kb.pass_section,
+                kb.pass_separator,
+                kb.pass_start,
+                kb.pass_length,
             )
+        ):
+            keyboard = KeyboardConfig(
+                log_mode=kb.log_mode or False,
+                enable=kb.enable,
+                source=kb.source or "A5",
+                prefix=kb.prefix,
+                postfix=kb.postfix,
+                delay_ms=kb.delay_ms,
+                pass_mode=kb.pass_mode,
+                pass_section=kb.pass_section,
+                pass_separator=kb.pass_separator,
+                pass_start=kb.pass_start,
+                pass_length=kb.pass_length,
+            )
+
+        # Build Apple Access config
+        access = None
+        acc = self._access_data
+        if any(v is not None for v in (acc.tci, acc.auth_required, acc.ecp2_mode)):
+            access = AccessConfig(
+                tci=acc.tci,
+                auth_required=acc.auth_required,
+                ecp2_mode=acc.ecp2_mode,
+            )
+
+        # Build serial port config
+        com_port = None
+        cp = self._comport_data
+        if any(v is not None for v in (cp.enable, cp.mode, cp.source)):
+            com_port = ComPortConfig(enable=cp.enable, mode=cp.mode, source=cp.source)
 
         # Build NFC config
         nfc = self._build_nfc_config()
@@ -588,6 +765,8 @@ class ConfigParser:
             keyboard=keyboard,
             nfc=nfc,
             desfire=desfire,
+            access=access,
+            com_port=com_port,
             feedback=feedback,
         )
 
@@ -757,14 +936,14 @@ class ConfigParser:
             return None
 
         parts = value.split(",")
-        if len(parts) != 4:
+        if len(parts) < 2 or not parts[0]:
             return None
 
         return LEDSequence(
             color=parts[0].upper(),
             on_ms=int(parts[1]),
-            off_ms=int(parts[2]),
-            repeats=int(parts[3]),
+            off_ms=int(parts[2]) if len(parts) > 2 else None,
+            repeats=int(parts[3]) if len(parts) > 3 else None,
         )
 
     def _parse_beep_sequence(self, value: str | None) -> BeepSequence | None:
@@ -777,16 +956,14 @@ class ConfigParser:
             return None
 
         parts = value.split(",")
-        if len(parts) < 3:
+        if not parts or not parts[0]:
             return None
-
-        frequency = int(parts[3]) if len(parts) >= 4 else None
 
         return BeepSequence(
             on_ms=int(parts[0]),
-            off_ms=int(parts[1]),
-            repeats=int(parts[2]),
-            frequency=frequency,
+            off_ms=int(parts[1]) if len(parts) > 1 else None,
+            repeats=int(parts[2]) if len(parts) > 2 else None,
+            frequency=int(parts[3]) if len(parts) > 3 else None,
         )
 
 

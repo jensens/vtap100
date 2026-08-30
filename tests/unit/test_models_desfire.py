@@ -68,8 +68,11 @@ class TestDESFireAppConfig:
         assert config.key_slot is None
         assert config.crypto is None
         assert config.format is None
-        assert config.read_length == 3
-        assert config.read_offset == 0
+        # Absent, not defaulted: the reader's own defaults are 3 and 0, but
+        # keeping the model value None is what lets an explicit
+        # DESFire1ReadOffset=0 survive a round-trip.
+        assert config.read_length is None
+        assert config.read_offset is None
 
     def test_desfire_app_id_required(self) -> None:
         """App ID is required."""
@@ -98,12 +101,16 @@ class TestDESFireAppConfig:
         config = DESFireAppConfig(app_id="AABBCC", file_id=255)
         assert config.file_id == 255
 
-    def test_desfire_file_id_zero_invalid(self) -> None:
-        """File ID 0 should fail."""
+    def test_desfire_file_id_negative_invalid(self) -> None:
+        """File ID below 0 should fail.
+
+        File 0 itself is valid: the manufacturer documents "Use a value from 0
+        to 255", and real deployment configs read from file 0.
+        """
         from vtap100.models.desfire import DESFireAppConfig
 
         with pytest.raises(ValidationError):
-            DESFireAppConfig(app_id="AABBCC", file_id=0)
+            DESFireAppConfig(app_id="AABBCC", file_id=-1)
 
     def test_desfire_file_id_above_max_invalid(self) -> None:
         """File ID above 255 should fail."""
@@ -187,11 +194,14 @@ class TestDESFireAppConfig:
             DESFireAppConfig(app_id="AABBCC", read_offset=256)
 
     def test_desfire_diversification(self) -> None:
-        """Can enable key diversification."""
+        """Can enable key diversification.
+
+        Mode 1 is AN10922 over UID and AID, the standard setting.
+        """
         from vtap100.models.desfire import DESFireAppConfig
 
-        config = DESFireAppConfig(app_id="AABBCC", diversification=True)
-        assert config.diversification is True
+        config = DESFireAppConfig(app_id="AABBCC", diversification=1)
+        assert config.diversification == 1
 
     def test_desfire_privacy_key(self) -> None:
         """Can set privacy key settings."""
@@ -466,3 +476,119 @@ class TestDESFireConfigOutput:
         lines = config.to_config_lines()
 
         assert not any("DESFireSeparator" in line for line in lines)
+
+
+class TestDESFireFileIdRange:
+    """FileID range per the manufacturer: 'Use a value from 0 to 255'."""
+
+    def test_file_id_zero_is_valid(self) -> None:
+        """File 0 is a legal DESFire file number and appears in real configs."""
+        from vtap100.models.desfire import DESFireAppConfig
+
+        config = DESFireAppConfig(app_id="AABBCC", file_id=0)
+        assert config.file_id == 0
+
+    def test_file_id_255_is_valid(self) -> None:
+        """Upper bound is inclusive."""
+        from vtap100.models.desfire import DESFireAppConfig
+
+        assert DESFireAppConfig(app_id="AABBCC", file_id=255).file_id == 255
+
+    def test_file_id_256_is_rejected(self) -> None:
+        """Above the documented range is still an error."""
+        from vtap100.models.desfire import DESFireAppConfig
+
+        with pytest.raises(ValidationError):
+            DESFireAppConfig(app_id="AABBCC", file_id=256)
+
+
+class TestDiversificationBitField:
+    """Diversification is a bit field, not a switch.
+
+    Bit 0 enables AN10922, bit 1 omits the AID from the input, bit 2 reverses
+    UID byte order. Valid values are therefore 0, 1, 3, 5 and 7.
+    """
+
+    @pytest.mark.parametrize("value", [0, 1, 3, 5, 7])
+    def test_documented_values_are_accepted(self, value: int) -> None:
+        """Every documented mode is valid."""
+        from vtap100.models.desfire import DESFireAppConfig
+
+        config = DESFireAppConfig(app_id="AABBCC", diversification=value)
+        assert config.diversification == value
+
+    @pytest.mark.parametrize("value", [2, 4, 6])
+    def test_modifier_without_active_bit_is_rejected(self, value: int) -> None:
+        """A modifier bit without bit 0 means nothing."""
+        from vtap100.models.desfire import DESFireAppConfig
+
+        with pytest.raises(ValidationError):
+            DESFireAppConfig(app_id="AABBCC", diversification=value)
+
+    def test_out_of_range_is_rejected(self) -> None:
+        """Only three bits exist."""
+        from vtap100.models.desfire import DESFireAppConfig
+
+        with pytest.raises(ValidationError):
+            DESFireAppConfig(app_id="AABBCC", diversification=8)
+
+    def test_builder_composes_bits(self) -> None:
+        """The builder mirrors KBSourceBuilder for the other bitmask setting."""
+        from vtap100.models.desfire import DiversificationBuilder
+
+        assert DiversificationBuilder().active().build() == 1
+        assert DiversificationBuilder().active().omit_aid().build() == 3
+        assert DiversificationBuilder().active().reverse_uid().build() == 5
+        assert DiversificationBuilder().active().omit_aid().reverse_uid().build() == 7
+
+
+class TestDESFireRemainingRanges:
+    """Ranges the model left unchecked."""
+
+    @pytest.mark.parametrize(
+        ("field_name", "valid", "invalid"),
+        [
+            ("key_num", 15, 16),
+            ("sysid_key_slot", 9, 10),
+            ("privacy_key_slot", 9, 10),
+        ],
+    )
+    def test_upper_bound(self, field_name: str, valid: int, invalid: int) -> None:
+        """The documented upper bound is enforced."""
+        from vtap100.models.desfire import DESFireAppConfig
+
+        config = DESFireAppConfig(app_id="AABBCC", **{field_name: valid})
+        assert getattr(config, field_name) == valid
+        with pytest.raises(ValidationError):
+            DESFireAppConfig(app_id="AABBCC", **{field_name: invalid})
+
+    def test_privacy_key_slot_zero_is_rejected(self) -> None:
+        """Privacy key slots are 1-9; there is no 'none' value."""
+        from vtap100.models.desfire import DESFireAppConfig
+
+        with pytest.raises(ValidationError):
+            DESFireAppConfig(app_id="AABBCC", privacy_key_slot=0)
+
+    def test_sysid_key_slot_zero_is_valid(self) -> None:
+        """SysIDKeySlot=0 means 'do not use a System Identifier'."""
+        from vtap100.models.desfire import DESFireAppConfig
+
+        assert DESFireAppConfig(app_id="AABBCC", sysid_key_slot=0).sysid_key_slot == 0
+
+
+class TestDESFireReadDefaults:
+    """An explicitly set default value must keep its line."""
+
+    def test_explicit_read_offset_zero_is_preserved(self) -> None:
+        """ReadOffset=0 is also the default, and must not vanish."""
+        from vtap100.roundtrip import compare
+
+        report = compare("!VTAPconfig\nDESFire1AppID=AABBCC\nDESFire1ReadOffset=0\n")
+        assert report.lost == []
+
+    def test_explicit_read_length_three_is_preserved(self) -> None:
+        """ReadLength=3 is also the default."""
+        from vtap100.roundtrip import compare
+
+        report = compare("!VTAPconfig\nDESFire1AppID=AABBCC\nDESFire1ReadLength=3\n")
+        assert report.lost == []

@@ -93,6 +93,20 @@ class ConfigGenerator:
                 lines.extend(desfire_lines)
 
         # LED/Beep feedback settings
+        # Serial port
+        if self.config.com_port:
+            com_port_lines = self.config.com_port.to_config_lines()
+            if com_port_lines:
+                lines.append("; Serial Port")
+                lines.extend(com_port_lines)
+
+        # Apple Access (ECP2)
+        if self.config.access:
+            access_lines = self.config.access.to_config_lines()
+            if access_lines:
+                lines.append("; Apple Access (ECP2)")
+                lines.extend(access_lines)
+
         if self.config.feedback:
             feedback_lines = self.config.feedback.to_config_lines()
             if feedback_lines:
@@ -122,19 +136,21 @@ class ConfigGenerator:
         # Apple VAS configurations
         if self.config.vas_configs:
             lines.append("; Apple VAS Configuration")
-            for i, vas in enumerate(self.config.vas_configs, start=1):
-                lines.extend(vas.to_config_lines(slot_number=i))
+            for vas in self.config.vas_configs:
+                lines.extend(vas.to_config_lines(slot_number=vas.slot))
 
         # VAS default passes enabled
         if self.config.vas_default_passes:
             lines.append(self.config.vas_default_passes.to_config_line())
 
         # Google Smart Tap configurations
-        # Note: ST1 does not work, so we start at ST2
+        # Slot numbers come from the model. New configurations default to slot 2
+        # because ST1 does not work on real readers, but a slot read from a file
+        # is written back unchanged rather than silently moved.
         if self.config.smarttap_configs:
             lines.append("; Google Smart Tap Configuration")
-            for i, st in enumerate(self.config.smarttap_configs, start=2):
-                lines.extend(st.to_config_lines(slot_number=i))
+            for st in self.config.smarttap_configs:
+                lines.extend(st.to_config_lines(slot_number=st.slot))
 
         # Smart Tap default passes enabled
         if self.config.smarttap_default_passes:

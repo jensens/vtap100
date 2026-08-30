@@ -39,7 +39,7 @@ DESFire App IDs must be exactly 6 hexadecimal characters.
 
 **Fix:** Use format like `112233` or `AABBCC`
 
-### "Key slot must be 1-6" / "Key slot must be 1-9"
+### "Key slot must be 0-6" / "Key slot must be 1-9"
 
 - Apple VAS / Google Smart Tap: slots 1-6
 - DESFire / Tag Read: slots 1-9
@@ -51,6 +51,56 @@ DESFire App IDs must be exactly 6 hexadecimal characters.
 - Spaces around `=` sign (use `Name=Value`, not `Name = Value`)
 - Invalid characters in values
 - Wrong line endings (use LF, not CRLF)
+
+## A Setting Has No Effect
+
+If a setting is present in `config.txt`, survives a save, and the reader still
+behaves as though it were absent, suspect the **firmware version before the
+configuration**.
+
+A VTAP reader ignores settings it does not know, silently. There is no error
+message, no log entry, and nothing wrong with the file — the setting simply does
+nothing. Trying different values changes nothing either, which is the tell: a
+setting that is understood but wrongly configured usually behaves *differently*
+when you change it.
+
+Check the running version:
+
+```bash
+cat /media/<you>/VTAP100/BOOT.TXT
+```
+
+```
+VTAP100
+Firmware: V2.2.8.2      <-- this line
+Hardware: 5.01
+```
+
+Then compare against the table of minimum versions in
+[settings_reference.md](configuration/settings_reference.md). `DESFire#ReadOffset`
+for instance needs v2.3.0.2; on v2.2.8.2 it does nothing at any value.
+
+To update, copy the firmware image for your hardware generation onto the reader's
+mass storage and reboot — `vtapware.dat` for hardware v5 and later,
+`firmware.dat` for v4 and earlier. The wrong generation's file will not work.
+See [Update firmware](https://help.vtapnfc.com/en/Content/VTAP-Configuration-Guide/Update-firmware.htm) and [Downloads](https://www.vtapnfc.com/support/downloads/).
+
+## Settings Disappear After Saving
+
+If a setting vanishes from your `config.txt` after loading and saving it, that
+is a defect — report it with the file. As of the round-trip work, all known real
+configurations survive a cycle unchanged, including the manufacturer's own
+published sample.
+
+### Known limitations
+
+Two documented syntaxes are not yet supported. A configuration using them loads,
+but the affected line is dropped on save:
+
+- **Sequence references** (firmware v5+): `TagBeep=100:tagbeep@beeps.ini` and
+  `LEDDefaultRGB=FFFFFF:seq.comet@leds.ini`, which point at entries in
+  `leds.ini` or `beeps.ini`.
+- **Bluetooth, OSDP and MIFARE Classic settings** are not modelled at all.
 
 ## Key File Issues
 

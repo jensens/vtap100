@@ -13,7 +13,7 @@ Apple VAS (Value Added Services) enables reading Apple Wallet passes via NFC. Th
 | Parameter | Values | Default | Description |
 |-----------|--------|---------|-------------|
 | VAS#MerchantID | String | - | **Required.** Apple Pass Type ID (e.g., `pass.com.company.passname`) |
-| VAS#KeySlot | 0-6 | 0 | Slot of the private#.pem file (0=auto) |
+| VAS#KeySlot | 0-6 | omitted | Slot of the private#.pem file. Optional: 0 or omitted makes the reader compare all available keys against the hash of the public key |
 | VAS#MerchantURL | URL | - | Optional: URL for pass presentation |
 | VASDefaultPassesEnabled | List | 1,2,3,4,5,6 | Active VAS configurations |
 
@@ -98,3 +98,10 @@ except ValidationError as e:
 
 - [VTAP Help - Apple VAS Settings](https://help.vtapnfc.com/en/Content/VTAP-Commands/Config-txt-VAS_settings.htm)
 - [Passmeister - Apple Wallet Setup](https://www.passmeister.com/en/b/nfc_setup_dot_origin_vtap100_apple_wallet)
+
+## Manufacturer Documentation
+
+The authority for every value range on this page. Where this project's
+documentation disagreed with these, the manufacturer won.
+
+- [Apple VAS settings](https://help.vtapnfc.com/en/Content/VTAP-Commands/Config-txt-VAS_settings.htm)

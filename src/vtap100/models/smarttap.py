@@ -6,6 +6,7 @@ by NFC readers for loyalty, membership, and identity applications.
 
 Example:
     >>> config = GoogleSmartTapConfig(
+    ...     slot=2,
     ...     collector_id="96972794",
     ...     key_slot=1,
     ...     key_version=1,
@@ -31,6 +32,7 @@ class GoogleSmartTapConfig(BaseModel):
     """Configuration for a single Google Smart Tap pass type.
 
     Attributes:
+        slot: The pass slot number (1-6) appearing in the ST# parameter names.
         collector_id: The Google Collector ID (numeric string).
             Provided by Google to uniquely identify your passes.
         key_slot: The private key slot (1-6) where the decryption key is stored.
@@ -39,19 +41,25 @@ class GoogleSmartTapConfig(BaseModel):
             Defaults to 0 if not specified.
     """
 
+    slot: int = Field(
+        ...,
+        ge=1,
+        le=6,
+        description="Pass slot number (1-6) used in the ST# parameter names",
+    )
     collector_id: str = Field(
         ...,
         description="Google Collector ID (numeric string)",
         min_length=1,
     )
-    key_slot: int = Field(
-        ...,
-        ge=1,
+    key_slot: int | None = Field(
+        default=None,
+        ge=0,
         le=6,
-        description="Private key slot (1-6, required for reader to work)",
+        description="Private key slot (0-6; 0 or omitted is the documented default)",
     )
-    key_version: int = Field(
-        default=0,
+    key_version: int | None = Field(
+        default=None,
         ge=0,
         description="Key version (must match Google dashboard)",
     )
@@ -68,11 +76,11 @@ class GoogleSmartTapConfig(BaseModel):
         """
         lines = [f"ST{slot_number}CollectorID={self.collector_id}"]
 
-        # Always include key_slot (required for reader to work)
-        lines.append(f"ST{slot_number}KeySlot={self.key_slot}")
+        if self.key_slot is not None:
+            lines.append(f"ST{slot_number}KeySlot={self.key_slot}")
 
-        # Always include key_version (required for Google Smart Tap)
-        lines.append(f"ST{slot_number}KeyVersion={self.key_version}")
+        if self.key_version is not None:
+            lines.append(f"ST{slot_number}KeyVersion={self.key_version}")
 
         return lines
 
